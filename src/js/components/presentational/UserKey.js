@@ -7,24 +7,45 @@ class UserKey extends Component {
       currentUser: 'darin',
       apiKey: 'abc123'
     };
-    this.confirmDeletion = this.confirmDeletion.bind(this);
-    this.handleConfirmation = this.handleConfirmation.bind(this);
+    this.confirmApiKeyDeletion = this.confirmApiKeyDeletion.bind(this);
+    this.confirmApiKeyRegeneration = this.confirmApiKeyRegeneration.bind(this);
+    this.destroyUserApiKey = this.destroyUserApiKey.bind(this);
+    this.setUserApiKey = this.setUserApiKey.bind(this);
   }
-  confirmDeletion() {
+
+  confirmApiKeyDeletion() {
     if(window.confirm("Warning, This is a Destructive Action!\nAll software agents which use this key will stop working!")) {
-      this.handleConfirmation()
+      this.destroyUserApiKey()
     }
   }
 
-  handleConfirmation() {
-    alert("Confirmed by UserKey")
+  confirmApiKeyRegeneration() {
+    if(window.confirm("Warning, This is a Destructive Action!\nAll software agents which use the original key will stop working!")) {
+      this.setUserApiKey();
+    }
   }
+
+  destroyUserApiKey() {
+    this.setState(state => ({
+      apiKey: null
+    }));
+  }
+
+  setUserApiKey() {
+    this.setState(state => ({
+      apiKey: '123abc'
+    }))
+  }
+
   render() {
     return (
       <div>
-        <p>Hello { this.state.currentUser }</p>
-        <button onClick={this.confirmDeletion} type="submit" className="btn btn-success btn-lg">
+        <p>User { this.state.currentUser } Key { this.state.apiKey }</p>
+        <button onClick={this.confirmApiKeyDeletion} type="submit" className="btn btn-success btn-lg">
           Destroy
+        </button>
+        <button onClick={this.confirmApiKeyRegeneration} type="submit" className="btn btn-success btn-lg">
+          Regenerate
         </button>
       </div>
     )
