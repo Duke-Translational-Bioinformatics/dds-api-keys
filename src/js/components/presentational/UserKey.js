@@ -5,12 +5,13 @@ class UserKey extends Component {
     super(props);
     this.state = {
       currentUser: 'darin',
-      apiKey: 'abc123'
+      apiKey: null
     };
     this.confirmApiKeyDeletion = this.confirmApiKeyDeletion.bind(this);
     this.confirmApiKeyRegeneration = this.confirmApiKeyRegeneration.bind(this);
     this.destroyUserApiKey = this.destroyUserApiKey.bind(this);
     this.setUserApiKey = this.setUserApiKey.bind(this);
+    this.getUserApiKey = this.getUserApiKey.bind(this);
   }
 
   confirmApiKeyDeletion() {
@@ -37,13 +38,21 @@ class UserKey extends Component {
     }))
   }
 
+  getUserApiKey() {
+    return this.state.apiKey
+  }
+
+  notifyClipboardCopy() {
+    alert("ApiKey Successfully Copied to Clipboard!")
+  }
+
   render() {
     let keyDisplay;
     if(this.state.apiKey == null) {
       keyDisplay = <button onClick={this.setUserApiKey} type="submit" className="btn btn-success btn-lg">Generate Key</button>
     }
     else {
-      keyDisplay = <ManageKey destroy={this.confirmApiKeyDeletion} regenerate={this.confirmApiKeyRegeneration} />
+      keyDisplay = <ManageKey destroyKey={this.confirmApiKeyDeletion} regenerateKey={this.confirmApiKeyRegeneration} getKey={this.getUserApiKey} handleSuccessfulClipboardCopy={this.notifyClipboardCopy} />
     }
     return (
       <div>
