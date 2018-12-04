@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import uuidv1 from "uuid";
 import ManageKey from "./ManageKey"
 class UserKey extends Component {
   constructor(props) {
@@ -33,8 +34,9 @@ class UserKey extends Component {
   }
 
   setUserApiKey() {
+    const newKey = uuidv1();
     this.setState(state => ({
-      apiKey: '123abc'
+      apiKey: newKey
     }))
   }
 
