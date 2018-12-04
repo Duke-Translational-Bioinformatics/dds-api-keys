@@ -21,9 +21,9 @@ class ManageKey extends Component {
   }
 }
 ManageKey.propTypes = {
-  destroyKey: PropTypes.func,
-  regenerateKey: PropTypes.func,
-  getKey: PropTypes.func,
-  handleSuccessfulClipboardCopy: PropTypes.func
+  destroyKey: PropTypes.func.isRequired,
+  regenerateKey: PropTypes.func.isRequired,
+  getKey: PropTypes.func.isRequired,
+  handleSuccessfulClipboardCopy: PropTypes.func.isRequired
 };
 export default ManageKey;
