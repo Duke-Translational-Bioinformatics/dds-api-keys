@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-
+import ManageKey from "./ManageKey"
 class UserKey extends Component {
   constructor(props) {
     super(props);
@@ -38,15 +38,17 @@ class UserKey extends Component {
   }
 
   render() {
+    let keyDisplay;
+    if(this.state.apiKey == null) {
+      keyDisplay = <button onClick={this.setUserApiKey} type="submit" className="btn btn-success btn-lg">Generate Key</button>
+    }
+    else {
+      keyDisplay = <ManageKey destroy={this.confirmApiKeyDeletion} regenerate={this.confirmApiKeyRegeneration} />
+    }
     return (
       <div>
         <p>User { this.state.currentUser } Key { this.state.apiKey }</p>
-        <button onClick={this.confirmApiKeyDeletion} type="submit" className="btn btn-success btn-lg">
-          Destroy
-        </button>
-        <button onClick={this.confirmApiKeyRegeneration} type="submit" className="btn btn-success btn-lg">
-          Regenerate
-        </button>
+        {keyDisplay}
       </div>
     )
   }
