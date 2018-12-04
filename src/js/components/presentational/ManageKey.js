@@ -5,14 +5,14 @@ class ManageKey extends Component {
   render() {
     return (
       <div>
-        <button onClick={this.props.destroyKey} type="submit" className="btn btn-success btn-lg">
+        <button onClick={this.props.destroyKey}>
           Destroy
         </button>
         <br />
-        <button onClick={this.props.regenerateKey} type="submit" className="btn btn-success btn-lg">
+        <button onClick={this.props.regenerateKey}>
           Regenerate
         </button>
-        <Clipboard option-text={this.props.getKey} onSuccess={this.props.handleSuccessfulClipboardCopy} button-type="submit" button-className="btn btn-success btn-lg">
+        <Clipboard option-text={this.props.getKey} onSuccess={this.props.handleSuccessfulClipboardCopy}>
           copy to clipboard
         </Clipboard>
       </div>

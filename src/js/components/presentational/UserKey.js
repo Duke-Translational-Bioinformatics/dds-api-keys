@@ -49,7 +49,7 @@ class UserKey extends Component {
   render() {
     let keyDisplay;
     if(this.state.apiKey == null) {
-      keyDisplay = <button onClick={this.setUserApiKey} type="submit" className="btn btn-success btn-lg">Generate Key</button>
+      keyDisplay = <button onClick={this.setUserApiKey}>Generate Key</button>
     }
     else {
       keyDisplay = <ManageKey destroyKey={this.confirmApiKeyDeletion} regenerateKey={this.confirmApiKeyRegeneration} getKey={this.getUserApiKey} handleSuccessfulClipboardCopy={this.notifyClipboardCopy} />
