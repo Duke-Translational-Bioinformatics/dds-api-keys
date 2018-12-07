@@ -10,24 +10,24 @@ var ddsClient = {
       .catch((error) => {
         handleFailure(error.response.data);
       })
+  },
+
+  getJwtToken(accessToken, handleToken, handleFailure) {
+    var url = `${ddsApiBaseURL}/user/api_token`;
+    this.send(
+      {
+        url: url,
+        method: 'get',
+        params: {access_token: accessToken}
+      },
+      (response) => {
+        var thisData = response.data;
+        handleToken(thisData.api_token, thisData.expires_on, thisData.time_to_live);
+      },
+      handleFailure
+    )
   }
 
-  // getJwtToken(accessToken, handleToken, handleFailure) {
-  //   console.log
-  //   var url = `${ddsApiBaseURL}/user/api_token`;
-  //   call(
-  //     {
-  //       url: url,
-  //       method: 'get',
-  //       params: {access_token: accessToken}
-  //     },
-  //     (data) => {
-  //       handleToken(data.api_token, data.expires_on, data.time_to_live);
-  //     },
-  //     handleFailure
-  //   )
-  // }
-  //
   // getCurrentUser(jwtToken, handleSuccess, handleFailure) {
   //   var url = `${ddsApiBaseURL}/current_user`
   //   call(
