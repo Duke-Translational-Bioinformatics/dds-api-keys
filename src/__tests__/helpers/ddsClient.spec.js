@@ -1,24 +1,85 @@
+jest.mock('axios');
+jest.useFakeTimers();
+
 import axios from 'axios';
 import ddsClient from 'js/helpers/ddsClient';
 
-jest.mock('axios');
+var shouldSucceed = true;
+var expectedData;
+var expectedError = {error: {message: 'Exception'}};
+var expectedFailureResponse = {
+  response: {
+    data: expectedError
+  }
+};
 
-describe('.send', () => {
-  test('is expected to take a payload and pass that payload to axios', done => {
-    const resp = {data: [{name: 'Bob'}]};
-    axios.mockResolvedValue(resp);
+var expectedSuccessResponse = {
+  data: expectedData,
+  status: 200,
+  statusText: "OK",
+  headers: {},
+  config: {},
+};
 
-    const payload = {
-      url: 'https://apidev.dataservice.duke.edu/api/v1/app/status',
-      method: 'get'
-    };
+function mocked_response() {
+  return new Promise((resolve, reject) => {
+    process.nextTick(function() {
+      if (!shouldSucceed) {
+        reject(expectedFailureResponse);
+      } else {
+        resolve(expectedSuccessResponse);
+      }
+    });
+  });
+}
 
-    const processFunc = (data) => {
-      console.log("GOT ", JSON.stringify(data));
-      done();
-    }
-    setImmediate(() => {
-      ddsClient.send(payload, processFunc, () => {});
+var handleSuccess = jest.fn();
+var handleFailure = jest.fn();
+
+axios.mockImplementation(mocked_response);
+
+describe('ddsClient', () => {
+  beforeEach(() => {
+    handleSuccess.mockClear();
+    handleFailure.mockClear();
+  });
+
+  describe('.send', () => {
+    describe('with success', () => {
+      let payload = {
+        url: 'https://test.url',
+        method: 'get'
+      };
+      expectedData = {name: 'Bob'};
+
+      test('is expected to take a payload and success function, pass it to axios, and process the response with the success function', done => {
+        shouldSucceed = true;
+        ddsClient.send(payload, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).toBeCalledWith(
+            expectedSuccessResponse
+          );
+          done();
+        });
+      });
+    });
+
+    describe('with failure', () => {
+      let payload = {
+        url: 'https://test.url',
+        method: 'put'
+      };
+
+      test('is expected to take a payload and failure function, pass it to axios, and process the error.data with the failure function', done => {
+        shouldSucceed = false;
+        ddsClient.send(payload, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            expectedError
+          );
+          done();
+        });
+      });
     });
   });
 });
