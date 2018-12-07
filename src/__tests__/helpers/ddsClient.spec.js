@@ -121,4 +121,143 @@ describe('ddsClient', () => {
       });
     });
   });
+
+  describe('.getCurrentUser', () => {
+    let jwtToken = 'abc123xyz';
+
+    describe('with success', () => {
+      it('is expected to take a jwtToken and success function, request the current_user, and pass the user to the success function', done => {
+        let expectedCurrentUser = {name: 'Bob', id: '1'};
+        expectedSuccessResponse['data'] = expectedCurrentUser;
+
+        shouldSucceed = true;
+        ddsClient.getCurrentUser(jwtToken, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).toBeCalledWith(
+            expectedCurrentUser
+          );
+          done();
+        });
+      });
+    });
+
+    describe('with failure', () => {
+      it('is expected to take a jwtToken and failure function, request the current_user, and process the error.data with the failure function', done => {
+        shouldSucceed = false;
+        ddsClient.getCurrentUser(jwtToken, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            expectedError
+          );
+          done();
+        });
+      });
+    });
+  });
+
+  describe('.getUserApiKey', () => {
+    let jwtToken = 'abc123xyz';
+
+    describe('with success', () => {
+      it('is expected to take a jwtToken and success function, request the api key, and pass the key to the success function', done => {
+        let expectedKey = 'xyz123abc';
+        expectedSuccessResponse['data'] = {
+          key: expectedKey,
+          created_on: '12-jul-2001'
+        };
+
+        shouldSucceed = true;
+        ddsClient.getUserApiKey(jwtToken, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).toBeCalledWith(
+            expectedKey
+          );
+          done();
+        });
+      });
+    });
+
+    describe('with failure', () => {
+      it('is expected to take a jwtToken and failure function, request the api key, and process the error.data with the failure function', done => {
+        shouldSucceed = false;
+        ddsClient.getUserApiKey(jwtToken, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            expectedError
+          );
+          done();
+        });
+      });
+    });
+  });
+
+  describe('.setUserApiKey', () => {
+    let jwtToken = 'abc123xyz';
+
+    describe('with success', () => {
+      it('is expected to take a jwtToken and success function, request to set the api key, and pass the new key to the success function', done => {
+        let expectedKey = 'xyz123abc';
+        expectedSuccessResponse['data'] = {
+          key: expectedKey,
+          created_on: '12-jul-2001'
+        };
+
+        shouldSucceed = true;
+        ddsClient.setUserApiKey(jwtToken, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).toBeCalledWith(
+            expectedKey
+          );
+          done();
+        });
+      });
+    });
+
+    describe('with failure', () => {
+      it('is expected to take a jwtToken and failure function, request to set the api key, and process the error.data with the failure function', done => {
+        shouldSucceed = false;
+        ddsClient.setUserApiKey(jwtToken, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            expectedError
+          );
+          done();
+        });
+      });
+    });
+  });
+
+  describe('.destroyUserApiKey', () => {
+    let jwtToken = 'abc123xyz';
+
+    describe('with success', () => {
+      it('is expected to take a jwtToken and success function, and request to destroy the api key', done => {
+        let expectedKey = 'xyz123abc';
+        expectedSuccessResponse['data'] = {
+          key: expectedKey,
+          created_on: '12-jul-2001'
+        };
+
+        shouldSucceed = true;
+        ddsClient.destroyUserApiKey(jwtToken, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).not.toHaveBeenCalled();
+          done();
+        });
+      });
+    });
+
+    describe('with failure', () => {
+      it('is expected to take a jwtToken and failure function, request to destroy the api key, and process the error.data with the failure function', done => {
+        shouldSucceed = false;
+        ddsClient.destroyUserApiKey(jwtToken, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            expectedError
+          );
+          done();
+        });
+      });
+    });
+  });
 });

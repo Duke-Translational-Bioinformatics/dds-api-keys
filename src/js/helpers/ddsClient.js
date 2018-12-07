@@ -26,58 +26,58 @@ var ddsClient = {
       },
       handleFailure
     )
-  }
+  },
 
-  // getCurrentUser(jwtToken, handleSuccess, handleFailure) {
-  //   var url = `${ddsApiBaseURL}/current_user`
-  //   call(
-  //     {
-  //       url: url,
-  //       method: 'get',
-  //       headers: {Authorization: jwtToken}
-  //     },
-  //     handleSuccess,
-  //     handleFailure
-  //   )
-  // }
-  //
-  // getUserApiKey(jwtToken) {
-  //   var url = `${ddsApiBaseURL}/current_user/api_key`
-  //   call(
-  //     {
-  //       url: url,
-  //       method: 'get',
-  //       headers: {Authorization: jwtToken}
-  //     },
-  //     handleSuccess,
-  //     handleFailure
-  //   )
-  // }
-  //
-  // setUserApiKey(jwtToken) {
-  //   var url = `${ddsApiBaseURL}/current_user/api_key`
-  //   call(
-  //     {
-  //       url: url,
-  //       method: 'put',
-  //       headers: {Authorization: jwtToken}
-  //     },
-  //     handleSuccess,
-  //     handleFailure
-  //   )
-  // }
-  //
-  // destroyUserApiKey(jwtToken) {
-  //   var url = `${ddsApiBaseURL}/current_user/api_key`
-  //   call(
-  //     {
-  //       url: url,
-  //       method: 'delete',
-  //       headers: {Authorization: jwtToken}
-  //     },
-  //     () => {},
-  //     handleFailure
-  //   )
-  // }
+  getCurrentUser(jwtToken, handleUser, handleFailure) {
+    var url = `${ddsApiBaseURL}/current_user`
+    this.send(
+      {
+        url: url,
+        method: 'get',
+        headers: {Authorization: jwtToken}
+      },
+      (response) => { handleUser(response.data) },
+      handleFailure
+    )
+  },
+
+  getUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
+    var url = `${ddsApiBaseURL}/current_user/api_key`
+    this.send(
+      {
+        url: url,
+        method: 'get',
+        headers: {Authorization: jwtToken}
+      },
+      (response) => { handleUserApiKey(response.data.key) },
+      handleFailure
+    )
+  },
+
+  setUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
+    var url = `${ddsApiBaseURL}/current_user/api_key`
+    this.send(
+      {
+        url: url,
+        method: 'put',
+        headers: {Authorization: jwtToken}
+      },
+      (response) => { handleUserApiKey(response.data.key) },
+      handleFailure
+    )
+  },
+
+  destroyUserApiKey(jwtToken, handleFailure) {
+    var url = `${ddsApiBaseURL}/current_user/api_key`
+    this.send(
+      {
+        url: url,
+        method: 'delete',
+        headers: {Authorization: jwtToken}
+      },
+      () => {},
+      handleFailure
+    )
+  }
 };
 export default ddsClient;
