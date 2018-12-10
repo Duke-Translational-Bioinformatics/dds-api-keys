@@ -78,6 +78,24 @@ var ddsClient = {
       () => {},
       handleFailure
     )
+  },
+
+  getDefaultOauthProvider(handleProvider, handleFailure) {
+    var url = `${ddsApiBaseURL}/auth_providers`
+    this.send(
+      {
+        url: url,
+        method: 'get'
+      },
+      (response) => {
+        response.data.results.forEach(function(provider) {
+          if(provider.is_default === "true") {
+            handleProvider(provider);
+          }
+        });
+      },
+      handleFailure
+    )
   }
 };
 export default ddsClient;
