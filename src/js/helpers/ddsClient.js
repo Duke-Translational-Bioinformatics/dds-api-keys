@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "../config/ddsconfig.js";
 
-const ddsApiBaseURL = () => config["dds_api_base_url"];
+const ddsApiBaseURL = config["dds_api_base_url"];
 
 var ddsClient = {
   send(payload, processData, handleFailure) {
@@ -13,7 +13,7 @@ var ddsClient = {
   },
 
   getJwtToken(accessToken, handleToken, handleFailure) {
-    var url = `${ddsApiBaseURL()}/user/api_token`;
+    var url = `${ddsApiBaseURL}/user/api_token`;
     this.send(
       {
         url: url,
@@ -29,7 +29,7 @@ var ddsClient = {
   },
 
   getCurrentUser(jwtToken, handleUser, handleFailure) {
-    var url = `${ddsApiBaseURL()}/current_user`
+    var url = `${ddsApiBaseURL}/current_user`
     this.send(
       {
         url: url,
@@ -42,7 +42,7 @@ var ddsClient = {
   },
 
   getUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
-    var url = `${ddsApiBaseURL()}/current_user/api_key`
+    var url = `${ddsApiBaseURL}/current_user/api_key`
     this.send(
       {
         url: url,
@@ -55,7 +55,7 @@ var ddsClient = {
   },
 
   setUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
-    var url = `${ddsApiBaseURL()}/current_user/api_key`
+    var url = `${ddsApiBaseURL}/current_user/api_key`
     this.send(
       {
         url: url,
@@ -68,7 +68,7 @@ var ddsClient = {
   },
 
   destroyUserApiKey(jwtToken, handleFailure) {
-    var url = `${ddsApiBaseURL()}/current_user/api_key`
+    var url = `${ddsApiBaseURL}/current_user/api_key`
     this.send(
       {
         url: url,
@@ -81,7 +81,7 @@ var ddsClient = {
   },
 
   getDefaultOauthProvider(handleProvider, handleFailure) {
-    var url = `${ddsApiBaseURL()}/auth_providers`
+    var url = `${ddsApiBaseURL}/auth_providers`
     this.send(
       {
         url: url,
