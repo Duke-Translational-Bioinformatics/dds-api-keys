@@ -81,7 +81,6 @@ var ddsClient = {
   },
 
   getDefaultOauthProvider(handleProvider, handleFailure) {
-    console.error("NOT MOCKED!");
     var url = `${ddsApiBaseURL()}/auth_providers`
     this.send(
       {

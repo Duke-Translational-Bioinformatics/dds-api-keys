@@ -30,6 +30,7 @@ function mocked_response() {
     });
   });
 }
+const origSend = ddsClient.send;
 
 var handleSuccess = jest.fn();
 var handleFailure = jest.fn();
@@ -81,8 +82,62 @@ describe('ddsClient', () => {
     });
   });
 
+  function spyDdsClientSend() {
+    beforeEach(() => {
+      ddsClient.send = jest.fn();
+      ddsClient.send.mockImplementation(origSend);
+    });
+    afterEach(() => {
+      ddsClient.send = origSend;
+    });
+  }
+
+  function testDDSApi(expectedSendUri, expectedSendMethod, sendCall, token, extraPayload) {
+    describe('expected DDS API interaction', () => {
+      let expectedApiSendUrl = `${process.env.DDS_API_BASE_URL}${expectedSendUri}`;
+
+      spyDdsClientSend();
+
+      it('is expected to call the correct dds api url', done => {
+        let expectedSendPayload = {
+          url: expectedApiSendUrl,
+          method: expectedSendMethod
+        };
+        if (extraPayload != null) {
+          for (var attrname in extraPayload) {
+            expectedSendPayload[attrname] = extraPayload[attrname];
+          }
+        }
+        if (token != null) {
+          sendCall(token, () => {}, () => {});
+        }
+        else {
+          sendCall(() => {}, () => {});
+        }
+
+        setImmediate(() => {
+          expect(ddsClient.send).toBeCalledWith(
+            expectedSendPayload,
+            expect.anything(),
+            expect.anything()
+          );
+          done();
+        });
+      });
+    });
+  }
+
   describe('.getJwtToken', () => {
     let accessToken = 'abc123xyz';
+    let expectedDDSUri = '/user/api_token';
+    let expectedDDSSendMethod = 'get';
+    let accessTokenPayload = {
+      params: {access_token: accessToken}
+    };
+    function subject(a,s,f) {
+      ddsClient.getJwtToken(a,s,f);
+    }
+    testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject, accessToken, accessTokenPayload);
 
     describe('with success', () => {
       it('is expected to take an accessToken and success function, request the jwt token, and pass the token, time_to_live, and expiry to the success function', done => {
@@ -124,6 +179,16 @@ describe('ddsClient', () => {
 
   describe('.getCurrentUser', () => {
     let jwtToken = 'abc123xyz';
+    let jwtTokenPayload = {
+      headers: {Authorization: jwtToken}
+    };
+    let expectedDDSUri = '/current_user';
+    let expectedDDSSendMethod = 'get';
+    function subject(a,s,f) {
+      ddsClient.getCurrentUser(a,s,f);
+    }
+
+    testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject, jwtToken, jwtTokenPayload);
 
     describe('with success', () => {
       it('is expected to take a jwtToken and success function, request the current_user, and pass the user to the success function', done => {
@@ -157,6 +222,16 @@ describe('ddsClient', () => {
 
   describe('.getUserApiKey', () => {
     let jwtToken = 'abc123xyz';
+    let jwtTokenPayload = {
+      headers: {Authorization: jwtToken}
+    };
+    let expectedDDSUri = '/current_user/api_key';
+    let expectedDDSSendMethod = 'get';
+    function subject(a,s,f) {
+      ddsClient.getUserApiKey(a,s,f);
+    }
+
+    testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject, jwtToken, jwtTokenPayload);
 
     describe('with success', () => {
       it('is expected to take a jwtToken and success function, request the api key, and pass the key to the success function', done => {
@@ -193,6 +268,16 @@ describe('ddsClient', () => {
 
   describe('.setUserApiKey', () => {
     let jwtToken = 'abc123xyz';
+    let jwtTokenPayload = {
+      headers: {Authorization: jwtToken}
+    };
+    let expectedDDSUri = '/current_user/api_key';
+    let expectedDDSSendMethod = 'put';
+    function subject(a,s,f) {
+      ddsClient.setUserApiKey(a,s,f);
+    }
+
+    testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject, jwtToken, jwtTokenPayload);
 
     describe('with success', () => {
       it('is expected to take a jwtToken and success function, request to set the api key, and pass the new key to the success function', done => {
@@ -229,6 +314,16 @@ describe('ddsClient', () => {
 
   describe('.destroyUserApiKey', () => {
     let jwtToken = 'abc123xyz';
+    let jwtTokenPayload = {
+      headers: {Authorization: jwtToken}
+    };
+    let expectedDDSUri = '/current_user/api_key';
+    let expectedDDSSendMethod = 'delete';
+    function subject(a,s,f) {
+      ddsClient.destroyUserApiKey(a,s,f);
+    }
+
+    testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject, jwtToken, jwtTokenPayload);
 
     describe('with success', () => {
       it('is expected to take a jwtToken and success function, and request to destroy the api key', done => {
@@ -262,8 +357,16 @@ describe('ddsClient', () => {
   });
 
   describe('.getDefaultOauthProvider', () => {
+    let expectedDDSUri = '/auth_providers';
+    let expectedDDSSendMethod = 'get';
+    function subject(s,f) {
+      ddsClient.getDefaultOauthProvider(s,f);
+    }
+
+    testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject);
+
     describe('with success', () => {
-      it.only('is expected to request the default oauth provider information, and pass it to the success function', done => {
+      it('is expected to request the default oauth provider information, and pass it to the success function', done => {
         let expectedProviderInfo = {
           id: '1',
           service_id: '2',
