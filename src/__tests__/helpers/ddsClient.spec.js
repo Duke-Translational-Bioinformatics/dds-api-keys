@@ -4,84 +4,36 @@ jest.useFakeTimers();
 import axios from 'axios';
 import ddsClient from 'js/helpers/ddsClient';
 
-var shouldSucceed = true;
-var expectedError = {error: {message: 'Exception'}};
-var expectedFailureResponse = {
-  response: {
-    data: expectedError
-  }
-};
-
-var expectedSuccessResponse = {
-  status: 200,
-  statusText: "OK",
-  headers: {},
-  config: {},
-};
-
-function mocked_response() {
-  return new Promise((resolve, reject) => {
-    process.nextTick(function() {
-      if (!shouldSucceed) {
-        reject(expectedFailureResponse);
-      } else {
-        resolve(expectedSuccessResponse);
-      }
-    });
-  });
-}
-const origSend = ddsClient.send;
-
-var handleSuccess = jest.fn();
-var handleFailure = jest.fn();
-
-axios.mockImplementation(mocked_response);
-
 describe('ddsClient', () => {
-  beforeEach(() => {
-    handleSuccess.mockClear();
-    handleFailure.mockClear();
-  });
+  var shouldSucceed = true;
+  var expectedError = {error: {message: 'Exception'}};
+  var expectedFailureResponse = {
+    response: {
+      data: expectedError
+    }
+  };
 
-  describe('.send', () => {
-    describe('with success', () => {
-      let payload = {
-        url: 'https://test.url',
-        method: 'get'
-      };
+  var expectedSuccessResponse = {
+    status: 200,
+    statusText: "OK",
+    headers: {},
+    config: {},
+  };
 
-      it('is expected to take a payload and success function, make the request, and process the response with the success function', done => {
-        expectedSuccessResponse['data'] = {name: 'Bob'};
-        shouldSucceed = true;
-        ddsClient.send(payload, handleSuccess, handleFailure);
-        setImmediate(() => {
-          expect(handleSuccess).toBeCalledWith(
-            expectedSuccessResponse
-          );
-          done();
-        });
+  function mocked_response() {
+    return new Promise((resolve, reject) => {
+      process.nextTick(function() {
+        if (!shouldSucceed) {
+          reject(expectedFailureResponse);
+        } else {
+          resolve(expectedSuccessResponse);
+        }
       });
     });
+  }
+  axios.mockImplementation(mocked_response);
 
-    describe('with failure', () => {
-      let payload = {
-        url: 'https://test.url',
-        method: 'put'
-      };
-
-      it('is expected to take a payload and failure function, make the request, and process the error.data with the failure function', done => {
-        shouldSucceed = false;
-        ddsClient.send(payload, handleSuccess, handleFailure);
-        setImmediate(() => {
-          expect(handleFailure).toBeCalledWith(
-            expectedError
-          );
-          done();
-        });
-      });
-    });
-  });
-
+  const origSend = ddsClient.send;
   function spyDdsClientSend() {
     beforeEach(() => {
       ddsClient.send = jest.fn();
@@ -126,6 +78,52 @@ describe('ddsClient', () => {
       });
     });
   }
+
+  var handleSuccess = jest.fn();
+  var handleFailure = jest.fn();
+  beforeEach(() => {
+    handleSuccess.mockClear();
+    handleFailure.mockClear();
+  });
+
+  describe('.send', () => {
+    describe('with success', () => {
+      let payload = {
+        url: 'https://test.url',
+        method: 'get'
+      };
+
+      it('is expected to take a payload and success function, make the request, and process the response with the success function', done => {
+        expectedSuccessResponse['data'] = {name: 'Bob'};
+        shouldSucceed = true;
+        ddsClient.send(payload, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).toBeCalledWith(
+            expectedSuccessResponse
+          );
+          done();
+        });
+      });
+    });
+
+    describe('with failure', () => {
+      let payload = {
+        url: 'https://test.url',
+        method: 'put'
+      };
+
+      it('is expected to take a payload and failure function, make the request, and process the error.data with the failure function', done => {
+        shouldSucceed = false;
+        ddsClient.send(payload, handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            expectedError
+          );
+          done();
+        });
+      });
+    });
+  });
 
   describe('.getJwtToken', () => {
     let accessToken = 'abc123xyz';
