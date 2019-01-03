@@ -332,9 +332,9 @@ describe('ddsClient', () => {
         };
 
         shouldSucceed = true;
-        ddsClient.destroyUserApiKey(jwtToken, handleFailure);
+        ddsClient.destroyUserApiKey(jwtToken, handleSuccess, handleFailure);
         setImmediate(() => {
-          expect(handleSuccess).not.toHaveBeenCalled();
+          expect(handleSuccess).toHaveBeenCalled();
           done();
         });
       });
@@ -343,7 +343,7 @@ describe('ddsClient', () => {
     describe('with failure', () => {
       it('is expected to take a jwtToken and failure function, request to destroy the api key, and process the error.data with the failure function', done => {
         shouldSucceed = false;
-        ddsClient.destroyUserApiKey(jwtToken, handleFailure);
+        ddsClient.destroyUserApiKey(jwtToken, handleSuccess, handleFailure);
         setImmediate(() => {
           expect(handleFailure).toBeCalledWith(
             expectedError

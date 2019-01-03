@@ -70,6 +70,8 @@ describe('ddsClient', () => {
           expect(storedTokenExpiration).toEqual(expectedTokenExpiration);
           expect(storedTokenExpiration).toBeLessThan(Date.now());
           expect(authHelper.isLoggedIn()).toBeFalsy();
+          expect(sessionStorage.getItem(expectedTokenStoreKey)).toBeNull();
+          expect(sessionStorage.getItem(expectedTokenExpirationStoreKey)).toBeNull();
         });
       });
 

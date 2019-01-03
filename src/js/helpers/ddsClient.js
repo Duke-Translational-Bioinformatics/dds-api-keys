@@ -67,7 +67,7 @@ var ddsClient = {
     )
   },
 
-  destroyUserApiKey(jwtToken, handleFailure) {
+  destroyUserApiKey(jwtToken, handleSuccess, handleFailure) {
     var url = `${ddsApiBaseURL}/current_user/api_key`
     this.send(
       {
@@ -75,7 +75,7 @@ var ddsClient = {
         method: 'delete',
         headers: {Authorization: jwtToken}
       },
-      () => {},
+      (response) => { handleSuccess() },
       handleFailure
     )
   },
