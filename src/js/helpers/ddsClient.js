@@ -89,7 +89,7 @@ var ddsClient = {
       },
       (response) => {
         response.data.results.forEach(function(provider) {
-          if(provider.is_default === "true") {
+          if(provider.is_default) {
             handleProvider(provider);
           }
         });
