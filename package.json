@@ -13,7 +13,9 @@
     "modulePaths": [
       "<rootDir>/src/"
     ],
-    "setupFiles": ["jest-localstorage-mock"],
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ],
     "testURL": "https://apikeys.duke.edu/test.html"
   },
   "keywords": [],
