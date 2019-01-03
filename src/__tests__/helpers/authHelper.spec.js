@@ -7,6 +7,7 @@ describe('ddsClient', () => {
   const expectedToken = 'abc123xyz';
   const expectedTokenStoreKey = "api-keys-token";
   const expectedTokenExpirationStoreKey = "api-keys-token-expiration";
+  var expectedTokenExpiration;
 
   var handleSuccess = jest.fn();
   var handleFailure = jest.fn();
@@ -15,6 +16,37 @@ describe('ddsClient', () => {
     sessionStorage.clear();
     handleSuccess.mockClear();
     handleFailure.mockClear();
+  });
+
+  describe('.jwt', () => {
+    describe('sessionStore does not contain api-keys-token', () => {
+      it('should return null', () => {
+        expect(sessionStorage.getItem(expectedTokenStoreKey)).toBeNull();
+        expect(authHelper.jwt()).toBeNull();
+      });
+    });
+    describe('sessionStore contains api-keys-token', () => {
+      it('should return the value stored in the sessionStore', () => {
+        sessionStorage.setItem(expectedTokenStoreKey, expectedToken);
+        expect(authHelper.jwt()).toEqual(expectedToken);
+      });
+    });
+  });
+
+  describe('.jwtExpiration', () => {
+    describe('sessionStore does not contain api-keys-token-expiration', () => {
+      it('should return null', () => {
+        expect(sessionStorage.getItem(expectedTokenExpirationStoreKey)).toBeNull();
+        expect(authHelper.jwtExpiration()).toBeNull();
+      });
+    });
+    describe('sessionStore contains api-keys-token-expiration', () => {
+      it('should return the value stored in the sessionStore', () => {
+        expectedTokenExpiration = Date.now() + 1000;
+        sessionStorage.setItem(expectedTokenExpirationStoreKey, expectedTokenExpiration);
+        expect(authHelper.jwtExpiration()).toEqual(expectedTokenExpiration.toString());
+      });
+    });
   });
 
   describe('.isLoggedIn', () => {
@@ -27,7 +59,6 @@ describe('ddsClient', () => {
     });
 
     describe('sessionStore contains api-keys-token and api-keys-token-expiration', () => {
-      var expectedTokenExpiration;
       describe('token is expired', () => {
         it('should return false', () => {
           expectedTokenExpiration = Date.now() - 1000;
@@ -58,11 +89,11 @@ describe('ddsClient', () => {
     });
   });
 
-  describe('.tokenExists', () => {
+  describe('.accessTokenExists', () => {
     describe('hash fragment with token does not exist', () => {
       it('should be false', () => {
         expect(authHelper.getOauthCodeFromURI()).toBeNull;
-        expect(authHelper.tokenExists()).toBeFalsy;
+        expect(authHelper.accessTokenExists()).toBeFalsy;
       });
     });
     describe('hash fragment with token exists', () => {
@@ -70,7 +101,7 @@ describe('ddsClient', () => {
         let originalFunction = authHelper.getOauthCodeFromURI;
         authHelper.getOauthCodeFromURI = jest.fn(() => { expectedToken });
         expect(authHelper.getOauthCodeFromURI()).not.toBeNull;
-        expect(authHelper.tokenExists()).toBeTruthy;
+        expect(authHelper.accessTokenExists()).toBeTruthy;
         authHelper.getOauthCodeFromURI = originalFunction;
       });
     });
@@ -98,17 +129,13 @@ describe('ddsClient', () => {
     var oauthSuccess = true;
     var defaultProviderPresent = true;
     const expectedNoDefaultOauthProviderResponse = "No Default StorageProvider returned from DDS!";
-    const expectedLoginInitiationUrl = 'authenticate';
-    const expectedBaseUri = 'http://oauth.com';
-    const expectedLoginResponseType = 'token';
+    const expectedLoginInitiationUrl = 'http://oauth.com/authenticate?response_type=token&client_id=oauthclientid';
     var mockOauthProvider = {
       id: 1,
       service_id: 2,
       name: "serviceProvider",
       is_default: "true",
-      login_initiation_url: expectedLoginInitiationUrl,
-      base_uri: expectedBaseUri,
-      login_response_type: expectedLoginResponseType
+      login_initiation_url: expectedLoginInitiationUrl
     };
     const mockOauthError = {
       code: "401",
@@ -150,14 +177,9 @@ describe('ddsClient', () => {
       });
 
       describe('default provider returned', () => {
-        const oauthClientId = config["oauth_client_id"];
         const oauthRedirect = config["oauth_redirect"];
-        const expectedOauthRedirectUrl = `${expectedBaseUri}/${
+        const expectedOauthRedirectUrl = `${
             expectedLoginInitiationUrl
-          }?response_type=${
-            expectedLoginResponseType
-          }&client_id=${
-            oauthClientId
           }&state=login&redirect_uri=${
             oauthRedirect
         }`;
@@ -224,7 +246,7 @@ describe('ddsClient', () => {
       const jwtToken = 'abc123xyz';
       const expiration = 'future';
       const timeToLive = '1000';
-      const origTokenExistsF = authHelper.tokenExists;
+      const origTokenExistsF = authHelper.accessTokenExists;
       const origDdsGetJwtF = ddsClient.getJwtToken;
       var tokenExists = false;
       var jwtIsValid = false;
@@ -232,8 +254,8 @@ describe('ddsClient', () => {
 
       beforeEach(() => {
         isLoggedIn = false;
-        authHelper.tokenExists = jest.fn();
-        authHelper.tokenExists.mockImplementation(() => {
+        authHelper.accessTokenExists = jest.fn();
+        authHelper.accessTokenExists.mockImplementation(() => {
           return tokenExists;
         });
 
@@ -249,7 +271,7 @@ describe('ddsClient', () => {
           });
       });
       afterEach(() => {
-        authHelper.tokenExists = origTokenExistsF;
+        authHelper.accessTokenExists = origTokenExistsF;
         ddsClient.getJwtToken = origDdsGetJwtF;
       });
       describe('access token exists', () => {
@@ -260,11 +282,16 @@ describe('ddsClient', () => {
         describe('and is a valid jwt', () => {
           it('should call the success handler with true', done => {
             jwtIsValid = true;
-            authHelper.token = jwtToken;
+            var origJwt = authHelper.jwt;
+            authHelper.jwt = jest.fn();
+            authHelper.jwt.mockImplementation(() => {
+              return jwtToken;
+            });
             authHelper.login().then(
               handleSuccess,
               handleFailure
             );
+            authHelper.jwt = origJwt;
             setImmediate(() => {
               expect(handleSuccess).toBeCalledWith(
                 true
