@@ -12,6 +12,10 @@ const authHelper = {
       if(parseInt(this.jwtExpiration()) >= Date.now()) {
         return true;
       }
+      else {
+        sessionStorage.clear();
+        return false;
+      }
     }
   },
 
@@ -70,7 +74,11 @@ const authHelper = {
             this.accessToken,
             (jwtToken, expiration, timeToLive) => {
               sessionStorage.setItem(tokenStoreKey, jwtToken);
-              sessionStorage.setItem(tokenExpirationStoreKey, Date.now() + timeToLive)
+              sessionStorage.setItem(tokenExpirationStoreKey, Date.now() + timeToLive);
+              window.location.replace("#");
+              if (typeof window.history.replaceState == 'function') {
+                history.replaceState({}, '', window.location.href.slice(0, -1));
+              }
               resolve(true);
             },
             (errorMessage) => {

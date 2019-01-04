@@ -42,16 +42,18 @@ var ddsClient = {
   },
 
   getUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
-    var url = `${ddsApiBaseURL}/current_user/api_key`
+    var url = `${ddsApiBaseURL}/current_user/api_key`;
     this.send(
       {
         url: url,
         method: 'get',
         headers: {Authorization: jwtToken}
       },
-      (response) => { handleUserApiKey(response.data.key) },
+      (response) => {
+        handleUserApiKey(response.data.key);
+      },
       handleFailure
-    )
+    );
   },
 
   setUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
