@@ -1,12 +1,12 @@
 import React from "react";
 import { render } from "react-dom";
 import { Provider } from 'react-redux'
-import store from './js/store'
-import App from "./js/components/presentational/App";
-// uncomment next line to see store in the browser console
-// window.store = store;
+import controller from './js/controller'
+import App from "./js/components/views/App";
+// uncomment next line to see controller in the browser console
+// window.store = controller;
 render(
-  <Provider store={store}>
+  <Provider store={controller}>
     <App />
   </Provider>,
   document.getElementById("app")

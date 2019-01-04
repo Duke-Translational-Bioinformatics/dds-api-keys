@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types'
-import ApiKey from "../container/ApiKey"
+import UserKey from "../models/UserKey"
 import authHelper from '../../helpers/authHelper';
 import ddsClient from '../../helpers/ddsClient';
 
-class UserKey extends Component {
+class CurrentUser extends Component {
   constructor(props) {
     super(props);
     this.handleAuthenticationSuccess = this.handleAuthenticationSuccess.bind(this);
@@ -38,7 +38,7 @@ class UserKey extends Component {
       return (
         <div>
           <p>User { this.props.currentUser.full_name }</p>
-          <ApiKey />
+          <UserKey />
         </div>
       )
     }
@@ -52,8 +52,8 @@ class UserKey extends Component {
   }
 }
 
-UserKey.propTypes = {
+CurrentUser.propTypes = {
   currentUser: PropTypes.object,
   setCurrentUser: PropTypes.func.isRequired
 }
-export default UserKey;
+export default CurrentUser;
