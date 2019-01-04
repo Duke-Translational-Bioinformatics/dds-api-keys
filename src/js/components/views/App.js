@@ -1,5 +1,5 @@
 import React from "react";
-import User from "../models/User";
+import User from "../controllers/User";
 const App = () => (
   <div>
     <User />

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types'
-import UserKey from "../models/UserKey"
+import UserKey from "../controllers/UserKey"
 import authHelper from '../../helpers/authHelper';
 import ddsClient from '../../helpers/ddsClient';
 
