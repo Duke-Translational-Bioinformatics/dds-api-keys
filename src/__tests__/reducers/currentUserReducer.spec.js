@@ -21,4 +21,15 @@ describe('currentUserReducer', () => {
     };
     expect(reducer({}, action)).toEqual(expectedCurrentUser);
   });
+  it('should not handle SET_USER_API_KEY', () => {
+    const existingState = {
+      foo: 'bar'
+    };
+    const expectedKey = 'abc123xyz';
+    const action = {
+      type: 'SET_USER_API_KEY',
+      userApiKey: expectedKey
+    };
+    expect(reducer(existingState, action)).toEqual(existingState);
+  });
 });
