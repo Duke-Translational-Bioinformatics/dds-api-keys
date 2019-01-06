@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import Clipboard from 'react-clipboard.js';
 import PropTypes from 'prop-types'
-import authHelper from '../../helpers/authHelper';
-import ddsClient from '../../helpers/ddsClient';
+import authHelper from '../helpers/authHelper';
+import ddsClient from '../helpers/ddsClient';
 
 class ManageKey extends Component {
   constructor(props) {

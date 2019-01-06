@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { setCurrentUser } from '../../actions'
+import { setCurrentUser } from '../model/actions'
 import CurrentUser from '../views/CurrentUser'
 
 const mapStateToProps = state => ({

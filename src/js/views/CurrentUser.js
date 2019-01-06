@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types'
 import UserKey from "../controllers/UserKey"
-import authHelper from '../../helpers/authHelper';
-import ddsClient from '../../helpers/ddsClient';
+import authHelper from '../helpers/authHelper';
+import ddsClient from '../helpers/ddsClient';
 
 class CurrentUser extends Component {
   constructor(props) {

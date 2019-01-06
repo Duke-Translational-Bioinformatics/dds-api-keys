@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { setUserApiKey } from '../../actions'
+import { setUserApiKey } from '../model/actions'
 import ManageKey from '../views/ManageKey'
 
 const mapStateToProps = state => ({

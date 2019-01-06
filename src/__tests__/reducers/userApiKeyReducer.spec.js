@@ -1,4 +1,4 @@
-import reducer from 'js/reducers/userApiKeyReducer';
+import reducer from 'js/model/reducers/userApiKeyReducer';
 
 describe('UserApiKeyReducer', () => {
   it('should return initial state', () => {

@@ -1,4 +1,4 @@
-import reducer from 'js/reducers/currentUserReducer';
+import reducer from 'js/model/reducers/currentUserReducer';
 
 describe('currentUserReducer', () => {
   it('should return initial state', () => {
