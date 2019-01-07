@@ -363,15 +363,15 @@ describe('ddsClient', () => {
 
     testDDSApi(expectedDDSUri, expectedDDSSendMethod, subject);
 
-    describe('with success', () => {
+    describe('with success and default storage provider is present', () => {
       it('is expected to request the default oauth provider information, and pass it to the success function', done => {
         let expectedProviderInfo = {
           id: '1',
           service_id: '2',
           name: 'default provider',
           login_initiation_url: 'http://url',
-          is_deprecated: 'false',
-          is_default: 'true',
+          is_deprecated: false,
+          is_default: true,
           base_uri: '/authenticate',
           login_response_type: 'token'
         };
@@ -381,8 +381,8 @@ describe('ddsClient', () => {
           service_id: '1',
           name: 'other provider',
           login_initiation_url: 'http://otherurl',
-          is_deprecated: 'false',
-          is_default: 'false',
+          is_deprecated: false,
+          is_default: false,
           base_uri: '/authenticate',
           login_response_type: 'token'
         };
@@ -405,8 +405,40 @@ describe('ddsClient', () => {
       });
     });
 
+    describe('with success but no default storage provider is present', () => {
+      it('is expected to pass null to the success function', done => {
+        let expectedProviderInfo = null;
+
+        let otherProviderInfo = {
+          id: '2',
+          service_id: '1',
+          name: 'other provider',
+          login_initiation_url: 'http://otherurl',
+          is_deprecated: false,
+          is_default: false,
+          base_uri: '/authenticate',
+          login_response_type: 'token'
+        };
+
+        expectedSuccessResponse['data'] = {
+          results: [
+            otherProviderInfo
+          ]
+        };
+
+        shouldSucceed = true;
+        ddsClient.getDefaultOauthProvider(handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleSuccess).toBeCalledWith(
+            expectedProviderInfo
+          );
+          done();
+        });
+      });
+    });
+
     describe('with failure', () => {
-      it('is expected to to request the default oauth provider information, and process the error.data with the failure function', done => {
+      it('is expected to request the default oauth provider information, and process the error.data with the failure function', done => {
         shouldSucceed = false;
         ddsClient.getDefaultOauthProvider(handleSuccess, handleFailure);
         setImmediate(() => {

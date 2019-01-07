@@ -90,11 +90,17 @@ var ddsClient = {
         method: 'get'
       },
       (response) => {
-        response.data.results.forEach(function(provider) {
+        let defaultProviderFound = false;
+        response.data.results.some(function(provider) {
           if(provider.is_default) {
+            defaultProviderFound = true;
             handleProvider(provider);
           }
+          return provider.is_default;
         });
+        if (!defaultProviderFound) {
+          handleProvider(null);
+        }
       },
       handleFailure
     )
