@@ -1,10 +1,10 @@
 import React from 'react';
-import Enzyme, { shallow } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-import User from 'js/controllers/User'
-import configureMockStore from 'redux-mock-store';
+import '../enzymeConfig';
+import { shallow } from 'enzyme';
 
-Enzyme.configure({ adapter: new Adapter() });
+import User from 'js/controllers/User'
+
+import configureMockStore from 'redux-mock-store';
 const mockStore = configureMockStore();
 
 describe('User controller', () => {
