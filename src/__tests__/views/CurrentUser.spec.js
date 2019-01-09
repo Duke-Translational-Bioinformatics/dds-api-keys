@@ -129,7 +129,7 @@ describe('CurrentUser View', () => {
       });
 
       describe('and getCurrentUser fails', () => {
-        it('should handleException and show fetching user', done => {
+        it('should handleException and alert the user', done => {
           userIsLoggedIn = false;
           loginShouldSucceed = true;
           expect(authHelper.isLoggedIn()).toBeFalsy();
@@ -149,7 +149,7 @@ describe('CurrentUser View', () => {
     });
 
     describe('and authentication fails', () => {
-      it('should handleException and show fetching user', done => {
+      it('should handleException and alert the user', done => {
         userIsLoggedIn = false;
         loginShouldSucceed = false;
 
