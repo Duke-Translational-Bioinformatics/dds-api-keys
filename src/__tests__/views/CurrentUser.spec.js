@@ -9,7 +9,7 @@ import ddsClient from 'js/helpers/ddsClient';
 
 describe('CurrentUser View', () => {
   let wrapper;
-  var mockSetCurrentUser;
+  let mockSetCurrentUser;
 
   const origIsLoggedInF = authHelper.isLoggedIn;
   let userIsLoggedIn = false;
