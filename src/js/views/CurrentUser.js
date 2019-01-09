@@ -20,6 +20,10 @@ class CurrentUser extends Component {
     }
   }
 
+  handleException(errorMessage) {
+    alert(JSON.stringify(errorMessage));
+  }
+
   handleAuthenticationSuccess(isSuccessful) {
     var jwtToken = authHelper.jwt();
     ddsClient.getCurrentUser(
