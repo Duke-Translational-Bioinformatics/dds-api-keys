@@ -1,4 +1,5 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
 
 module.exports = {
   module: {
@@ -24,6 +25,10 @@ module.exports = {
     ]
   },
   plugins: [
+    new webpack.EnvironmentPlugin([
+      'DDS_API_BASE_URL',
+      'OAUTH_REDIRECT'
+    ]),
     new HtmlWebPackPlugin({
       template: "./src/index.html",
       filename: "./index.html"

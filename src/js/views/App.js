@@ -1,8 +1,8 @@
 import React from "react";
-import UserApiKey from "../container/UserApiKey"
+import User from "../controllers/User";
 const App = () => (
   <div>
-    <UserApiKey />
+    <User />
   </div>
 );
 export default App;

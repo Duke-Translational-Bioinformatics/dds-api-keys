@@ -4,70 +4,49 @@ import ddsClient from 'js/helpers/ddsClient';
 import config from "js/config/authconfig.js";
 
 describe('ddsClient', () => {
-  var expectedToken = 'abc123xyz';
-  var expectedTokenExpiration;
-
+  const expectedToken = 'abc123xyz';
   const expectedTokenStoreKey = "api-keys-token";
   const expectedTokenExpirationStoreKey = "api-keys-token-expiration";
+  var expectedTokenExpiration;
 
-  const oauthClientId = config["oauth_client_id"];
-  const oauthRedirect = config["oauth_redirect"];
-  const expectedLoginInitiationUrl = 'authenticate';
-  const expectedBaseUri = 'http://oauth.com';
-  const expectedLoginResponseType = 'token';
-  const expectedOauthClientId = 'fooby';
-  const expectedRedirectTo = 'http://me.com';
-  const expectedOauthRedirectUrl = `${expectedBaseUri}/${
-      expectedLoginInitiationUrl
-    }?response_type=${
-      expectedLoginResponseType
-    }&client_id=${
-      oauthClientId
-    }&state=login&redirect_uri=${
-      oauthRedirect
-  }`;
-  const expectedNoDefaultOauthProviderResponse = "No Default StorageProvider returned from DDS!";
-  var mockOauthProvider = {
-    id: 1,
-    service_id: 2,
-    name: "serviceProvider",
-    is_default: "true",
-    login_initiation_url: expectedLoginInitiationUrl,
-    base_uri: expectedBaseUri,
-    login_response_type: expectedLoginResponseType
-  };
-  const mockOauthError = {
-    code: "401",
-    message: "unauthorized",
-    suggestion: "login with oauth"
-  };
-
-  var oauthSuccess = true;
-  var defaultProviderPresent = true;
-  function mockDOPRequest(handleS, handleF) {
-    if (oauthSuccess) {
-      if (defaultProviderPresent){
-        handleS(mockOauthProvider);
-      }
-      else {
-        handleS(null);
-      }
-    }
-    else {
-      handleF(mockOauthError);
-    }
-  }
   var handleSuccess = jest.fn();
   var handleFailure = jest.fn();
-  ddsClient.getDefaultOauthProvider = jest.fn();
-  ddsClient.getDefaultOauthProvider.mockImplementation(mockDOPRequest);
-  window.location.assign = jest.fn();
 
   beforeEach(() => {
     sessionStorage.clear();
     handleSuccess.mockClear();
     handleFailure.mockClear();
-    ddsClient.getDefaultOauthProvider.mockClear();
+  });
+
+  describe('.jwt', () => {
+    describe('sessionStore does not contain api-keys-token', () => {
+      it('should return null', () => {
+        expect(sessionStorage.getItem(expectedTokenStoreKey)).toBeNull();
+        expect(authHelper.jwt()).toBeNull();
+      });
+    });
+    describe('sessionStore contains api-keys-token', () => {
+      it('should return the value stored in the sessionStore', () => {
+        sessionStorage.setItem(expectedTokenStoreKey, expectedToken);
+        expect(authHelper.jwt()).toEqual(expectedToken);
+      });
+    });
+  });
+
+  describe('.jwtExpiration', () => {
+    describe('sessionStore does not contain api-keys-token-expiration', () => {
+      it('should return null', () => {
+        expect(sessionStorage.getItem(expectedTokenExpirationStoreKey)).toBeNull();
+        expect(authHelper.jwtExpiration()).toBeNull();
+      });
+    });
+    describe('sessionStore contains api-keys-token-expiration', () => {
+      it('should return the value stored in the sessionStore', () => {
+        expectedTokenExpiration = Date.now() + 1000;
+        sessionStorage.setItem(expectedTokenExpirationStoreKey, expectedTokenExpiration);
+        expect(authHelper.jwtExpiration()).toEqual(expectedTokenExpiration.toString());
+      });
+    });
   });
 
   describe('.isLoggedIn', () => {
@@ -91,6 +70,8 @@ describe('ddsClient', () => {
           expect(storedTokenExpiration).toEqual(expectedTokenExpiration);
           expect(storedTokenExpiration).toBeLessThan(Date.now());
           expect(authHelper.isLoggedIn()).toBeFalsy();
+          expect(sessionStorage.getItem(expectedTokenStoreKey)).toBeNull();
+          expect(sessionStorage.getItem(expectedTokenExpirationStoreKey)).toBeNull();
         });
       });
 
@@ -110,11 +91,11 @@ describe('ddsClient', () => {
     });
   });
 
-  describe('.tokenExists', () => {
+  describe('.accessTokenExists', () => {
     describe('hash fragment with token does not exist', () => {
       it('should be false', () => {
         expect(authHelper.getOauthCodeFromURI()).toBeNull;
-        expect(authHelper.tokenExists()).toBeFalsy;
+        expect(authHelper.accessTokenExists()).toBeFalsy;
       });
     });
     describe('hash fragment with token exists', () => {
@@ -122,7 +103,7 @@ describe('ddsClient', () => {
         let originalFunction = authHelper.getOauthCodeFromURI;
         authHelper.getOauthCodeFromURI = jest.fn(() => { expectedToken });
         expect(authHelper.getOauthCodeFromURI()).not.toBeNull;
-        expect(authHelper.tokenExists()).toBeTruthy;
+        expect(authHelper.accessTokenExists()).toBeTruthy;
         authHelper.getOauthCodeFromURI = originalFunction;
       });
     });
@@ -147,48 +128,90 @@ describe('ddsClient', () => {
   });
 
   describe('.getOauthProviderInfo', () => {
-      describe('success', () => {
-        describe('no default provider returned', () => {
-          it('should pass an error to the errorHandler', done => {
-            oauthSuccess = true;
-            defaultProviderPresent = false;
-            authHelper.getOauthProviderInfo(handleSuccess, handleFailure);
-            setImmediate(() => {
-              expect(handleFailure).toBeCalledWith(
-                expectedNoDefaultOauthProviderResponse
-              );
-              done();
-            });
-          });
-        });
+    var oauthSuccess = true;
+    var defaultProviderPresent = true;
+    const expectedNoDefaultOauthProviderResponse = "No Default StorageProvider returned from DDS!";
+    const expectedLoginInitiationUrl = 'http://oauth.com/authenticate?response_type=token&client_id=oauthclientid';
+    var mockOauthProvider = {
+      id: 1,
+      service_id: 2,
+      name: "serviceProvider",
+      is_default: "true",
+      login_initiation_url: expectedLoginInitiationUrl
+    };
+    const mockOauthError = {
+      code: "401",
+      message: "unauthorized",
+      suggestion: "login with oauth"
+    };
+    function mockDOPRequest(handleS, handleF) {
+      if (oauthSuccess) {
+        if (defaultProviderPresent){
+          handleS(mockOauthProvider);
+        }
+        else {
+          handleS(null);
+        }
+      }
+      else {
+        handleF(mockOauthError);
+      }
+    }
+    ddsClient.getDefaultOauthProvider = jest.fn();
+    ddsClient.getDefaultOauthProvider.mockImplementation(mockDOPRequest);
 
-        describe('default provider returned', () => {
-          it('should pass the oauthRedirectUrl to the successHandler', done => {
-            oauthSuccess = true;
-            defaultProviderPresent = true;
-            authHelper.getOauthProviderInfo(handleSuccess, handleFailure);
-            setImmediate(() => {
-              expect(handleSuccess).toBeCalledWith(
-                expectedOauthRedirectUrl
-              );
-              done();
-            });
-          });
-        });
-      });
-
-      describe('error', () => {
-        it('should pass the error to the errorHandler', done => {
-          oauthSuccess = false;
+    beforeEach(() => {
+      ddsClient.getDefaultOauthProvider.mockClear();
+    });
+    describe('success', () => {
+      describe('no default provider returned', () => {
+        it('should pass an error to the errorHandler', done => {
+          oauthSuccess = true;
+          defaultProviderPresent = false;
           authHelper.getOauthProviderInfo(handleSuccess, handleFailure);
           setImmediate(() => {
             expect(handleFailure).toBeCalledWith(
-              "Error getting default auth provider information " + mockOauthError.message
+              expectedNoDefaultOauthProviderResponse
             );
             done();
           });
         });
       });
+
+      describe('default provider returned', () => {
+        const oauthRedirect = config["oauth_redirect"];
+        const expectedOauthRedirectUrl = `${
+            expectedLoginInitiationUrl
+          }&state=login&redirect_uri=${
+            oauthRedirect
+        }`;
+
+        it('should pass the oauthRedirectUrl to the successHandler', done => {
+          oauthSuccess = true;
+          defaultProviderPresent = true;
+          authHelper.getOauthProviderInfo(handleSuccess, handleFailure);
+          setImmediate(() => {
+            expect(handleSuccess).toBeCalledWith(
+              expectedOauthRedirectUrl
+            );
+            done();
+          });
+        });
+      });
+    });
+
+    describe('error', () => {
+      it('should pass the error to the errorHandler', done => {
+        oauthSuccess = false;
+        authHelper.getOauthProviderInfo(handleSuccess, handleFailure);
+        setImmediate(() => {
+          expect(handleFailure).toBeCalledWith(
+            "Error getting default auth provider information " + mockOauthError.message
+          );
+          done();
+        });
+      });
+    });
   });
 
   describe('.login', () => {
@@ -225,15 +248,16 @@ describe('ddsClient', () => {
       const jwtToken = 'abc123xyz';
       const expiration = 'future';
       const timeToLive = '1000';
-      const origTokenExistsF = authHelper.tokenExists;
+      const origTokenExistsF = authHelper.accessTokenExists;
       const origDdsGetJwtF = ddsClient.getJwtToken;
       var tokenExists = false;
       var jwtIsValid = false;
       const invalidTokenMessage = "token invalid";
 
       beforeEach(() => {
-        authHelper.tokenExists = jest.fn();
-        authHelper.tokenExists.mockImplementation(() => {
+        isLoggedIn = false;
+        authHelper.accessTokenExists = jest.fn();
+        authHelper.accessTokenExists.mockImplementation(() => {
           return tokenExists;
         });
 
@@ -249,20 +273,27 @@ describe('ddsClient', () => {
           });
       });
       afterEach(() => {
-        authHelper.tokenExists = origTokenExistsF;
+        authHelper.accessTokenExists = origTokenExistsF;
         ddsClient.getJwtToken = origDdsGetJwtF;
       });
       describe('access token exists', () => {
+        beforeEach(() => {
+          tokenExists = true;
+        });
+
         describe('and is a valid jwt', () => {
           it('should call the success handler with true', done => {
-            isLoggedIn = false;
-            tokenExists = true;
             jwtIsValid = true;
-            authHelper.token = jwtToken;
+            var origJwt = authHelper.jwt;
+            authHelper.jwt = jest.fn();
+            authHelper.jwt.mockImplementation(() => {
+              return jwtToken;
+            });
             authHelper.login().then(
               handleSuccess,
               handleFailure
             );
+            authHelper.jwt = origJwt;
             setImmediate(() => {
               expect(handleSuccess).toBeCalledWith(
                 true
@@ -272,8 +303,6 @@ describe('ddsClient', () => {
           });
 
           it('should store the jwtToken and expiration in the sessionStorage', done => {
-            isLoggedIn = false;
-            tokenExists = true;
             jwtIsValid = true;
             authHelper.login().then(
               handleSuccess,
@@ -288,8 +317,6 @@ describe('ddsClient', () => {
         });
         describe('and is not a valid jwt', () => {
           it('should call the failureHandler with the error message', done => {
-            isLoggedIn = false;
-            tokenExists = true;
             jwtIsValid = false;
             let expectedFailureMessage = `Could not get JwtToken: ${invalidTokenMessage}`;
             authHelper.login().then(
@@ -307,15 +334,17 @@ describe('ddsClient', () => {
       });
       describe('access token does not exist', () => {
         const origGetOauthProviderInfoF = authHelper.getOauthProviderInfo;
-        const expectedOauthRedirectUrl = 'http://oauth.somewhere.com';
+        const mockedOauthRedirectUrl = 'http://oauth.somewhere.com';
         const oauthProviderInfoFailureMessage = 'error';
         var oauthProviderRequestSuccessful = false;
+        window.location.assign = jest.fn();
 
         beforeEach(() => {
+          tokenExists = false;
           authHelper.getOauthProviderInfo = jest.fn();
           authHelper.getOauthProviderInfo.mockImplementation((s,f) => {
             if(oauthProviderRequestSuccessful) {
-              s(expectedOauthRedirectUrl);
+              s(mockedOauthRedirectUrl);
             }
             else {
               f(oauthProviderInfoFailureMessage);
@@ -327,15 +356,13 @@ describe('ddsClient', () => {
         });
         describe('getOauthProviderInfo success', () => {
           it('should assign the window location to the oauth url', done => {
-            isLoggedIn = false;
-            tokenExists = false;
             oauthProviderRequestSuccessful = true;
             authHelper.login().then(
               handleSuccess,
               handleFailure
             );
             setImmediate(() => {
-              expect(window.location.assign).toBeCalledWith(expectedOauthRedirectUrl);
+              expect(window.location.assign).toBeCalledWith(mockedOauthRedirectUrl);
               expect(handleSuccess).toBeCalledWith(
                 true
               );
@@ -345,8 +372,6 @@ describe('ddsClient', () => {
         });
         describe('getOauthProviderInfo failure', () => {
           it('should call the failure handler with the error message', done => {
-            isLoggedIn = false;
-            tokenExists = false;
             oauthProviderRequestSuccessful = false;
             authHelper.login().then(
               handleSuccess,

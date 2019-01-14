@@ -2,25 +2,34 @@ import Axios from "axios";
 import ddsClient from './ddsClient'
 import config from "../config/authconfig.js";
 
-const oauthClientId = config["oauth_client_id"];
-const oathRedirect = config["oauth_redirect"];
+const oauthRedirect = config["oauth_redirect"];
 const tokenStoreKey = "api-keys-token";
 const tokenExpirationStoreKey = "api-keys-token-expiration"
 
 const authHelper = {
   isLoggedIn() {
-    this.token = sessionStorage.getItem(tokenStoreKey);
-    this.tokenExpiration = sessionStorage.getItem(tokenExpirationStoreKey);
-    if(this.token && this.tokenExpiration) {
-      if(parseInt(this.tokenExpiration) >= Date.now()) {
+    if(this.jwt() && this.jwtExpiration()) {
+      if(parseInt(this.jwtExpiration()) >= Date.now()) {
         return true;
+      }
+      else {
+        sessionStorage.clear();
+        return false;
       }
     }
   },
 
-  tokenExists() {
-    this.token = this.getOauthCodeFromURI();
-    return this.token != null;
+  jwt() {
+    return sessionStorage.getItem(tokenStoreKey);
+  },
+
+  jwtExpiration() {
+    return sessionStorage.getItem(tokenExpirationStoreKey);
+  },
+
+  accessTokenExists() {
+    this.accessToken = this.getOauthCodeFromURI();
+    return this.accessToken != null;
   },
 
   getOauthCodeFromURI() {
@@ -36,10 +45,8 @@ const authHelper = {
       (provider) => {
         if(provider) {
           successHandler(
-            `${provider.base_uri}/${provider.login_initiation_url}?response_type=${
-              provider.login_response_type
-            }&client_id=${oauthClientId}&state=login&redirect_uri=${
-              oathRedirect
+            `${provider.login_initiation_url}&state=login&redirect_uri=${
+              oauthRedirect
             }`
           );
         }
@@ -62,12 +69,16 @@ const authHelper = {
         resolve(true);
       }
       else {
-        if(this.tokenExists()) {
+        if(this.accessTokenExists()) {
           ddsClient.getJwtToken(
-            this.token,
+            this.accessToken,
             (jwtToken, expiration, timeToLive) => {
               sessionStorage.setItem(tokenStoreKey, jwtToken);
-              sessionStorage.setItem(tokenExpirationStoreKey, Date.now() + timeToLive)
+              sessionStorage.setItem(tokenExpirationStoreKey, Date.now() + timeToLive);
+              window.location.replace("#");
+              if (typeof window.history.replaceState == 'function') {
+                history.replaceState({}, '', window.location.href.slice(0, -1));
+              }
               resolve(true);
             },
             (errorMessage) => {

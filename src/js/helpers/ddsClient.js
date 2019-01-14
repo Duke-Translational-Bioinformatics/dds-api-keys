@@ -42,16 +42,18 @@ var ddsClient = {
   },
 
   getUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
-    var url = `${ddsApiBaseURL}/current_user/api_key`
+    var url = `${ddsApiBaseURL}/current_user/api_key`;
     this.send(
       {
         url: url,
         method: 'get',
         headers: {Authorization: jwtToken}
       },
-      (response) => { handleUserApiKey(response.data.key) },
+      (response) => {
+        handleUserApiKey(response.data.key);
+      },
       handleFailure
-    )
+    );
   },
 
   setUserApiKey(jwtToken, handleUserApiKey, handleFailure) {
@@ -67,7 +69,7 @@ var ddsClient = {
     )
   },
 
-  destroyUserApiKey(jwtToken, handleFailure) {
+  destroyUserApiKey(jwtToken, handleSuccess, handleFailure) {
     var url = `${ddsApiBaseURL}/current_user/api_key`
     this.send(
       {
@@ -75,7 +77,7 @@ var ddsClient = {
         method: 'delete',
         headers: {Authorization: jwtToken}
       },
-      () => {},
+      (response) => { handleSuccess() },
       handleFailure
     )
   },
@@ -88,11 +90,17 @@ var ddsClient = {
         method: 'get'
       },
       (response) => {
-        response.data.results.forEach(function(provider) {
-          if(provider.is_default === "true") {
+        let defaultProviderFound = false;
+        response.data.results.some(function(provider) {
+          if(provider.is_default) {
+            defaultProviderFound = true;
             handleProvider(provider);
           }
+          return provider.is_default;
         });
+        if (!defaultProviderFound) {
+          handleProvider(null);
+        }
       },
       handleFailure
     )
