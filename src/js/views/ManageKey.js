@@ -46,23 +46,27 @@ class ManageKey extends Component {
     ddsClient.getUserApiKey(
       jwtToken,
       this.handleCurrentUserApiKey,
-      (errorMessage) => {
-        if(errorMessage.error != "404") {
-          this.handleException(errorMessage);
-        }
-      }
+      this.ignoreKeyNotFoundException
     );
+  }
+
+  ignoreKeyNotFoundException(errorMessage) {
+    if(errorMessage.error != "404") {
+      this.handleException(errorMessage);
+    }
   }
 
   destroyUserApiKey() {
     var jwtToken = authHelper.jwt();
     ddsClient.destroyUserApiKey(
       jwtToken,
-      () => {
-        this.props.destroyUserApiKey();
-      },
+      this.handleSuccessfulBackendApiKeyDestruction,
       this.handleException
     );
+  }
+
+  handleSuccessfulBackendApiKeyDestruction() {
+    this.props.destroyUserApiKey();
   }
 
   newUserApiKey() {
@@ -87,21 +91,20 @@ class ManageKey extends Component {
   }
 
   render() {
-    let keyDisplay;
     if (this.props.userApiKey == null) {
       return (
         <div>
-          <button onClick={this.generateUserApiKey}>Generate Key</button>
+          <button id="generate_user_api_key" onClick={this.generateUserApiKey}>Generate Key</button>
         </div>
       )
     }
     else {
       return (
         <div>
-          <button onClick={this.confirmApiKeyDeletion}>Destroy</button>
+          <button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion}>Destroy</button>
           <br />
-          <button onClick={this.confirmApiKeyRegeneration}>Regenerate</button>
-          <Clipboard option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>copy to clipboard</Clipboard>
+          <button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration}>Regenerate</button>
+          <Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>copy to clipboard</Clipboard>
         </div>
       )
     }
