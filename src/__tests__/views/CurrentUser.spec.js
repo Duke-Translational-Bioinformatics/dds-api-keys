@@ -167,4 +167,59 @@ describe('CurrentUser View', () => {
       });
     });
   });
+
+  describe('Handler functions', () => {
+    let props, subject;
+
+    beforeEach(() => {
+      mockSetCurrentUser = jest.fn();
+      props = {
+        currentUser: expectedCurrentUser,
+        setCurrentUser: mockSetCurrentUser
+      };
+      subject = new CurrentUser(props);
+    });
+
+    afterEach(() => {
+      props = null;
+      subject = null;
+      mockSetCurrentUser = null;
+    })
+
+    describe('handleException', () => {
+      it('should alert the user with the exception', () => {
+        let thisMessage = {error: "404", message: "got an error"};
+        const origAlertF = global.alert;
+        global.alert = mockAlert;
+        subject.handleException(thisMessage);
+        expect(mockAlert).toHaveBeenCalledWith(JSON.stringify(thisMessage));
+        global.alert = origAlertF;
+      });
+    });
+
+    describe('handleAuthenticationSuccess', () => {
+      it('should attempt to get the currentUser from the Api Backend', () => {
+        authHelper.jwt = jest.fn();
+        authHelper.jwt.mockImplementation(() => {
+          return fakeJwt;
+        });
+        ddsClient.getCurrentUser = jest.fn();
+        subject.handleAuthenticationSuccess(true);
+        expect(ddsClient.getCurrentUser).toHaveBeenCalledWith(
+          fakeJwt,
+          subject.handleCurrentUser,
+          subject.handleException
+        )
+        ddsClient.getCurrentUser = origGetCurrentUserF;
+        authHelper.jwt = origJwtF;
+      });
+    });
+
+    describe('handleCurrentUser', () => {
+      it('should call the setCurrentUser prop', () => {
+        subject.handleCurrentUser(expectedCurrentUser);
+        expect(mockSetCurrentUser).toHaveBeenCalledWith(expectedCurrentUser);
+      });
+    });
+  });
 });
