@@ -1,6 +1,6 @@
 jest.useFakeTimers();
 import React from 'react';
-import '../enzymeConfig';
+import 'js/config/enzymeConfig';
 import { shallow } from 'enzyme';
 import ManageKey from 'js/views/ManageKey';
 import Clipboard from 'react-clipboard.js';

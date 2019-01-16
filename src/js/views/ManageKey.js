@@ -11,7 +11,9 @@ class ManageKey extends Component {
     this.confirmApiKeyRegeneration = this.confirmApiKeyRegeneration.bind(this);
     this.generateUserApiKey = this.generateUserApiKey.bind(this);
     this.initializeUserApiKey = this.initializeUserApiKey.bind(this);
+    this.ignoreKeyNotFoundException = this.ignoreKeyNotFoundException.bind(this);
     this.destroyUserApiKey = this.destroyUserApiKey.bind(this);
+    this.handleSuccessfulBackendApiKeyDestruction = this.handleSuccessfulBackendApiKeyDestruction.bind(this);
     this.newUserApiKey = this.newUserApiKey.bind(this);
     this.handleCurrentUserApiKey = this.handleCurrentUserApiKey.bind(this);
   }
