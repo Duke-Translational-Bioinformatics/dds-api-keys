@@ -1,6 +1,6 @@
 jest.useFakeTimers();
 import React from 'react';
-import '../enzymeConfig';
+import 'js/config/enzymeConfig';
 import { shallow } from 'enzyme';
 import CurrentUser from 'js/views/CurrentUser';
 import UserKey from "js/controllers/UserKey"

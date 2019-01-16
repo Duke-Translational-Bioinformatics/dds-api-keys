@@ -1,5 +1,5 @@
 import React from 'react';
-import '../enzymeConfig';
+import 'js/config/enzymeConfig';
 import { shallow } from 'enzyme';
 
 import App from 'js/views/App'
