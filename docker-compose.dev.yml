@@ -1,0 +1,11 @@
+version: '2'
+services:
+  localdev:
+    image: dds-api-keys
+    command: ['echo','setting up localdev']
+    volumes:
+      - .:/opt/app-root/src
+  server:
+    user: root
+    volumes_from:
+      - localdev

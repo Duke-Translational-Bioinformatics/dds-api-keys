@@ -1,11 +1,7 @@
 version: '2'
 services:
-  localdev:
-    image: dds-api-keys
-    command: ['echo','setting up localdev']
-    volumes:
-      - .:/opt/app-root/src
   server:
+    build: .
     image: dds-api-keys
     command: npm start
     env_file:
@@ -14,5 +10,3 @@ services:
       - dds.env
     ports:
       - 8080:8080
-    volumes_from:
-      - localdev
