@@ -8,7 +8,7 @@ services:
         - OAUTH_CLIENT_ID
         - OAUTH_REDIRECT
         - DDS_API_BASE_URL
-    image: dds-api-keys
+    image: dds-api-keys:production
     command: node app.js
     ports:
       - 8080:8080
