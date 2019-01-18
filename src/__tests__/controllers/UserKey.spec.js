@@ -1,5 +1,4 @@
 import React from 'react';
-import 'js/config/enzymeConfig';
 import { shallow } from 'enzyme';
 
 import UserKey from 'js/controllers/UserKey'
