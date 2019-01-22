@@ -9,9 +9,10 @@ class CurrentUser extends Component {
     super(props);
     this.handleAuthenticationSuccess = this.handleAuthenticationSuccess.bind(this);
     this.handleCurrentUser = this.handleCurrentUser.bind(this);
+    this.ignorePrematureCallException = this.ignorePrematureCallException.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (!authHelper.isLoggedIn()) {
       authHelper.login().then(
         this.handleAuthenticationSuccess,
@@ -29,8 +30,19 @@ class CurrentUser extends Component {
     ddsClient.getCurrentUser(
       jwtToken,
       this.handleCurrentUser,
-      this.handleException
+      this.ignorePrematureCallException
     )
+  }
+
+  ignorePrematureCallException(errorMessage) {
+    //as the async call to login is resolving, getCurrentUser
+    //gets called with a null jwt, which will not happen
+    //when the login fully resolves
+    //this handler ignores this call, and allows the page to reload
+    //when the login fully resolves.
+    if (authHelper.jwt()) {
+      this.handleException(errorMessage);
+    }
   }
 
   handleCurrentUser(user) {
@@ -38,18 +50,18 @@ class CurrentUser extends Component {
   }
 
   render() {
-    if (authHelper.isLoggedIn()) {
+    if (!authHelper.isLoggedIn()) {
       return (
         <div>
-          <p>User { this.props.currentUser.full_name }</p>
-          <UserKey />
+          <p>Fetching User</p>
         </div>
       )
     }
     else {
       return (
         <div>
-          <p>Fetching User</p>
+          <p>User { this.props.currentUser.full_name }</p>
+          <UserKey />
         </div>
       )
     }

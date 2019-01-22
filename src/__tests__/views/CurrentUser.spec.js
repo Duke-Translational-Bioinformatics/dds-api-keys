@@ -207,7 +207,7 @@ describe('CurrentUser View', () => {
         expect(ddsClient.getCurrentUser).toHaveBeenCalledWith(
           fakeJwt,
           subject.handleCurrentUser,
-          subject.handleException
+          subject.ignorePrematureCallException
         )
         ddsClient.getCurrentUser = origGetCurrentUserF;
         authHelper.jwt = origJwtF;
@@ -218,6 +218,40 @@ describe('CurrentUser View', () => {
       it('should call the setCurrentUser prop', () => {
         subject.handleCurrentUser(expectedCurrentUser);
         expect(mockSetCurrentUser).toHaveBeenCalledWith(expectedCurrentUser);
+      });
+    });
+
+    describe('ignorePrematureCallException', () => {
+      describe('when authHelper.jwt() returns null', () => {
+        it('should ignore the exception', () => {
+          let thisMessage = {error: "404", message: "got an error"};
+          const origHandleException = subject.handleException;
+          subject.handleException = jest.fn();
+          authHelper.jwt = jest.fn();
+          authHelper.jwt.mockImplementation(() => {
+            return null;
+          });
+          subject.ignorePrematureCallException(thisMessage);
+          expect(subject.handleException).not.toHaveBeenCalled();
+          subject.handleException = origHandleException;
+          authHelper.jwt = origJwtF;
+        });
+      });
+
+      describe('when authHelper.jwt() does not return null', () => {
+        it('should forward the exception to handleException', () => {
+          let thisMessage = {error: "404", message: "got an error"};
+          const origHandleException = subject.handleException;
+          subject.handleException = jest.fn();
+          authHelper.jwt = jest.fn();
+          authHelper.jwt.mockImplementation(() => {
+            return fakeJwt;
+          });
+          subject.ignorePrematureCallException(thisMessage);
+          expect(subject.handleException).toHaveBeenCalledWith(thisMessage);
+          subject.handleException = origHandleException;
+          authHelper.jwt = origJwtF;
+        });
       });
     });
   });
