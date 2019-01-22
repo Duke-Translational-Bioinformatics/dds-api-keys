@@ -8,7 +8,7 @@ import ddsClient from 'js/helpers/ddsClient';
 
 describe('CurrentUser View', () => {
   let wrapper;
-  let mockSetCurrentUser;
+  let mockSetCurrentUser = jest.fn();
 
   const origIsLoggedInF = authHelper.isLoggedIn;
   let userIsLoggedIn = false;
@@ -16,188 +16,121 @@ describe('CurrentUser View', () => {
   const expectedCurrentUser = {
     full_name: 'user name'
   };
-  let loginFailureMessage = {message: "login failure"};
-  const getCurrentUserFailureMessage = {message: 'getCurrentUser failure'};
-
-  const expectedFetchingUserMessage = 'Fetching User';
 
   function mockIsLoggedIn() {
     return userIsLoggedIn;
   }
 
-  let loginShouldSucceed = false;
   const origLoginF = authHelper.login;
-  const expectedSuccessResponse = true;
-
-  function mockLogin() {
-    return new Promise((resolve, reject) => {
-      process.nextTick(function() {
-        if (loginShouldSucceed) {
-          resolve(expectedSuccessResponse);
-        } else {
-          reject(loginFailureMessage);
-        }
-      });
-    });
-  };
-
-  const origAlert = global.alert;
-  const mockAlert = jest.fn();
-
   const origJwtF = authHelper.jwt;
   const fakeJwt = 'abc123xyz';
-  var jwtIsValid = false;
-
   const origGetCurrentUserF = ddsClient.getCurrentUser;
-  var getCurrentUserSuccess = false;
 
-  function mockGetCurrentUser(token, successH, failureH) {
-    if (getCurrentUserSuccess) {
-      successH(expectedCurrentUser);
-    }
-    else {
-      failureH(getCurrentUserFailureMessage);
-    }
-  }
-
-  function setUpMocks() {
-    global.alert = mockAlert;
-
-    mockSetCurrentUser = jest.fn();
-    authHelper.isLoggedIn = jest.fn();
-    authHelper.isLoggedIn.mockImplementation(mockIsLoggedIn);
-
-    authHelper.login = jest.fn();
-    authHelper.login.mockImplementation(mockLogin);
-
-    authHelper.jwt = jest.fn();
-    authHelper.jwt.mockImplementation(() => {
-      return fakeJwt;
-    });
-
-    ddsClient.getCurrentUser = jest.fn();
-    ddsClient.getCurrentUser.mockImplementation(mockGetCurrentUser);
-  }
-
-  function tearDownMocks() {
-    global.alert = origAlert;
-    mockSetCurrentUser = null;
-    authHelper.isLoggedIn = origIsLoggedInF
-    authHelper.login = origLoginF;
-    authHelper.jwt = origJwtF;
-    ddsClient.getCurrentUser = origGetCurrentUserF;
-    userIsLoggedIn = false;
-    loginShouldSucceed = false;
-    getCurrentUserSuccess = false;
-  }
-
-  describe('when user is already logged in', () => {
-    it('should render information about the user and a UserKey controller', () => {
-      userIsLoggedIn = true;
-      setUpMocks();
-
-      expect(authHelper.isLoggedIn()).toBeTruthy();
-      wrapper = shallow(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
-      expect(authHelper.login).not.toBeCalled();
-      expect(wrapper).toIncludeText(expectedCurrentUser.full_name);
-      expect(wrapper.find(UserKey)).toExist();
-
-      tearDownMocks();
-    });
+  beforeEach(() => {
+    mockSetCurrentUser.mockClear();
   });
 
-  describe('when user is not already logged in', () => {
-    describe('and authentication succeeds', () => {
-      describe('and getCurrentUser succeeds', () => {
-        it('should set the currentUser and render', done => {
-          userIsLoggedIn = false;
-          loginShouldSucceed = true;
-          expect(authHelper.isLoggedIn()).toBeFalsy();
-          getCurrentUserSuccess = true;
+  describe('UI', () => {
+    describe('when user is already logged in', () => {
+      let setUpUIMocks = () => {
+        authHelper.isLoggedIn = jest.fn();
+        authHelper.isLoggedIn.mockImplementation(mockIsLoggedIn);
 
-          setUpMocks();
+        authHelper.login = jest.fn();
+      }
 
-          wrapper = shallow(<CurrentUser setCurrentUser={mockSetCurrentUser} />);
-          setImmediate(() => {
-            expect(authHelper.login).toBeCalled();
-            expect(mockSetCurrentUser).toBeCalledWith(expectedCurrentUser);
-            tearDownMocks();
-            done();
-          });
-        });
-      });
+      let tearDownUIMocks = () => {
+        authHelper.isLoggedIn = origIsLoggedInF
+        authHelper.login = origLoginF;
+        userIsLoggedIn = false;
+      }
 
-      describe('and getCurrentUser fails', () => {
-        it('should handleException and alert the user', done => {
-          userIsLoggedIn = false;
-          loginShouldSucceed = true;
-          expect(authHelper.isLoggedIn()).toBeFalsy();
-          getCurrentUserSuccess = false;
+      it('should render information about the user and a UserKey controller', () => {
+        userIsLoggedIn = true;
+        setUpUIMocks();
 
-          setUpMocks();
+        expect(authHelper.isLoggedIn()).toBeTruthy();
+        wrapper = shallow(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
+        expect(authHelper.login).not.toBeCalled();
+        expect(wrapper).toIncludeText(expectedCurrentUser.full_name);
+        expect(wrapper.find(UserKey)).toExist();
 
-          wrapper = shallow(<CurrentUser setCurrentUser={mockSetCurrentUser} />);
-          setImmediate(() => {
-            expect(mockSetCurrentUser).not.toBeCalled();
-            expect(mockAlert).toBeCalledWith(JSON.stringify(getCurrentUserFailureMessage));
-            tearDownMocks();
-            done();
-          });
-        });
+        tearDownUIMocks();
       });
     });
 
-    describe('and authentication fails', () => {
-      it('should handleException and alert the user', done => {
+
+    describe('when user is not already logged in', () => {
+      let mockedPromiseResolver = {
+        then: jest.fn()
+      };
+      function mockedPromise() {
+        return mockedPromiseResolver
+      }
+
+      let setUpUIMocks = () => {
+        authHelper.isLoggedIn = jest.fn();
+        authHelper.isLoggedIn.mockImplementation(mockIsLoggedIn);
+
+        authHelper.login = jest.fn();
+        authHelper.login.mockImplementation(mockedPromise);
+      }
+
+      let tearDownUIMocks = () => {
+        authHelper.isLoggedIn = origIsLoggedInF
+        authHelper.login = origLoginF;
         userIsLoggedIn = false;
-        loginShouldSucceed = false;
-
-        setUpMocks();
-
+      }
+      it('should attempt to log the user in', done => {
+        setUpUIMocks();
         expect(authHelper.isLoggedIn()).toBeFalsy();
-        wrapper = shallow(<CurrentUser setCurrentUser={mockSetCurrentUser} />);
+
+        wrapper = mount(<CurrentUser setCurrentUser={mockSetCurrentUser} />);
         setImmediate(() => {
           expect(authHelper.login).toBeCalled();
-          expect(mockSetCurrentUser).not.toBeCalled();
-          expect(mockAlert).toBeCalledWith(JSON.stringify(loginFailureMessage));
-          tearDownMocks();
+          expect(mockedPromiseResolver.then).toHaveBeenCalledWith(
+            wrapper.instance().handleAuthenticationSuccess,
+            wrapper.instance().handleException
+          );
+          tearDownUIMocks();
           done();
         });
       });
     });
   });
 
-  describe('Handler functions', () => {
-    let props, subject;
-
-    beforeEach(() => {
-      mockSetCurrentUser = jest.fn();
-      props = {
-        currentUser: expectedCurrentUser,
-        setCurrentUser: mockSetCurrentUser
-      };
-      subject = new CurrentUser(props);
-    });
-
-    afterEach(() => {
-      props = null;
-      subject = null;
-      mockSetCurrentUser = null;
-    })
+  describe('Handler Functions', () => {
+    let props = {
+      setCurrentUser: mockSetCurrentUser
+    };
+    let subject = new CurrentUser(props);
 
     describe('handleException', () => {
-      it('should alert the user with the exception', () => {
-        let thisMessage = {error: "404", message: "got an error"};
-        const origAlertF = global.alert;
-        global.alert = mockAlert;
-        subject.handleException(thisMessage);
-        expect(mockAlert).toHaveBeenCalledWith(JSON.stringify(thisMessage));
-        global.alert = origAlertF;
+      describe('when renderedRef is present', () => {
+        it('should set the hasError state', () => {
+          window.alert = jest.fn();
+          let thisMessage = {error: "404", message: "got an error"};
+          wrapper = mount(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
+          expect(wrapper.state()).toEqual({});
+          expect(wrapper.instance().refs.renderedRef).toBeTruthy();
+          wrapper.instance().handleException(thisMessage);
+          expect(wrapper.state()).toEqual({hasError: JSON.stringify(thisMessage)});
+        });
+      });
+
+      describe('when renderedRef is absent', () => {
+        it('should not set the hasError state', () => {
+          let thisMessage = {error: "404", message: "got an error"};
+          expect(subject.state).toEqual({});
+          expect(subject.refs.renderedRef).toBeFalsy();
+          subject.handleException(thisMessage);
+          expect(subject.state).toEqual({});
+        });
       });
     });
 
     describe('handleAuthenticationSuccess', () => {
-      it('should attempt to get the currentUser from the Api Backend', () => {
+      it('should get the jwt and attempt to get the currentUser', () => {
         authHelper.jwt = jest.fn();
         authHelper.jwt.mockImplementation(() => {
           return fakeJwt;
@@ -214,44 +147,41 @@ describe('CurrentUser View', () => {
       });
     });
 
-    describe('handleCurrentUser', () => {
-      it('should call the setCurrentUser prop', () => {
-        subject.handleCurrentUser(expectedCurrentUser);
-        expect(mockSetCurrentUser).toHaveBeenCalledWith(expectedCurrentUser);
-      });
-    });
-
     describe('ignorePrematureCallException', () => {
-      describe('when authHelper.jwt() returns null', () => {
-        it('should ignore the exception', () => {
-          let thisMessage = {error: "404", message: "got an error"};
-          const origHandleException = subject.handleException;
-          subject.handleException = jest.fn();
-          authHelper.jwt = jest.fn();
-          authHelper.jwt.mockImplementation(() => {
-            return null;
-          });
-          subject.ignorePrematureCallException(thisMessage);
-          expect(subject.handleException).not.toHaveBeenCalled();
-          subject.handleException = origHandleException;
-          authHelper.jwt = origJwtF;
-        });
-      });
-
-      describe('when authHelper.jwt() does not return null', () => {
+      describe('when authHelper.jwt is defined', () => {
         it('should forward the exception to handleException', () => {
           let thisMessage = {error: "404", message: "got an error"};
-          const origHandleException = subject.handleException;
-          subject.handleException = jest.fn();
           authHelper.jwt = jest.fn();
           authHelper.jwt.mockImplementation(() => {
             return fakeJwt;
           });
+          let origHandleExceptionF = subject.handleException;
+          subject.handleException = jest.fn();
+          expect(authHelper.jwt()).toBeTruthy();
           subject.ignorePrematureCallException(thisMessage);
           expect(subject.handleException).toHaveBeenCalledWith(thisMessage);
-          subject.handleException = origHandleException;
+          subject.handleException = origHandleExceptionF;
           authHelper.jwt = origJwtF;
         });
+      });
+
+      describe('when authHelper.jwt is not defined', () => {
+        it('should not forward the exception to handleException', () => {
+          let thisMessage = {error: "404", message: "got an error"};
+          let origHandleExceptionF = subject.handleException;
+          subject.handleException = jest.fn();
+          expect(authHelper.jwt()).toBeFalsy();
+          subject.ignorePrematureCallException(thisMessage);
+          expect(subject.handleException).not.toHaveBeenCalled();
+          subject.handleException = origHandleExceptionF;
+        });
+      });
+    });
+
+    describe('handleCurrentUser', () => {
+      it('should call the setCurrentUser prop', () => {
+        subject.handleCurrentUser(expectedCurrentUser);
+        expect(mockSetCurrentUser).toHaveBeenCalledWith(expectedCurrentUser);
       });
     });
   });

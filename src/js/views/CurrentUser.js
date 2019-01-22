@@ -10,6 +10,7 @@ class CurrentUser extends Component {
     this.handleAuthenticationSuccess = this.handleAuthenticationSuccess.bind(this);
     this.handleCurrentUser = this.handleCurrentUser.bind(this);
     this.ignorePrematureCallException = this.ignorePrematureCallException.bind(this);
+    this.state = {};
   }
 
   componentDidMount() {
@@ -22,7 +23,9 @@ class CurrentUser extends Component {
   }
 
   handleException(errorMessage) {
-    alert(JSON.stringify(errorMessage));
+    if (this.refs.renderedRef) {
+      this.setState({hasError: JSON.stringify(errorMessage)});
+    }
   }
 
   handleAuthenticationSuccess(isSuccessful) {
@@ -50,18 +53,21 @@ class CurrentUser extends Component {
   }
 
   render() {
-    if (!authHelper.isLoggedIn()) {
+    if (this.state.hasError){
+      alert(JSON.stringify(this.state.hasError));
+    }
+    if (authHelper.isLoggedIn()) {
       return (
-        <div>
-          <p>Fetching User</p>
+        <div ref="renderedRef">
+          <p>User { this.props.currentUser.full_name }</p>
+          <UserKey />
         </div>
       )
     }
     else {
       return (
-        <div>
-          <p>User { this.props.currentUser.full_name }</p>
-          <UserKey />
+        <div ref="renderedRef">
+          <p>Fetching User</p>
         </div>
       )
     }
