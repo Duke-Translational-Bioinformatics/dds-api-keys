@@ -23,8 +23,8 @@ class CurrentUser extends Component {
   }
 
   handleException(errorMessage) {
-    if (this.refs.renderedRef) {
-      this.setState({hasError: JSON.stringify(errorMessage)});
+    if (this.refs.current_user_rendered) {
+      this.setState({hasError: errorMessage});
     }
   }
 
@@ -58,7 +58,7 @@ class CurrentUser extends Component {
     }
     if (authHelper.isLoggedIn()) {
       return (
-        <div ref="renderedRef">
+        <div ref="current_user_rendered">
           <p>User { this.props.currentUser.full_name }</p>
           <UserKey />
         </div>
@@ -66,7 +66,7 @@ class CurrentUser extends Component {
     }
     else {
       return (
-        <div ref="renderedRef">
+        <div ref="current_user_rendered">
           <p>Fetching User</p>
         </div>
       )

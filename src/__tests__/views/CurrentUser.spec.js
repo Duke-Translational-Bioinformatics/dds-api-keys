@@ -106,23 +106,23 @@ describe('CurrentUser View', () => {
     let subject = new CurrentUser(props);
 
     describe('handleException', () => {
-      describe('when renderedRef is present', () => {
+      describe('when refs.current_user_rendered is present', () => {
         it('should set the hasError state', () => {
           window.alert = jest.fn();
           let thisMessage = {error: "404", message: "got an error"};
           wrapper = mount(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
           expect(wrapper.state()).toEqual({});
-          expect(wrapper.instance().refs.renderedRef).toBeTruthy();
+          expect(wrapper.instance().refs.current_user_rendered).toBeTruthy();
           wrapper.instance().handleException(thisMessage);
-          expect(wrapper.state()).toEqual({hasError: JSON.stringify(thisMessage)});
+          expect(wrapper.state()).toEqual({hasError: thisMessage});
         });
       });
 
-      describe('when renderedRef is absent', () => {
+      describe('when refs.current_user_rendered is absent', () => {
         it('should not set the hasError state', () => {
           let thisMessage = {error: "404", message: "got an error"};
           expect(subject.state).toEqual({});
-          expect(subject.refs.renderedRef).toBeFalsy();
+          expect(subject.refs.current_user_rendered).toBeFalsy();
           subject.handleException(thisMessage);
           expect(subject.state).toEqual({});
         });
