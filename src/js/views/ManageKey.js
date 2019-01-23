@@ -16,6 +16,7 @@ class ManageKey extends Component {
     this.handleSuccessfulBackendApiKeyDestruction = this.handleSuccessfulBackendApiKeyDestruction.bind(this);
     this.newUserApiKey = this.newUserApiKey.bind(this);
     this.handleCurrentUserApiKey = this.handleCurrentUserApiKey.bind(this);
+    this.state = {};
   }
 
   componentWillMount() {
@@ -81,7 +82,9 @@ class ManageKey extends Component {
   }
 
   handleException(errorMessage) {
-    alert(JSON.stringify(errorMessage));
+    if (this.refs.manage_key_rendered) {
+      this.setState({hasError: errorMessage});
+    }
   }
 
   handleCurrentUserApiKey(key) {
@@ -93,16 +96,20 @@ class ManageKey extends Component {
   }
 
   render() {
+    if (this.state.hasError){
+      alert(JSON.stringify(this.state.hasError));
+    }
+
     if (this.props.userApiKey == null) {
       return (
-        <div>
+        <div ref="manage_key_rendered">
           <button id="generate_user_api_key" onClick={this.generateUserApiKey}>Generate Key</button>
         </div>
       )
     }
     else {
       return (
-        <div>
+        <div ref="manage_key_rendered">
           <button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion}>Destroy</button>
           <br />
           <button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration}>Regenerate</button>

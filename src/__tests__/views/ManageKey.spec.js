@@ -297,13 +297,26 @@ describe('ManageKey View', () => {
     });
 
     describe('handleException', () => {
-      it('should alert the user with the exception', () => {
-        let thisMessage = {error: "404", message: "got an error"};
-        const origAlertF = global.alert;
-        global.alert = jest.fn();
-        subject.handleException(thisMessage);
-        expect(global.alert).toHaveBeenCalledWith(JSON.stringify(thisMessage));
-        global.alert = origAlertF;
+      let thisMessage = {error: "404", message: "got an error"};
+
+      describe('when refs.manage_key_rendered is present', () => {
+        it('should set the hasError state', () => {
+          window.alert = jest.fn();
+          wrapper = mount(<ManageKey userApiKey={userApiKey} setUserApiKey={mockSetUserApiKey} destroyUserApiKey={mockDestroyUserApiKey} />);
+          expect(wrapper.state()).toEqual({});
+          expect(wrapper.instance().refs.manage_key_rendered).toBeTruthy();
+          wrapper.instance().handleException(thisMessage);
+          expect(wrapper.state()).toEqual({hasError: thisMessage});
+        });
+      });
+
+      describe('when refs.manage_key_rendered is absent', () => {
+        it('should not set the hasError state', () => {
+          expect(subject.state).toEqual({});
+          expect(subject.refs.manage_key_rendered).toBeFalsy();
+          subject.handleException(thisMessage);
+          expect(subject.state).toEqual({});
+        });
       });
     });
 
