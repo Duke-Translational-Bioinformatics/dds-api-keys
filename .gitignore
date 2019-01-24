@@ -5,3 +5,5 @@ dist
 node_modules
 .node_repl_history
 *secret*
+.ssh/git_deploy_key
+docker-compose.override.yml
