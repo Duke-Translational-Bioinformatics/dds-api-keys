@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Clipboard from 'react-clipboard.js';
 import PropTypes from 'prop-types';
-import { Button, IconAddCircle, IconTrashcan, IconWarning, IconShare } from 'dracs';
+import { Button, IconAddCircle, IconTrashcan, IconWarning, IconShare, H4, P, Modal } from 'dracs';
 
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
@@ -20,7 +20,11 @@ class ManageKey extends Component {
     this.newUserApiKey = this.newUserApiKey.bind(this);
     this.handleCurrentUserApiKey = this.handleCurrentUserApiKey.bind(this);
     this.handleException = this.handleException.bind(this);
-    this.state = {};
+    this.acknowlegeException = this.acknowlegeException.bind(this);
+    this.state = {
+      hasError: false,
+      errorMessage: null
+    };
   }
 
   componentWillMount() {
@@ -87,7 +91,16 @@ class ManageKey extends Component {
 
   handleException(errorMessage) {
     if (this.refs.manage_key_rendered) {
-      this.setState({hasError: errorMessage});
+      this.setState({
+        hasError: true,
+        errorMessage: errorMessage
+      });
+    }
+  }
+
+  acknowlegeException() {
+    if (this.refs.manage_key_rendered) {
+      this.setState({hasError: false, errorMessage: null});
     }
   }
 
@@ -100,13 +113,16 @@ class ManageKey extends Component {
   }
 
   render() {
-    if (this.state.hasError){
-      alert(JSON.stringify(this.state.hasError));
-    }
+    let apiProblemNotification = <Modal active={this.state.hasError}>
+      <H4>A Problem has occurred</H4>
+      <P>{JSON.stringify(this.state.errorMessage)}</P>
+      <Button onClick={this.acknowlegeException} label="OK" />
+    </Modal>;
 
     if (this.props.userApiKey == null) {
       return (
         <div className="item-row" ref="manage_key_rendered">
+          {apiProblemNotification}
           <IconAddCircle size={20} color="#7ED321" /><Button id="generate_user_api_key" onClick={this.generateUserApiKey} label="Generate Key" type="raised" autoFocus />
         </div>
       )
@@ -114,6 +130,7 @@ class ManageKey extends Component {
     else {
       return (
         <div ref="manage_key_rendered">
+          {apiProblemNotification}
           <span className="item-row"><IconTrashcan size={20} /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
           <span className="item-row"><IconWarning size={20} /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
           <span className="item-row"><IconShare size={20} /><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>

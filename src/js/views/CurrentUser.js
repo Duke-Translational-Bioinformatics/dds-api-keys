@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types'
 import UserKey from "../controllers/UserKey"
-import { Card, CardHeader, CardBody, H4, P, Spinner } from 'dracs';
+import { Card, CardHeader, CardBody, H4, P, Spinner, Button, Modal } from 'dracs';
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
 
@@ -12,7 +12,10 @@ class CurrentUser extends Component {
     this.handleCurrentUser = this.handleCurrentUser.bind(this);
     this.ignorePrematureCallException = this.ignorePrematureCallException.bind(this);
     this.handleException = this.handleException.bind(this);
-    this.state = {};
+    this.acknowlegeException = this.acknowlegeException.bind(this);
+    this.state = {
+      hasError: false
+    };
   }
 
   componentDidMount() {
@@ -26,7 +29,15 @@ class CurrentUser extends Component {
 
   handleException(errorMessage) {
     if (this.refs.current_user_rendered) {
-      this.setState({hasError: errorMessage});
+      this.setState({
+        hasError: true,
+        errorMessage: errorMessage});
+    }
+  }
+
+  acknowlegeException() {
+    if (this.refs.current_user_rendered) {
+      this.setState({hasError: false, errorMessage: null});
     }
   }
 
@@ -55,12 +66,16 @@ class CurrentUser extends Component {
   }
 
   render() {
-    if (this.state.hasError){
-      alert(JSON.stringify(this.state.hasError));
-    }
+    let problemNotification = <Modal active={this.state.hasError}>
+                <H4>A Problem has occurred</H4>
+                <P>{JSON.stringify(this.state.errorMessage)}</P>
+                <Button onClick={this.acknowlegeException} label="OK" />
+              </Modal>;
+
     if (authHelper.isLoggedIn()) {
       return (
         <div ref="current_user_rendered">
+          {problemNotification}
           <Card height="400px" width="500px" raised>
             <CardHeader
               border
@@ -80,6 +95,7 @@ class CurrentUser extends Component {
     else {
       return (
         <div ref="current_user_rendered">
+          {problemNotification}
           <Card height="400px" width="500px" raised>
             <CardHeader
               border
