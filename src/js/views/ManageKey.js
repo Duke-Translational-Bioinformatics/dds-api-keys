@@ -23,11 +23,14 @@ class ManageKey extends Component {
     this.acknowlegeException = this.acknowlegeException.bind(this);
     this.cancelKeyDestruction = this.cancelKeyDestruction.bind(this);
     this.cancelKeyRegeneration = this.cancelKeyRegeneration.bind(this);
+    this.acknowlegeKeyCopied = this.acknowlegeKeyCopied.bind(this);
+    this.notifyClipboardCopy = this.notifyClipboardCopy.bind(this);
     this.state = {
       hasError: false,
       errorMessage: null,
       needsDeletionConfirmation: false,
-      needsRegenerationConfirmation: false
+      needsRegenerationConfirmation: false,
+      keyCopiedToClipboard: false
     };
   }
 
@@ -135,7 +138,19 @@ class ManageKey extends Component {
   }
 
   notifyClipboardCopy() {
-    alert("ApiKey Successfully Copied to Clipboard!")
+    if (this.refs.manage_key_rendered) {
+      this.setState({
+        keyCopiedToClipboard: true
+      })
+    }
+  }
+
+  acknowlegeKeyCopied() {
+    if (this.refs.manage_key_rendered) {
+      this.setState({
+        keyCopiedToClipboard: false
+      })
+    }
   }
 
   render() {
@@ -158,7 +173,7 @@ class ManageKey extends Component {
         title="Warning, This is a Destructive Action"
         actions={[
           {label: 'Cancel', onClick: this.cancelKeyDestruction},
-          {label: 'Destroy', onClick: this.destroyUserApiKey}
+          {label: 'Continue', onClick: this.destroyUserApiKey}
         ]}
       >
         <P>All software agents which use this key will stop working!"</P>
@@ -167,17 +182,25 @@ class ManageKey extends Component {
         title="Warning, This is a Destructive Action"
         actions={[
           {label: 'Cancel', onClick: this.cancelKeyRegeneration},
-          {label: 'Destroy', onClick: this.newUserApiKey}
+          {label: 'Continue', onClick: this.newUserApiKey}
         ]}
       >
         <P>All software agents which use the original key will stop working!</P>
       </Dialog>;
+      let keyCopiedNotification = <Modal
+        active={this.state.keyCopiedToClipboard}
+        onEscKeyDown={this.acknowlegeKeyCopied}
+      >
+        <P>User Secret Successfully Copied to Clipboard!</P>
+        <Button onClick={this.acknowlegeKeyCopied} label="OK" />
+      </Modal>;
 
       return (
         <div ref="manage_key_rendered">
           {apiProblemNotification}
           {deletionConfirmationDialog}
           {regenerationConfirmationDialog}
+          {keyCopiedNotification}
           <span className="item-row"><IconTrashcan size={20} /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
           <span className="item-row"><IconWarning size={20} /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
           <span className="item-row"><IconShare size={20} /><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
