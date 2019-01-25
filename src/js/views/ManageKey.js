@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Clipboard from 'react-clipboard.js';
 import PropTypes from 'prop-types';
-import { Button, IconAddCircle, IconTrashcan, IconWarning } from 'dracs';
+import { Button, IconAddCircle, IconTrashcan, IconWarning, IconShare } from 'dracs';
 
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
@@ -113,10 +113,10 @@ class ManageKey extends Component {
     }
     else {
       return (
-        <div className="item-row" ref="manage_key_rendered">
+        <div ref="manage_key_rendered">
           <span className="item-row"><IconTrashcan size={20} /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
           <span className="item-row"><IconWarning size={20} /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
-          <span className="item-row"><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
+          <span className="item-row"><IconShare size={20} /><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
         </div>
       )
     }

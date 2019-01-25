@@ -61,25 +61,16 @@ class CurrentUser extends Component {
     if (authHelper.isLoggedIn()) {
       return (
         <div ref="current_user_rendered">
-          <Card height="400px" width="400px" raised>
+          <Card height="400px" width="500px" raised>
             <CardHeader
               border
-              className=""
-              dragHandle={false}
-              htmlTitle={false}
               icon={<div className="item-row"><H4 bold color="#FFFFFF">Duke Data Service User Secret</H4><P className="header-title" color="#FFFFFF">{ this.props.currentUser.full_name }</P></div>}
               style={{
-                maxWidth: "384px",
+                maxWidth: "500px",
                 backgroundColor: "#0680CD"
               }}
-              title=""
             />
-            <CardBody
-              className=""
-              id=""
-              padding=""
-              style={{}}
-            >
+            <CardBody>
               <UserKey />
             </CardBody>
           </Card>
@@ -89,7 +80,7 @@ class CurrentUser extends Component {
     else {
       return (
         <div ref="current_user_rendered">
-          <Card height="400px" width="400px" raised>
+          <Card height="400px" width="500px" raised>
             <CardHeader
               border
               className=""
@@ -97,7 +88,7 @@ class CurrentUser extends Component {
               htmlTitle={false}
               icon={<H4 bold color="#FFFFFF">Duke Data Service User Secret</H4>}
               style={{
-                maxWidth: "384px",
+                maxWidth: "500px",
                 backgroundColor: "#0680CD"
               }}
               title=""
@@ -108,7 +99,7 @@ class CurrentUser extends Component {
               padding=""
               style={{}}
             >
-              <P>Initializing ... <Spinner /></P>
+              <P>Initializing ... </P><Spinner />
             </CardBody>
           </Card>
         </div>
