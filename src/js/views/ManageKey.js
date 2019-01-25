@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import Clipboard from 'react-clipboard.js';
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
+import { Button, IconAddCircle, IconTrashcan, IconWarning } from 'dracs';
+
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
+require("../../stylesheets/styles.css"); //this must be declared last for style cascade to work properly
 
 class ManageKey extends Component {
   constructor(props) {
@@ -16,6 +19,7 @@ class ManageKey extends Component {
     this.handleSuccessfulBackendApiKeyDestruction = this.handleSuccessfulBackendApiKeyDestruction.bind(this);
     this.newUserApiKey = this.newUserApiKey.bind(this);
     this.handleCurrentUserApiKey = this.handleCurrentUserApiKey.bind(this);
+    this.handleException = this.handleException.bind(this);
     this.state = {};
   }
 
@@ -103,22 +107,22 @@ class ManageKey extends Component {
     if (this.props.userApiKey == null) {
       return (
         <div ref="manage_key_rendered">
-          <button id="generate_user_api_key" onClick={this.generateUserApiKey}>Generate Key</button>
+          <IconAddCircle size="20" color="#7ED321" /><Button id="generate_user_api_key" onClick={this.generateUserApiKey} label="Generate Key" type="raised" autoFocus />
         </div>
       )
     }
     else {
       return (
-        <div ref="manage_key_rendered">
-          <button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion}>Destroy</button>
-          <br />
-          <button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration}>Regenerate</button>
-          <Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>copy to clipboard</Clipboard>
+        <div className="button-row" ref="manage_key_rendered">
+          <span><IconTrashcan className="button-row-item" size="20" /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
+          <span><IconWarning className="button-row-item" size="20" /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
+          <span><Clipboard className="button-row-item" id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
         </div>
       )
     }
   }
 }
+
 ManageKey.propTypes = {
   userApiKey: PropTypes.string,
   setUserApiKey: PropTypes.func.isRequired,

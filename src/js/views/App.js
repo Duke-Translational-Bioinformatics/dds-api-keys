@@ -1,8 +1,12 @@
-import React from "react";
+import React, { Component } from "react";
 import User from "../controllers/User";
-const App = () => (
-  <div>
-    <User />
-  </div>
-);
+class App extends Component {
+  render() {
+    return (
+      <div>
+        <User />
+      </div>
+    )
+  }
+}
 export default App;

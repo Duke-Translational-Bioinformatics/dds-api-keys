@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types'
 import UserKey from "../controllers/UserKey"
+import { AppHeader, H4, P, Spinner } from 'dracs';
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
 
@@ -10,6 +11,7 @@ class CurrentUser extends Component {
     this.handleAuthenticationSuccess = this.handleAuthenticationSuccess.bind(this);
     this.handleCurrentUser = this.handleCurrentUser.bind(this);
     this.ignorePrematureCallException = this.ignorePrematureCallException.bind(this);
+    this.handleException = this.handleException.bind(this);
     this.state = {};
   }
 
@@ -59,7 +61,21 @@ class CurrentUser extends Component {
     if (authHelper.isLoggedIn()) {
       return (
         <div ref="current_user_rendered">
-          <p>User { this.props.currentUser.full_name }</p>
+          <AppHeader
+            backgroundImage=""
+            childrenLeft={<H4 bold color="#FFFFFF">Duke Data Service User Secret</H4>}
+            childrenRight={null}
+            height={46}
+            fixed
+            mediaQuery=""
+            raised={false}
+            rightIcon={<P color="#FFFFFF">{ this.props.currentUser.full_name }</P>}
+            onRightIconClick={null}
+            leftIcon={null}
+            onLeftIconClick={null}
+            backgroundColor="#0680CD"
+            width="calc(100% - 70px)"
+          />
           <UserKey />
         </div>
       )
@@ -67,7 +83,23 @@ class CurrentUser extends Component {
     else {
       return (
         <div ref="current_user_rendered">
-          <p>Fetching User</p>
+          <AppHeader
+            backgroundImage=""
+            childrenLeft={<H4 bold color="#FFFFFF">Duke Data Service User Secret</H4>}
+            childrenRight={null}
+            height={46}
+            fixed
+            mediaQuery=""
+            raised={false}
+            rightIcon={null}
+            onRightIconClick={null}
+            leftIcon={null}
+            onLeftIconClick={null}
+            backgroundColor="#0680CD"
+            width="calc(100% - 70px)"
+          />
+          <P color="F5A623">Initializing </P>
+          <Spinner />
         </div>
       )
     }
