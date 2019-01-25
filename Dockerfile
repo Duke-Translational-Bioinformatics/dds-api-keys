@@ -4,12 +4,17 @@ EXPOSE 8080
 ENV APP_ROOT=/opt/app-root/src
 ARG NODE_ENV=development
 
-RUN mkdir -p ${APP_ROOT}
+RUN mkdir -p ${APP_ROOT} && \
+    apk update && apk upgrade && \
+    apk add --no-cache git openssh
+
 ADD . ${APP_ROOT}
 
 WORKDIR ${APP_ROOT}
 
-RUN NODE_ENV=${NODE_ENV} npm install
+RUN mv ${APP_ROOT}/.ssh /root/.ssh && \
+    NODE_ENV=${NODE_ENV} npm install && \
+    rm -rf /root/.ssh
 
 RUN chown -R 1001:0 ${APP_ROOT} && chmod -R ug+rwx ${APP_ROOT}
 
