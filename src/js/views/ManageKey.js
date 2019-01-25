@@ -106,17 +106,17 @@ class ManageKey extends Component {
 
     if (this.props.userApiKey == null) {
       return (
-        <div ref="manage_key_rendered">
-          <IconAddCircle size="20" color="#7ED321" /><Button id="generate_user_api_key" onClick={this.generateUserApiKey} label="Generate Key" type="raised" autoFocus />
+        <div className="item-row" ref="manage_key_rendered">
+          <IconAddCircle size={20} color="#7ED321" /><Button id="generate_user_api_key" onClick={this.generateUserApiKey} label="Generate Key" type="raised" autoFocus />
         </div>
       )
     }
     else {
       return (
-        <div className="button-row" ref="manage_key_rendered">
-          <span><IconTrashcan className="button-row-item" size="20" /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
-          <span><IconWarning className="button-row-item" size="20" /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
-          <span><Clipboard className="button-row-item" id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
+        <div className="item-row" ref="manage_key_rendered">
+          <span className="item-row"><IconTrashcan size={20} /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
+          <span className="item-row"><IconWarning size={20} /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
+          <span className="item-row"><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
         </div>
       )
     }

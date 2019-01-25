@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from 'prop-types'
 import UserKey from "../controllers/UserKey"
-import { AppHeader, H4, P, Spinner } from 'dracs';
+import { Card, CardHeader, CardBody, H4, P, Spinner } from 'dracs';
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
 
@@ -61,45 +61,56 @@ class CurrentUser extends Component {
     if (authHelper.isLoggedIn()) {
       return (
         <div ref="current_user_rendered">
-          <AppHeader
-            backgroundImage=""
-            childrenLeft={<H4 bold color="#FFFFFF">Duke Data Service User Secret</H4>}
-            childrenRight={null}
-            height={46}
-            fixed
-            mediaQuery=""
-            raised={false}
-            rightIcon={<P color="#FFFFFF">{ this.props.currentUser.full_name }</P>}
-            onRightIconClick={null}
-            leftIcon={null}
-            onLeftIconClick={null}
-            backgroundColor="#0680CD"
-            width="calc(100% - 70px)"
-          />
-          <UserKey />
+          <Card height="400px" width="400px" raised>
+            <CardHeader
+              border
+              className=""
+              dragHandle={false}
+              htmlTitle={false}
+              icon={<div className="item-row"><H4 bold color="#FFFFFF">Duke Data Service User Secret</H4><P className="header-title" color="#FFFFFF">{ this.props.currentUser.full_name }</P></div>}
+              style={{
+                maxWidth: "384px",
+                backgroundColor: "#0680CD"
+              }}
+              title=""
+            />
+            <CardBody
+              className=""
+              id=""
+              padding=""
+              style={{}}
+            >
+              <UserKey />
+            </CardBody>
+          </Card>
         </div>
       )
     }
     else {
       return (
         <div ref="current_user_rendered">
-          <AppHeader
-            backgroundImage=""
-            childrenLeft={<H4 bold color="#FFFFFF">Duke Data Service User Secret</H4>}
-            childrenRight={null}
-            height={46}
-            fixed
-            mediaQuery=""
-            raised={false}
-            rightIcon={null}
-            onRightIconClick={null}
-            leftIcon={null}
-            onLeftIconClick={null}
-            backgroundColor="#0680CD"
-            width="calc(100% - 70px)"
-          />
-          <P color="F5A623">Initializing </P>
-          <Spinner />
+          <Card height="400px" width="400px" raised>
+            <CardHeader
+              border
+              className=""
+              dragHandle={false}
+              htmlTitle={false}
+              icon={<H4 bold color="#FFFFFF">Duke Data Service User Secret</H4>}
+              style={{
+                maxWidth: "384px",
+                backgroundColor: "#0680CD"
+              }}
+              title=""
+            />
+            <CardBody
+              className=""
+              id=""
+              padding=""
+              style={{}}
+            >
+              <P>Initializing ... <Spinner /></P>
+            </CardBody>
+          </Card>
         </div>
       )
     }
