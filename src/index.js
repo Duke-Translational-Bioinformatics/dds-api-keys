@@ -8,11 +8,15 @@ import { theme } from "dracs";
 
 // uncomment next line to see model in the browser console
 // window.store = model;
-render(
-  <Provider store={model}>
-      <ThemeProvider theme={theme} >
-        <App />
-      </ThemeProvider>
-  </Provider>,
-  document.getElementById("app")
-);
+
+const renderApp = () => {
+  render(
+    <Provider store={model}>
+        <ThemeProvider theme={theme} >
+          <App />
+        </ThemeProvider>
+    </Provider>,
+    document.getElementById("app")
+  );
+};
+renderApp();
