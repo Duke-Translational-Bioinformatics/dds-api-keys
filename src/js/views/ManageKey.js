@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Clipboard from 'react-clipboard.js';
 import PropTypes from 'prop-types';
-import { Button, IconAddCircle, IconTrashcan, IconWarning, IconShare, H4, P, Modal } from 'dracs';
+import { Button, IconAddCircle, IconTrashcan, IconWarning, IconShare, H4, P, Modal, Dialog } from 'dracs';
 
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
@@ -21,9 +21,13 @@ class ManageKey extends Component {
     this.handleCurrentUserApiKey = this.handleCurrentUserApiKey.bind(this);
     this.handleException = this.handleException.bind(this);
     this.acknowlegeException = this.acknowlegeException.bind(this);
+    this.cancelKeyDestruction = this.cancelKeyDestruction.bind(this);
+    this.cancelKeyRegeneration = this.cancelKeyRegeneration.bind(this);
     this.state = {
       hasError: false,
-      errorMessage: null
+      errorMessage: null,
+      needsDeletionConfirmation: false,
+      needsRegenerationConfirmation: false
     };
   }
 
@@ -35,15 +39,35 @@ class ManageKey extends Component {
 
   confirmApiKeyDeletion(event) {
     event.preventDefault();
-    if(window.confirm("Warning, This is a Destructive Action!\nAll software agents which use this key will stop working!")) {
-      this.destroyUserApiKey();
+    if (this.refs.manage_key_rendered) {
+      this.setState({
+        needsDeletionConfirmation: true
+      });
+    }
+  }
+
+  cancelKeyDestruction() {
+    if (this.refs.manage_key_rendered && this.state.needsDeletionConfirmation) {
+      this.setState({
+        needsDeletionConfirmation: false
+      });
     }
   }
 
   confirmApiKeyRegeneration(event) {
     event.preventDefault();
-    if(window.confirm("Warning, This is a Destructive Action!\nAll software agents which use the original key will stop working!")) {
-      this.newUserApiKey();
+    if (this.refs.manage_key_rendered) {
+      this.setState({
+        needsRegenerationConfirmation: true
+      });
+    }
+  }
+
+  cancelKeyRegeneration() {
+    if (this.refs.manage_key_rendered && this.state.needsRegenerationConfirmation) {
+      this.setState({
+        needsRegenerationConfirmation: false
+      });
     }
   }
 
@@ -78,6 +102,7 @@ class ManageKey extends Component {
 
   handleSuccessfulBackendApiKeyDestruction() {
     this.props.destroyUserApiKey();
+    this.cancelKeyDestruction();
   }
 
   newUserApiKey() {
@@ -106,6 +131,7 @@ class ManageKey extends Component {
 
   handleCurrentUserApiKey(key) {
     this.props.setUserApiKey(key);
+    this.cancelKeyRegeneration();
   }
 
   notifyClipboardCopy() {
@@ -128,9 +154,30 @@ class ManageKey extends Component {
       )
     }
     else {
+      let deletionConfirmationDialog = <Dialog active={this.state.needsDeletionConfirmation}
+        title="Warning, This is a Destructive Action"
+        actions={[
+          {label: 'Cancel', onClick: this.cancelKeyDestruction},
+          {label: 'Destroy', onClick: this.destroyUserApiKey}
+        ]}
+      >
+        <P>All software agents which use this key will stop working!"</P>
+      </Dialog>;
+      let regenerationConfirmationDialog = <Dialog active={this.state.needsRegenerationConfirmation}
+        title="Warning, This is a Destructive Action"
+        actions={[
+          {label: 'Cancel', onClick: this.cancelKeyRegeneration},
+          {label: 'Destroy', onClick: this.newUserApiKey}
+        ]}
+      >
+        <P>All software agents which use the original key will stop working!</P>
+      </Dialog>;
+
       return (
         <div ref="manage_key_rendered">
           {apiProblemNotification}
+          {deletionConfirmationDialog}
+          {regenerationConfirmationDialog}
           <span className="item-row"><IconTrashcan size={20} /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
           <span className="item-row"><IconWarning size={20} /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
           <span className="item-row"><IconShare size={20} /><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
