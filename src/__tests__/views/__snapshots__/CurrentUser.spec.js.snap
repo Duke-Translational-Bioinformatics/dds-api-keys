@@ -1,0 +1,626 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CurrentUser View UI when user is already logged in should render information about the user and a UserKey controller 1`] = `
+<div>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    type="medium"
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P />
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Card
+    border={true}
+    height="400px"
+    raised={true}
+    width="500px"
+  >
+    <CardHeader
+      border={true}
+      icon={
+        <div
+          className="item-row"
+        >
+          <typography__H4
+            bold={true}
+            color="#FFFFFF"
+          >
+            Duke Data Service User Secret
+          </typography__H4>
+          <typography__P
+            className="header-title"
+            color="#FFFFFF"
+          >
+            user name
+          </typography__P>
+        </div>
+      }
+      style={
+        Object {
+          "backgroundColor": "#0680CD",
+          "maxWidth": "500px",
+        }
+      }
+    />
+    <CardBody>
+      <Connect(ManageKey) />
+    </CardBody>
+  </Card>
+</div>
+`;
+
+exports[`CurrentUser View UI when user is not already logged in when a a login error is not encountered should render an initialization as it attempts to log the user in 1`] = `
+<ThemeProvider
+  theme={
+    Object {
+      "boxShadow": Object {
+        "button": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
+        "card": "0 1px 3px 0 rgba(0, 0, 0, 0.25)",
+        "header": "0 0 12px 0 rgba(0, 0, 0, 0.40)",
+        "shadow2px": "0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12)",
+        "shadow3px": "0 3px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 3px -2px rgba(0, 0, 0, 0.2), 0 1px 8px 0 rgba(0, 0, 0, 0.12)",
+        "zdepth5": "0 19px 60px rgba(0, 0, 0, 0.3), 0 15px 20px rgba(0, 0, 0, 0.22)",
+      },
+      "colors": Object {
+        "action": "#0680cd",
+        "action87pct": "hsla(203.200000000005, 94.3%, 41.4%, 0.87)",
+        "actionHover": "#53a4dc",
+        "base": "#131516",
+        "base45pct": "hsla(0,0%,14.9%,0.44999999999999996)",
+        "base57pct": "hsla(0, 0%, 14.9%, 0.5700000000000001)",
+        "base90pct": "hsla(0,0%,14.9%,0.9)",
+        "bg": "#fff",
+        "border": "#e8e5e2",
+        "borderDark": "#d3d3d3",
+        "darkBlue": "#036",
+        "dashBG": "#f6f5f4",
+        "error": "#cc3300",
+        "error87pct": "hsla(15,100%,40%,0.87)",
+        "muted": "#696969",
+        "statusGreen": "#008000",
+        "subheading": "#545454",
+        "successGreen": "#4AC948",
+        "tutorialHighlight": "rgb(255,215,0)",
+        "warning": "#ffd960",
+      },
+      "flexboxgrid": Object {
+        "breakpoints": Object {
+          "lg": 90,
+          "md": 73.125,
+          "sm": 48,
+          "xs": 0,
+        },
+        "container": Object {
+          "lg": 76,
+          "md": 61,
+          "sm": 46,
+        },
+        "gutterWidth": 1,
+        "outerMargin": 1,
+      },
+      "sizing": Object {
+        "base": 8,
+        "borderRadius": 4,
+        "fontSize": 16,
+      },
+      "zIndex": Object {
+        "lg": 500,
+        "md": 100,
+        "s": 10,
+        "xl": 1000,
+        "xs": 1,
+      },
+    }
+  }
+>
+  <CurrentUser
+    setCurrentUser={[MockFunction]}
+  >
+    <div>
+      <ActivableRenderer
+        active={false}
+        delay={300}
+        type="medium"
+      />
+      <Card
+        border={true}
+        height="400px"
+        raised={true}
+        width="500px"
+      >
+        <card__CardWrapper
+          border={true}
+          height="400px"
+          raised={true}
+          width="500px"
+        >
+          <section
+            className="card__CardWrapper-aKCya fwnmPO"
+            height="400px"
+            width="500px"
+          >
+            <CardHeader
+              border={true}
+              className=""
+              dragHandle={false}
+              htmlTitle={false}
+              icon={
+                <typography__H4
+                  bold={true}
+                  color="#FFFFFF"
+                >
+                  Duke Data Service User Secret
+                </typography__H4>
+              }
+              style={
+                Object {
+                  "backgroundColor": "#0680CD",
+                  "maxWidth": "500px",
+                }
+              }
+              title=""
+            >
+              <header__CardHeaderWrap
+                border={true}
+                className=""
+                dragHandle={false}
+                style={
+                  Object {
+                    "backgroundColor": "#0680CD",
+                    "maxWidth": "500px",
+                  }
+                }
+              >
+                <header
+                  className="header__CardHeaderWrap-gWktLy joQkYb"
+                  style={
+                    Object {
+                      "backgroundColor": "#0680CD",
+                      "maxWidth": "500px",
+                    }
+                  }
+                >
+                  <typography__H4
+                    bold={true}
+                    color="#FFFFFF"
+                  >
+                    <h4
+                      className="typography__H4-ggBxhx clfzTd"
+                      color="#FFFFFF"
+                    >
+                      Duke Data Service User Secret
+                    </h4>
+                  </typography__H4>
+                </header>
+              </header__CardHeaderWrap>
+            </CardHeader>
+            <CardBody
+              className=""
+              id=""
+              padding=""
+              style={Object {}}
+            >
+              <body__CardBodyWrap
+                className=""
+                id=""
+                padding=""
+                style={Object {}}
+              >
+                <article
+                  className="body__CardBodyWrap-gxNncO iKghek"
+                  id=""
+                  style={Object {}}
+                >
+                  <typography__P>
+                    <p
+                      className="typography__P-jyzngc gYZjzX"
+                    >
+                      Initializing ... 
+                    </p>
+                  </typography__P>
+                  <Spinner
+                    color="#0680cd"
+                    margin="4px"
+                    size={32}
+                  >
+                    <spinner__ElementWrap
+                      margin="4px"
+                      size={32}
+                    >
+                      <div
+                        className="spinner__ElementWrap-hXnaGg eIYEol"
+                        size={32}
+                      >
+                        <spinner__SpinnerWrap
+                          size={32}
+                        >
+                          <div
+                            className="spinner__SpinnerWrap-cJPLcw eSvGES"
+                            size={32}
+                          >
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="0"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-1.2s",
+                                  "WebkitTransform": "rotate(0deg) translate(146%)",
+                                  "animationDelay": "-1.2s",
+                                  "transform": "rotate(0deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-1.2s",
+                                    "WebkitTransform": "rotate(0deg) translate(146%)",
+                                    "animationDelay": "-1.2s",
+                                    "transform": "rotate(0deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="1"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-1.1s",
+                                  "WebkitTransform": "rotate(30deg) translate(146%)",
+                                  "animationDelay": "-1.1s",
+                                  "transform": "rotate(30deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-1.1s",
+                                    "WebkitTransform": "rotate(30deg) translate(146%)",
+                                    "animationDelay": "-1.1s",
+                                    "transform": "rotate(30deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="2"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-1s",
+                                  "WebkitTransform": "rotate(60deg) translate(146%)",
+                                  "animationDelay": "-1s",
+                                  "transform": "rotate(60deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-1s",
+                                    "WebkitTransform": "rotate(60deg) translate(146%)",
+                                    "animationDelay": "-1s",
+                                    "transform": "rotate(60deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="3"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.9s",
+                                  "WebkitTransform": "rotate(90deg) translate(146%)",
+                                  "animationDelay": "-0.9s",
+                                  "transform": "rotate(90deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.9s",
+                                    "WebkitTransform": "rotate(90deg) translate(146%)",
+                                    "animationDelay": "-0.9s",
+                                    "transform": "rotate(90deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="4"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.8s",
+                                  "WebkitTransform": "rotate(120deg) translate(146%)",
+                                  "animationDelay": "-0.8s",
+                                  "transform": "rotate(120deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.8s",
+                                    "WebkitTransform": "rotate(120deg) translate(146%)",
+                                    "animationDelay": "-0.8s",
+                                    "transform": "rotate(120deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="5"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.7s",
+                                  "WebkitTransform": "rotate(150deg) translate(146%)",
+                                  "animationDelay": "-0.7s",
+                                  "transform": "rotate(150deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.7s",
+                                    "WebkitTransform": "rotate(150deg) translate(146%)",
+                                    "animationDelay": "-0.7s",
+                                    "transform": "rotate(150deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="6"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.6s",
+                                  "WebkitTransform": "rotate(180deg) translate(146%)",
+                                  "animationDelay": "-0.6s",
+                                  "transform": "rotate(180deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.6s",
+                                    "WebkitTransform": "rotate(180deg) translate(146%)",
+                                    "animationDelay": "-0.6s",
+                                    "transform": "rotate(180deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="7"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.5s",
+                                  "WebkitTransform": "rotate(210deg) translate(146%)",
+                                  "animationDelay": "-0.5s",
+                                  "transform": "rotate(210deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.5s",
+                                    "WebkitTransform": "rotate(210deg) translate(146%)",
+                                    "animationDelay": "-0.5s",
+                                    "transform": "rotate(210deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="8"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.4s",
+                                  "WebkitTransform": "rotate(240deg) translate(146%)",
+                                  "animationDelay": "-0.4s",
+                                  "transform": "rotate(240deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.4s",
+                                    "WebkitTransform": "rotate(240deg) translate(146%)",
+                                    "animationDelay": "-0.4s",
+                                    "transform": "rotate(240deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="9"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.3s",
+                                  "WebkitTransform": "rotate(270deg) translate(146%)",
+                                  "animationDelay": "-0.3s",
+                                  "transform": "rotate(270deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.3s",
+                                    "WebkitTransform": "rotate(270deg) translate(146%)",
+                                    "animationDelay": "-0.3s",
+                                    "transform": "rotate(270deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="10"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.2s",
+                                  "WebkitTransform": "rotate(300deg) translate(146%)",
+                                  "animationDelay": "-0.2s",
+                                  "transform": "rotate(300deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.2s",
+                                    "WebkitTransform": "rotate(300deg) translate(146%)",
+                                    "animationDelay": "-0.2s",
+                                    "transform": "rotate(300deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                            <spinner__SpinnerBar
+                              color="#0680cd"
+                              key="11"
+                              style={
+                                Object {
+                                  "WebkitAnimationDelay": "-0.1s",
+                                  "WebkitTransform": "rotate(330deg) translate(146%)",
+                                  "animationDelay": "-0.1s",
+                                  "transform": "rotate(330deg) translate(146%)",
+                                }
+                              }
+                            >
+                              <div
+                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                color="#0680cd"
+                                style={
+                                  Object {
+                                    "WebkitAnimationDelay": "-0.1s",
+                                    "WebkitTransform": "rotate(330deg) translate(146%)",
+                                    "animationDelay": "-0.1s",
+                                    "transform": "rotate(330deg) translate(146%)",
+                                  }
+                                }
+                              />
+                            </spinner__SpinnerBar>
+                          </div>
+                        </spinner__SpinnerWrap>
+                      </div>
+                    </spinner__ElementWrap>
+                  </Spinner>
+                </article>
+              </body__CardBodyWrap>
+            </CardBody>
+          </section>
+        </card__CardWrapper>
+      </Card>
+    </div>
+  </CurrentUser>
+</ThemeProvider>
+`;
+
+exports[`CurrentUser View UI when user is not already logged in when a login error occurs should render an initialization as it attempts to log the user in 1`] = `
+<div>
+  <ActivableRenderer
+    active={true}
+    delay={300}
+    type="medium"
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P>
+      {"error":"404","message":"got an error"}
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Card
+    border={true}
+    height="400px"
+    raised={true}
+    width="500px"
+  >
+    <CardHeader
+      border={true}
+      className=""
+      dragHandle={false}
+      htmlTitle={false}
+      icon={
+        <typography__H4
+          bold={true}
+          color="#FFFFFF"
+        >
+          Duke Data Service User Secret
+        </typography__H4>
+      }
+      style={
+        Object {
+          "backgroundColor": "#0680CD",
+          "maxWidth": "500px",
+        }
+      }
+      title=""
+    />
+    <CardBody
+      className=""
+      id=""
+      padding=""
+      style={Object {}}
+    >
+      <typography__P>
+        Initializing ... 
+      </typography__P>
+      <Spinner
+        color="#0680cd"
+        margin="4px"
+        size={32}
+      />
+    </CardBody>
+  </Card>
+</div>
+`;

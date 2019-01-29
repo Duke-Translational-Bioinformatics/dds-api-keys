@@ -37,7 +37,7 @@ class CurrentUser extends Component {
 
   acknowlegeException() {
     if (this.refs.current_user_rendered) {
-      this.setState({hasError: false, errorMessage: null});
+      this.setState({hasError: false, errorMessage: undefined});
     }
   }
 
@@ -66,7 +66,7 @@ class CurrentUser extends Component {
   }
 
   render() {
-    let problemNotification = <Modal active={this.state.hasError}>
+    let problemNotification = <Modal type="medium" active={this.state.hasError}>
                 <H4>A Problem has occurred</H4>
                 <P>{JSON.stringify(this.state.errorMessage)}</P>
                 <Button onClick={this.acknowlegeException} label="OK" />

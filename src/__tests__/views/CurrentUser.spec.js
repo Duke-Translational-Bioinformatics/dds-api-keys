@@ -3,6 +3,9 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import CurrentUser from 'js/views/CurrentUser';
 import UserKey from "js/controllers/UserKey"
+import { ThemeProvider } from "styled-components";
+import { Modal, theme } from "dracs";
+
 import authHelper from 'js/helpers/authHelper';
 import ddsClient from 'js/helpers/ddsClient';
 
@@ -31,6 +34,12 @@ describe('CurrentUser View', () => {
   });
 
   describe('UI', () => {
+    var tearDownUIMocks;
+
+    afterEach(() => {
+      tearDownUIMocks();
+    });
+
     describe('when user is already logged in', () => {
       let setUpUIMocks = () => {
         authHelper.isLoggedIn = jest.fn();
@@ -39,7 +48,7 @@ describe('CurrentUser View', () => {
         authHelper.login = jest.fn();
       }
 
-      let tearDownUIMocks = () => {
+      tearDownUIMocks = () => {
         authHelper.isLoggedIn = origIsLoggedInF
         authHelper.login = origLoginF;
         userIsLoggedIn = false;
@@ -51,11 +60,9 @@ describe('CurrentUser View', () => {
 
         expect(authHelper.isLoggedIn()).toBeTruthy();
         wrapper = shallow(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
-        expect(authHelper.login).not.toBeCalled();
-        expect(wrapper).toIncludeText(expectedCurrentUser.full_name);
-        expect(wrapper.find(UserKey)).toExist();
-
-        tearDownUIMocks();
+        expect(wrapper).toMatchSnapshot();
+        expect(wrapper.find(Modal)).toHaveProp('active', false);
+        expect(wrapper.state().hasError).toBeFalsy();
       });
     });
 
@@ -76,24 +83,51 @@ describe('CurrentUser View', () => {
         authHelper.login.mockImplementation(mockedPromise);
       }
 
-      let tearDownUIMocks = () => {
+      tearDownUIMocks = () => {
         authHelper.isLoggedIn = origIsLoggedInF
         authHelper.login = origLoginF;
         userIsLoggedIn = false;
       }
-      it('should attempt to log the user in', done => {
-        setUpUIMocks();
-        expect(authHelper.isLoggedIn()).toBeFalsy();
 
-        wrapper = mount(<CurrentUser setCurrentUser={mockSetCurrentUser} />);
-        setImmediate(() => {
-          expect(authHelper.login).toBeCalled();
-          expect(mockedPromiseResolver.then).toHaveBeenCalledWith(
-            wrapper.instance().handleAuthenticationSuccess,
-            wrapper.instance().handleException
+      describe('when a login error occurs', () => {
+        it('should render an initialization as it attempts to log the user in', () => {
+          let thisMessage = {error: "404", message: "got an error"};
+          setUpUIMocks();
+          expect(authHelper.isLoggedIn()).toBeFalsy();
+
+          wrapper = shallow(
+            <CurrentUser setCurrentUser={mockSetCurrentUser} />
           );
-          tearDownUIMocks();
-          done();
+          let wrapperWithError = wrapper.setState({
+            hasError: true,
+            errorMessage: thisMessage
+          });
+          expect(wrapperWithError).toMatchSnapshot();
+          expect(wrapperWithError.find(Modal)).toHaveProp('active', true);
+          expect(wrapperWithError.state().hasError).toBeTruthy();
+        });
+      });
+
+      describe('when a a login error is not encountered', () => {
+        it('should render an initialization as it attempts to log the user in', done => {
+          setUpUIMocks();
+          expect(authHelper.isLoggedIn()).toBeFalsy();
+
+          wrapper = mount(
+            <ThemeProvider theme={theme}>
+              <CurrentUser setCurrentUser={mockSetCurrentUser} />
+            </ThemeProvider>
+          );
+          expect(wrapper).toMatchSnapshot();
+          const subject = wrapper.find("CurrentUser");
+          setImmediate(() => {
+            expect(authHelper.login).toBeCalled();
+            expect(mockedPromiseResolver.then).toHaveBeenCalledWith(
+              subject.instance().handleAuthenticationSuccess,
+              subject.instance().handleException
+            );
+            done();
+          });
         });
       });
     });
@@ -110,21 +144,75 @@ describe('CurrentUser View', () => {
         it('should set the hasError state', () => {
           window.alert = jest.fn();
           let thisMessage = {error: "404", message: "got an error"};
-          wrapper = mount(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
-          expect(wrapper.state()).toEqual({});
-          expect(wrapper.instance().refs.current_user_rendered).toBeTruthy();
-          wrapper.instance().handleException(thisMessage);
-          expect(wrapper.state()).toEqual({hasError: thisMessage});
+          wrapper = mount(
+            <ThemeProvider theme={theme}>
+              <CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />
+            </ThemeProvider>
+          );
+          const renderedCurrentUser = wrapper.find("CurrentUser");
+          expect(renderedCurrentUser.state()).toEqual({
+            hasError: false
+          });
+          expect(renderedCurrentUser.instance().refs.current_user_rendered).toBeTruthy();
+          renderedCurrentUser.instance().handleException(thisMessage);
+          expect(renderedCurrentUser.state()).toEqual({
+            hasError: true,
+            errorMessage: thisMessage
+          });
         });
       });
 
       describe('when refs.current_user_rendered is absent', () => {
         it('should not set the hasError state', () => {
           let thisMessage = {error: "404", message: "got an error"};
-          expect(subject.state).toEqual({});
+          expect(subject.state).toEqual({
+            hasError: false
+          });
           expect(subject.refs.current_user_rendered).toBeFalsy();
           subject.handleException(thisMessage);
-          expect(subject.state).toEqual({});
+          expect(subject.state).toEqual({
+            hasError: false
+          });
+        });
+      });
+    });
+
+    describe('acknowlegeException', () => {
+      describe('when refs.current_user_rendered is present', () => {
+        it('should clear any errors present', () => {
+          window.alert = jest.fn();
+          let thisMessage = {error: "404", message: "got an error"};
+          wrapper = mount(
+            <ThemeProvider theme={theme}>
+              <CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />
+            </ThemeProvider>
+          );
+          const renderedCurrentUser = wrapper.find("CurrentUser");
+          expect(renderedCurrentUser.state()).toEqual({
+            hasError: false
+          });
+          expect(renderedCurrentUser.instance().refs.current_user_rendered).toBeTruthy();
+          renderedCurrentUser.instance().handleException(thisMessage);
+          expect(renderedCurrentUser.state()).toEqual({
+            hasError: true,
+            errorMessage: thisMessage
+          });
+
+          renderedCurrentUser.instance().acknowlegeException();
+          expect(renderedCurrentUser.state()).toEqual({
+            hasError: false
+          });
+        });
+      });
+
+      describe('when refs.current_user_rendered is absent', () => {
+        it('should not reset state', () => {
+          const origSetStateF = subject.setState;
+          subject.setState = jest.fn();
+          expect(subject.refs.current_user_rendered).toBeFalsy();
+          subject.acknowlegeException();
+          expect(subject.setState).not.toHaveBeenCalled();
+          subject.setState = origSetStateF;
         });
       });
     });
