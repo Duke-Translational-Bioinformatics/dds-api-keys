@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import CurrentUser from 'js/views/CurrentUser';
 import UserKey from "js/controllers/UserKey"
 import { ThemeProvider } from "styled-components";
-import { Modal, theme } from "dracs";
+import { Button, Modal, theme } from "dracs";
 
 import authHelper from 'js/helpers/authHelper';
 import ddsClient from 'js/helpers/ddsClient';
@@ -54,14 +54,17 @@ describe('CurrentUser View', () => {
         userIsLoggedIn = false;
       }
 
-      it('should render information about the user and a UserKey controller', () => {
+      it('should render information about the user, an problem alert Modal, and a UserKey controller', () => {
         userIsLoggedIn = true;
         setUpUIMocks();
 
         expect(authHelper.isLoggedIn()).toBeTruthy();
         wrapper = shallow(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
         expect(wrapper).toMatchSnapshot();
-        expect(wrapper.find(Modal)).toHaveProp('active', false);
+        let modalWrapper = wrapper.find(Modal);
+        expect(modalWrapper).toHaveProp('active', false);
+        let modalButton = modalWrapper.find(Button);
+        expect(modalButton).toHaveProp('onClick', wrapper.instance().acknowlegeException);
         expect(wrapper.state().hasError).toBeFalsy();
       });
     });

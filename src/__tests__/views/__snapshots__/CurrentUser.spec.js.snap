@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CurrentUser View UI when user is already logged in should render information about the user and a UserKey controller 1`] = `
+exports[`CurrentUser View UI when user is already logged in should render information about the user, an problem alert Modal, and a UserKey controller 1`] = `
 <div>
   <ActivableRenderer
     active={false}
