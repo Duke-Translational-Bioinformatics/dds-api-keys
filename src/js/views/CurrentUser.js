@@ -66,11 +66,16 @@ class CurrentUser extends Component {
   }
 
   render() {
-    let problemNotification = <Modal type="medium" active={this.state.hasError}>
-                <H4>A Problem has occurred</H4>
-                <P>{JSON.stringify(this.state.errorMessage)}</P>
-                <Button onClick={this.acknowlegeException} label="OK" />
-              </Modal>;
+    let problemNotification = <Modal
+      id="login_api_problem_notification"
+      type="medium"
+      active={this.state.hasError}
+      onEscKeyDown={this.acknowlegeException}
+    >
+      <H4>A Problem has occurred</H4>
+      <P>{JSON.stringify(this.state.errorMessage)}</P>
+      <Button onClick={this.acknowlegeException} label="OK" />
+    </Modal>;
 
     if (authHelper.isLoggedIn()) {
       return (

@@ -5,6 +5,8 @@ exports[`CurrentUser View UI when user is already logged in should render inform
   <ActivableRenderer
     active={false}
     delay={300}
+    id="login_api_problem_notification"
+    onEscKeyDown={[Function]}
     type="medium"
   >
     <typography__H4>
@@ -127,6 +129,8 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
       <ActivableRenderer
         active={false}
         delay={300}
+        id="login_api_problem_notification"
+        onEscKeyDown={[Function]}
         type="medium"
       />
       <Card
@@ -566,6 +570,8 @@ exports[`CurrentUser View UI when user is not already logged in when a login err
   <ActivableRenderer
     active={true}
     delay={300}
+    id="login_api_problem_notification"
+    onEscKeyDown={[Function]}
     type="medium"
   >
     <typography__H4>

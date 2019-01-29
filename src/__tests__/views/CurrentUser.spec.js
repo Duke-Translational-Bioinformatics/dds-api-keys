@@ -4,7 +4,7 @@ import { shallow } from 'enzyme';
 import CurrentUser from 'js/views/CurrentUser';
 import UserKey from "js/controllers/UserKey"
 import { ThemeProvider } from "styled-components";
-import { Button, Modal, theme } from "dracs";
+import { Button, theme } from "dracs";
 
 import authHelper from 'js/helpers/authHelper';
 import ddsClient from 'js/helpers/ddsClient';
@@ -61,11 +61,13 @@ describe('CurrentUser View', () => {
         expect(authHelper.isLoggedIn()).toBeTruthy();
         wrapper = shallow(<CurrentUser currentUser={expectedCurrentUser} setCurrentUser={mockSetCurrentUser} />);
         expect(wrapper).toMatchSnapshot();
-        let modalWrapper = wrapper.find(Modal);
-        expect(modalWrapper).toHaveProp('active', false);
-        let modalButton = modalWrapper.find(Button);
-        expect(modalButton).toHaveProp('onClick', wrapper.instance().acknowlegeException);
+        let apiProblemNotificationWrapper = wrapper.find('#login_api_problem_notification');
+        expect(apiProblemNotificationWrapper).toHaveProp('active', false);
         expect(wrapper.state().hasError).toBeFalsy();
+        expect(apiProblemNotificationWrapper).toHaveProp('onEscKeyDown', wrapper.instance().acknowlegeException);
+
+        let acknowlegeExceptionButton = apiProblemNotificationWrapper.find(Button);
+        expect(acknowlegeExceptionButton).toHaveProp('onClick', wrapper.instance().acknowlegeException);
       });
     });
 
@@ -106,7 +108,7 @@ describe('CurrentUser View', () => {
             errorMessage: thisMessage
           });
           expect(wrapperWithError).toMatchSnapshot();
-          expect(wrapperWithError.find(Modal)).toHaveProp('active', true);
+          expect(wrapperWithError.find('#login_api_problem_notification')).toHaveProp('active', true);
           expect(wrapperWithError.state().hasError).toBeTruthy();
         });
       });
