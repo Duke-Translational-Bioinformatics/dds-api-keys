@@ -1,0 +1,1018 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ManageKey View UI when CurrentUser does not have a defined userApiKey when a key api exception does exist should render an active key api exception Modal 1`] = `
+<div
+  className="item-row"
+>
+  <ActivableRenderer
+    active={true}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P>
+      {"error":"404","message":"got an error"}
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="generate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircle
+          color="#7ED321"
+          size={20}
+          style={
+            Object {
+              "alignItems": "center",
+              "display": "flex",
+              "flex": "1 1 auto",
+              "justifyContent": "center",
+            }
+          }
+        />
+        Generate Key
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+</div>
+`;
+
+exports[`ManageKey View UI when CurrentUser does not have a defined userApiKey when no key api exception exists should render a Generate Key Button and an inactive key api exception Modal 1`] = `
+<div
+  className="item-row"
+>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P />
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="generate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircle
+          color="#7ED321"
+          size={20}
+          style={
+            Object {
+              "alignItems": "center",
+              "display": "flex",
+              "flex": "1 1 auto",
+              "justifyContent": "center",
+            }
+          }
+        />
+        Generate Key
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+</div>
+`;
+
+exports[`ManageKey View UI when CurrentUser has a defined userApiKey when a key api exception does not exist when a key deletion confirmation notification is required should render an active Confirm Deletion Dialog 1`] = `
+<div>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P />
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={true}
+    delay={300}
+    id="deletion_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use this key will stop working!"
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="regeneration_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use the original key will stop working!
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_copied_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__P>
+      User Secret Successfully Copied to Clipboard!
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="destroy_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconCloseCircleFilled
+          color="#0680cd"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Destroy
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <Button
+    id="regenerate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircleFilled
+          color="#666"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Regenerate
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <ClipboardButton
+    className="clipboard-button"
+    id="access_user_api_key"
+    onClick={[Function]}
+    onSuccess={[Function]}
+    option-text={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+  >
+    <span
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "flex": "1 1 auto",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <IconDetails
+        color="#0680cd"
+        size={20}
+        style={
+          Object {
+            "margin": "-4px 4px 0 0",
+          }
+        }
+      />
+      Copy to Clipboard
+    </span>
+  </ClipboardButton>
+</div>
+`;
+
+exports[`ManageKey View UI when CurrentUser has a defined userApiKey when a key api exception does not exist when a key regeneration confirmation notification is required should render an active Confirm Regeneration Dialog 1`] = `
+<div>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P />
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="deletion_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use this key will stop working!"
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={true}
+    delay={300}
+    id="regeneration_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use the original key will stop working!
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_copied_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__P>
+      User Secret Successfully Copied to Clipboard!
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="destroy_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconCloseCircleFilled
+          color="#0680cd"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Destroy
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <Button
+    id="regenerate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircleFilled
+          color="#666"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Regenerate
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <ClipboardButton
+    className="clipboard-button"
+    id="access_user_api_key"
+    onClick={[Function]}
+    onSuccess={[Function]}
+    option-text={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+  >
+    <span
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "flex": "1 1 auto",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <IconDetails
+        color="#0680cd"
+        size={20}
+        style={
+          Object {
+            "margin": "-4px 4px 0 0",
+          }
+        }
+      />
+      Copy to Clipboard
+    </span>
+  </ClipboardButton>
+</div>
+`;
+
+exports[`ManageKey View UI when CurrentUser has a defined userApiKey when a key api exception does not exist when no confirmations are required when the copy to clipboard notification is not required should render an inactive key api exception Modal, inactive Confirmation Dialogs, inactive Key Copied to Clipboard Notification Modal, and Destroy, Regenerate, and Clipboard Buttons 1`] = `
+<div>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P />
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="deletion_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use this key will stop working!"
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="regeneration_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use the original key will stop working!
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_copied_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__P>
+      User Secret Successfully Copied to Clipboard!
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="destroy_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconCloseCircleFilled
+          color="#0680cd"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Destroy
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <Button
+    id="regenerate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircleFilled
+          color="#666"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Regenerate
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <ClipboardButton
+    className="clipboard-button"
+    id="access_user_api_key"
+    onClick={[Function]}
+    onSuccess={[Function]}
+    option-text={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+  >
+    <span
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "flex": "1 1 auto",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <IconDetails
+        color="#0680cd"
+        size={20}
+        style={
+          Object {
+            "margin": "-4px 4px 0 0",
+          }
+        }
+      />
+      Copy to Clipboard
+    </span>
+  </ClipboardButton>
+</div>
+`;
+
+exports[`ManageKey View UI when CurrentUser has a defined userApiKey when a key api exception does not exist when no confirmations are required when the copy to clipboard notification is required should render an active Key Copied to Clipboard Notification Modal 1`] = `
+<div>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P />
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="deletion_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use this key will stop working!"
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="regeneration_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use the original key will stop working!
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    active={true}
+    delay={300}
+    id="key_copied_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__P>
+      User Secret Successfully Copied to Clipboard!
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="destroy_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconCloseCircleFilled
+          color="#0680cd"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Destroy
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <Button
+    id="regenerate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircleFilled
+          color="#666"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Regenerate
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <ClipboardButton
+    className="clipboard-button"
+    id="access_user_api_key"
+    onClick={[Function]}
+    onSuccess={[Function]}
+    option-text={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+  >
+    <span
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "flex": "1 1 auto",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <IconDetails
+        color="#0680cd"
+        size={20}
+        style={
+          Object {
+            "margin": "-4px 4px 0 0",
+          }
+        }
+      />
+      Copy to Clipboard
+    </span>
+  </ClipboardButton>
+</div>
+`;
+
+exports[`ManageKey View UI when CurrentUser has a defined userApiKey when a key api exception exists should render an active active key api exception Modal 1`] = `
+<div>
+  <ActivableRenderer
+    active={true}
+    delay={300}
+    id="key_api_problem_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__H4>
+      A Problem has occurred
+    </typography__H4>
+    <typography__P>
+      {"error":"404","message":"got an error"}
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="deletion_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use this key will stop working!"
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    actions={
+      Array [
+        Object {
+          "label": "Cancel",
+          "onClick": [Function],
+        },
+        Object {
+          "label": "Continue",
+          "onClick": [Function],
+        },
+      ]
+    }
+    active={false}
+    delay={300}
+    id="regeneration_confirmation_dialog"
+    title="Warning, This is a Destructive Action"
+  >
+    <typography__P>
+      All software agents which use the original key will stop working!
+    </typography__P>
+  </ActivableRenderer>
+  <ActivableRenderer
+    active={false}
+    delay={300}
+    id="key_copied_notification"
+    onEscKeyDown={[Function]}
+  >
+    <typography__P>
+      User Secret Successfully Copied to Clipboard!
+    </typography__P>
+    <Button
+      label="OK"
+      onClick={[Function]}
+    />
+  </ActivableRenderer>
+  <Button
+    autoFocus={true}
+    id="destroy_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconCloseCircleFilled
+          color="#0680cd"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Destroy
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <Button
+    id="regenerate_user_api_key"
+    label={
+      <span
+        style={
+          Object {
+            "alignItems": "center",
+            "display": "flex",
+            "flex": "1 1 auto",
+            "justifyContent": "center",
+          }
+        }
+      >
+        <IconAddCircleFilled
+          color="#666"
+          size={20}
+          style={
+            Object {
+              "margin": "-4px 4px 0 0",
+            }
+          }
+        />
+        Regenerate
+      </span>
+    }
+    onClick={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+    type="raised"
+  />
+  <ClipboardButton
+    className="clipboard-button"
+    id="access_user_api_key"
+    onClick={[Function]}
+    onSuccess={[Function]}
+    option-text={[Function]}
+    style={
+      Object {
+        "margin": "8px",
+      }
+    }
+  >
+    <span
+      style={
+        Object {
+          "alignItems": "center",
+          "display": "flex",
+          "flex": "1 1 auto",
+          "justifyContent": "center",
+        }
+      }
+    >
+      <IconDetails
+        color="#0680cd"
+        size={20}
+        style={
+          Object {
+            "margin": "-4px 4px 0 0",
+          }
+        }
+      />
+      Copy to Clipboard
+    </span>
+  </ClipboardButton>
+</div>
+`;

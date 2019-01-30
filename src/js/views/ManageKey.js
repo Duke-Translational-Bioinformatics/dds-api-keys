@@ -1,7 +1,36 @@
 import React, { Component } from "react";
 import Clipboard from 'react-clipboard.js';
 import PropTypes from 'prop-types';
-import { Button, IconAddCircle, IconTrashcan, IconWarning, IconShare, H4, P, Modal, Dialog } from 'dracs';
+import {
+  Button,
+  IconAddCircle,
+  IconTrashcan,
+  IconWarning,
+  IconDetails,
+  IconShare,
+  IconAddCircleFilled,
+  IconCloseCircleFilled,
+  H4,P,
+  Modal, Dialog,
+  List, SingleLineListItem,
+  theme
+ } from 'dracs';
+
+ const buttonSpacing = {
+   margin: "8px"
+ };
+
+ const buttonIconSpacing = {
+   margin: "-4px 4px 0 0"
+ }
+
+ const iconSpanStyle = {
+   display: "flex",
+   flex: "1 1 auto",
+   justifyContent: "center",
+   alignItems: "center",
+ };
+
 
 import authHelper from '../helpers/authHelper';
 import ddsClient from '../helpers/ddsClient';
@@ -27,7 +56,6 @@ class ManageKey extends Component {
     this.notifyClipboardCopy = this.notifyClipboardCopy.bind(this);
     this.state = {
       hasError: false,
-      errorMessage: null,
       needsDeletionConfirmation: false,
       needsRegenerationConfirmation: false,
       keyCopiedToClipboard: false
@@ -128,7 +156,7 @@ class ManageKey extends Component {
 
   acknowlegeException() {
     if (this.refs.manage_key_rendered) {
-      this.setState({hasError: false, errorMessage: null});
+      this.setState({hasError: false, errorMessage: undefined});
     }
   }
 
@@ -154,7 +182,11 @@ class ManageKey extends Component {
   }
 
   render() {
-    let apiProblemNotification = <Modal active={this.state.hasError}>
+    let apiProblemNotification = <Modal
+      id="key_api_problem_notification"
+      active={this.state.hasError}
+      onEscKeyDown={this.acknowlegeException}
+    >
       <H4>A Problem has occurred</H4>
       <P>{JSON.stringify(this.state.errorMessage)}</P>
       <Button onClick={this.acknowlegeException} label="OK" />
@@ -164,12 +196,24 @@ class ManageKey extends Component {
       return (
         <div className="item-row" ref="manage_key_rendered">
           {apiProblemNotification}
-          <IconAddCircle size={20} color="#7ED321" /><Button id="generate_user_api_key" onClick={this.generateUserApiKey} label="Generate Key" type="raised" autoFocus />
+          <Button
+            id="generate_user_api_key"
+            onClick={this.generateUserApiKey}
+            label={
+              <span style={iconSpanStyle}>
+                <IconAddCircle style={iconSpanStyle} size={20} color="#7ED321" />Generate Key
+              </span>
+            }
+            style={buttonSpacing}
+            type="raised"
+            autoFocus />
         </div>
       )
     }
     else {
-      let deletionConfirmationDialog = <Dialog active={this.state.needsDeletionConfirmation}
+      let deletionConfirmationDialog = <Dialog
+        id="deletion_confirmation_dialog"
+        active={this.state.needsDeletionConfirmation}
         title="Warning, This is a Destructive Action"
         actions={[
           {label: 'Cancel', onClick: this.cancelKeyDestruction},
@@ -178,7 +222,9 @@ class ManageKey extends Component {
       >
         <P>All software agents which use this key will stop working!"</P>
       </Dialog>;
-      let regenerationConfirmationDialog = <Dialog active={this.state.needsRegenerationConfirmation}
+      let regenerationConfirmationDialog = <Dialog
+        id="regeneration_confirmation_dialog"
+        active={this.state.needsRegenerationConfirmation}
         title="Warning, This is a Destructive Action"
         actions={[
           {label: 'Cancel', onClick: this.cancelKeyRegeneration},
@@ -188,6 +234,7 @@ class ManageKey extends Component {
         <P>All software agents which use the original key will stop working!</P>
       </Dialog>;
       let keyCopiedNotification = <Modal
+        id="key_copied_notification"
         active={this.state.keyCopiedToClipboard}
         onEscKeyDown={this.acknowlegeKeyCopied}
       >
@@ -201,9 +248,37 @@ class ManageKey extends Component {
           {deletionConfirmationDialog}
           {regenerationConfirmationDialog}
           {keyCopiedNotification}
-          <span className="item-row"><IconTrashcan size={20} /><Button id="destroy_user_api_key" onClick={this.confirmApiKeyDeletion} label="Destroy" type="raised" autoFocus /></span>
-          <span className="item-row"><IconWarning size={20} /><Button id="regenerate_user_api_key" onClick={this.confirmApiKeyRegeneration} label="Regenerate" type="raised" autoFocus /></span>
-          <span className="item-row"><IconShare size={20} /><Clipboard id="access_user_api_key" option-text={() => this.props.userApiKey} onSuccess={this.notifyClipboardCopy}>Copy to Clipboard</Clipboard></span>
+
+            <Button
+              id="destroy_user_api_key"
+              onClick={this.confirmApiKeyDeletion}
+              label={
+                <span style={iconSpanStyle}>
+                  <IconCloseCircleFilled style={buttonIconSpacing} size={20} />Destroy
+                </span>
+              }
+              style={buttonSpacing}
+              type="raised"
+              autoFocus
+            />
+            <Button
+              style={buttonSpacing}
+              id="regenerate_user_api_key"
+              onClick={this.confirmApiKeyRegeneration}
+              label={<span style={iconSpanStyle}><IconAddCircleFilled style={buttonIconSpacing} size={20} />Regenerate</span>}
+              type="raised"
+            />
+            <Clipboard
+              className="clipboard-button"
+              style={buttonSpacing}
+              id="access_user_api_key"
+              option-text={() => this.props.userApiKey}
+              onSuccess={this.notifyClipboardCopy}
+            >
+             <span style={iconSpanStyle}>
+               <IconDetails style={buttonIconSpacing} size={20} color={theme.colors.action}  />Copy to Clipboard
+             </span>
+           </Clipboard>
         </div>
       )
     }
