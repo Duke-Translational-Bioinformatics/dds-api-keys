@@ -54,7 +54,7 @@ build_candidate() {
   raise "
   Building candidate ${candidate_image}
   "
-  docker build -t "${candidate_image}" .
+  docker build --pull -t "${candidate_image}" .
   if [ $? -gt 0 ]
   then
     raise "Problem in the Build"
