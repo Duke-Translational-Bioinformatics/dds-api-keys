@@ -4,6 +4,8 @@ stages:
 build:
   stage: build
   script:
+    - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
+    - chmod 400 .ssh/git_deploy_key
     - ./bin/ci/build
   tags:
     - docker-build
