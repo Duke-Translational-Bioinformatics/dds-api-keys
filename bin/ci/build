@@ -12,7 +12,7 @@ raise()
 }
 
 check_required_environment() {
-  required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME OAUTH_CLIENT_ID OAUTH_REDIRECT DDS_API_BASE_URL"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME"
 
   for reqvar in $required_env
   do
@@ -24,7 +24,20 @@ check_required_environment() {
   done
 }
 
-login() {
+check_required_deployment_environment() {
+  local required_deploymet_env="OAUTH_CLIENT_ID OAUTH_REDIRECT DDS_API_BASE_URL"
+
+  for reqvar in $required_deploymet_env
+  do
+    if [ -z ${!reqvar} ]
+    then
+      raise "missing ENVIRONMENT required for deployment ${reqvar}!"
+      return 1
+    fi
+  done
+}
+
+check_required_publish_environment() {
   [ ${DO_NOT_PUBLISH} ] && return
   local required_publish_env="CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
 
@@ -38,9 +51,16 @@ login() {
       return 1
     fi
   done
+}
+
+login() {
+  [ ${DO_NOT_PUBLISH} ] && return
+
+  check_required_publish_environment || return 1
   echo "
   logging into ${CI_REGISTRY}
   "
+  dry_run && return
   echo "${CI_REGISTRY_PASSWORD}" | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
 }
 
@@ -49,16 +69,25 @@ deployable() {
   echo "${target_environment}" | grep '\-deployment' > /dev/null
 }
 
+dry_run() {
+  [ ${DRY_RUN} ] && raise "skipping for dry run" && return
+  return 1
+}
+
 build_candidate() {
   local candidate_image="${1}-candidate:${2}"
   raise "
   Building candidate ${candidate_image}
   "
-  docker build --pull -t "${candidate_image}" .
-  if [ $? -gt 0 ]
+
+  if ! dry_run
   then
-    raise "Problem in the Build"
-    return 1
+    docker build --pull -t "${candidate_image}" .
+    if [ $? -gt 0 ]
+    then
+      raise "Problem in the Build"
+      return 1
+    fi
   fi
   publish_image "${candidate_image}"
 }
@@ -70,11 +99,15 @@ build_deployable() {
   raise "
   Building ${original_base_image} deployable ${deployable_image} FROM ${candidate_image}
   "
-  cat Dockerfile.production | sed "s/FROM ${original_base_image}/FROM ${candidate_image}/" | docker build --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${deployable_image}" -
-  if [ $? -gt 0 ]
+  if ! dry_run
   then
-    raise "Problem in the Build"
-    return 1
+    # programmatically override the FROM
+    sed "s/FROM ${original_base_image}/FROM ${candidate_image}/" Dockerfile.production | docker build --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${deployable_image}" -
+    if [ $? -gt 0 ]
+    then
+      raise "Problem in the Build"
+      return 1
+    fi
   fi
   publish_image "${deployable_image}"
 }
@@ -86,21 +119,30 @@ publish_image() {
   echo "
   tagging ${image} as ${publishable_image}
   "
-  docker tag "${image}" "${publishable_image}"
-  if [ $? -gt 0 ]
+  if ! dry_run
   then
-    raise "Problem Tagging"
-    return 1
+    docker tag "${image}" "${publishable_image}"
+    if [ $? -gt 0 ]
+    then
+      raise "Problem Tagging"
+      return 1
+    fi
   fi
   echo "
   pushing image to gitlab registry
   "
+
+  dry_run && return
   docker push "${publishable_image}"
 }
 
 run_main() {
-  check_required_environment || return 1
-  login || return 1
+  check_required_environment || exit 1
+  login || exit 1
+  if deployable "${CI_COMMIT_REF_SLUG}"
+  then
+    check_required_deployment_environment || exit 1
+  fi
 
   environment=$(echo "${CI_COMMIT_REF_SLUG}" | sed "s/\-deployment.*//" | sed "s/\_/\-/g")
   application=$(echo "${CI_PROJECT_NAME}" | sed "s/\_/\-/g")
