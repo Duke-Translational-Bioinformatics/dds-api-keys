@@ -1,7 +1,8 @@
 #!/bin/bash
-# This script builds the nodejs image for the application
-# with its devDependencies as ${application}-candidate:${environment}
-# so that it can be used for testing in later pipeline stages
+# This script builds the ${application}:${environment}
+# production ready image from the image built from build.nodejs,
+# which is pruned of all devDependencies, and only includes the
+# express application, dist, and node_modules.
 raise()
 {
   echo "${1}" >&2
@@ -15,6 +16,20 @@ check_required_environment() {
     if [ -z ${!reqvar} ]
     then
       raise "missing ENVIRONMENT ${reqvar}!"
+      return 1
+    fi
+  done
+}
+
+check_required_deployment_environment() {
+  local environment="${1}"
+  local required_deploymet_env="${environment}_OAUTH_CLIENT_ID ${environment}_OAUTH_REDIRECT ${environment}_DDS_API_BASE_URL"
+
+  for reqvar in $required_deploymet_env
+  do
+    if [ -z ${!reqvar} ]
+    then
+      raise "missing ENVIRONMENT required for deployment ${reqvar}!"
       return 1
     fi
   done
@@ -47,27 +62,39 @@ login() {
   echo "${CI_REGISTRY_PASSWORD}" | docker login -u ${CI_REGISTRY_USER} --password-stdin ${CI_REGISTRY}
 }
 
+deployable() {
+  local target_environment="${1}"
+  echo "${target_environment}" | grep '\-deployment' > /dev/null
+}
+
 dry_run() {
   [ ${DRY_RUN} ] && raise "skipping for dry run" && return
   return 1
 }
 
-build_candidate() {
+build_deployable() {
+  raise "running build_deployable"
+  local original_base_image="${1}"
   local candidate_image="${1}-candidate:${2}"
+  if [ ${CI_REGISTRY_IMAGE} ]
+  then
+    candidate_image="${CI_REGISTRY_IMAGE}/${1}-candidate:${2}"
+  fi
+  local deployable_image="${1}:${2}"
   raise "
-  Building candidate ${candidate_image}
+  Building ${original_base_image} deployable ${deployable_image} FROM ${candidate_image}
   "
-
   if ! dry_run
   then
-    docker build --pull -t "${candidate_image}" .
+    # programmatically override the FROM
+    sed "s/FROM ${original_base_image}/FROM ${candidate_image}/" Dockerfile.production | docker build --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${deployable_image}" -
     if [ $? -gt 0 ]
     then
       raise "Problem in the Build"
       return 1
     fi
   fi
-  publish_image "${candidate_image}"
+  publish_image "${deployable_image}"
 }
 
 publish_image() {
@@ -96,12 +123,20 @@ publish_image() {
 
 run_main() {
   check_required_environment || exit 1
+  local environment=$(echo "${CI_COMMIT_REF_SLUG}" | sed "s/\-deployment.*//" | sed "s/\_/\-/g")
+  local application=$(echo "${CI_PROJECT_NAME}" | sed "s/\_/\-/g")
+
+  if deployable "${CI_COMMIT_REF_SLUG}"
+  then
+    check_required_deployment_environment "${environment}" || exit 1
+  else
+    raise "build_deployment skipping non deployable environment ${CI_COMMIT_REF_SLUG}"
+    exit
+  fi
   login || exit 1
 
-  environment=$(echo "${CI_COMMIT_REF_SLUG}" | sed "s/\-deployment.*//" | sed "s/\_/\-/g")
-  application=$(echo "${CI_PROJECT_NAME}" | sed "s/\_/\-/g")
 
-  build_candidate "${application}" "${environment}" || return 1
+  build_deployable "${application}" "${environment}" || return 1
   raise "ALL COMPLETE"
 }
 
