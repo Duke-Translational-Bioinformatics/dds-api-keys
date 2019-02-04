@@ -44,8 +44,6 @@ login() {
   logging into ${CI_REGISTRY}
   "
   dry_run && return
-  docker --version
-  docker login --help
   docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 }
 
