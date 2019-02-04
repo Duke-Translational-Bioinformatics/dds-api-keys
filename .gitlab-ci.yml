@@ -1,0 +1,9 @@
+stages:
+  - build
+
+build:
+  stage: build
+  script:
+    - ./bin/ci/build
+  tags:
+    - docker-build
