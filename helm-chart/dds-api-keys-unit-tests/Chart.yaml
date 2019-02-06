@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Run Unit Tests in Kubernetes
+name: dds-api-keys-unit-tests
+version: 0.0.1

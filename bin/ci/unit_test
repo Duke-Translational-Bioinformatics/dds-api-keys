@@ -1,0 +1,49 @@
+#!/bin/bash
+
+environment=$(echo "${CI_COMMIT_REF_SLUG}" | sed "s/\-deployment.*//" | sed "s/\_/\-/g")
+application=$(echo "${CI_PROJECT_NAME}" | sed "s/\_/\-/g")
+cluster_namespace="${application}"
+if [ ${LOCAL_NAMESPACE} ]
+then
+  cluster_namespace="${LOCAL_NAMESPACE}"
+fi
+
+echo "
+image:
+  repository: ${CI_REGISTRY_IMAGE}/${application}-candidate
+  pullPolicy: Always
+  pullSecret: ${application}-registry-credentials
+environment: ${environment}
+" > ${application}-${environment}.yml
+success=0
+
+echo "installing unit test pod and waiting 90 seconds for it to start" >&2
+helm install --name ${CI_COMMIT_SHA} --values ${application}-${environment}.yml helm-chart/${application}-unit-tests --wait --timeout 90
+success=$?
+if [ ${success} -eq 0 ]
+then
+  export POD_NAME=$(kubectl get pods --namespace ${cluster_namespace} -l "app.kubernetes.io/name=${application}-unit-tests,app.kubernetes.io/instance=${CI_COMMIT_SHA}" -o jsonpath='{.items[0].metadata.name}')
+  success=$?
+  [ $success -gt 0 ] && echo "could not get POD NAME" >&2
+  if [ $success -eq 0 ]
+  then
+    kubectl logs -f ${POD_NAME}
+    success=$?
+    [ $success -gt 0 ] && echo "could not follow logs" >&2
+    if [ $success -eq 0 ]
+    then
+      exit_status=$(kubectl get pod/${POD_NAME} -o jsonpath='{.status.containerStatuses[0].state.terminated.exitCode}')
+      success=$?
+      [ $success -gt 0 ] &&  echo "could not get pod exit status" >&2
+      if [ $success -eq 0 ]
+      then
+        success=${exit_status}
+      fi
+    fi
+  fi
+fi
+
+[ $NO_CLEANUP ] && exit ${success}
+echo "cleaning up chart"
+helm delete --purge ${CI_COMMIT_SHA}
+exit ${success}
