@@ -123,12 +123,10 @@ publish_image() {
 
 run_main() {
   check_required_environment || exit 1
-  local environment=$(echo "${CI_COMMIT_REF_SLUG}" | sed "s/\-deployment.*//" | sed "s/\_/\-/g")
-  local application=$(echo "${CI_PROJECT_NAME}" | sed "s/\_/\-/g")
 
   if deployable "${CI_COMMIT_REF_SLUG}"
   then
-    check_required_deployment_environment "${environment}" || exit 1
+    check_required_deployment_environment "${CI_COMMIT_REF_SLUG}" || exit 1
   else
     raise "build_deployment skipping non deployable environment ${CI_COMMIT_REF_SLUG}"
     exit
@@ -136,7 +134,7 @@ run_main() {
   login || exit 1
 
 
-  build_deployable "${application}" "${environment}" || return 1
+  build_deployable "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1
   raise "ALL COMPLETE"
 }
 
