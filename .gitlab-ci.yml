@@ -19,7 +19,7 @@ jest:
   variables:
     GIT_STRATEGY: none
   script:
-    - pwd
+    - cd /opt/app-root/src
     - npm run ci_test
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts: # these are saved and available to other jobs in this script even when container is removed
