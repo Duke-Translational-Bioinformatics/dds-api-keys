@@ -16,7 +16,10 @@ build:
 jest:
   stage: test
   image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
+  variables:
+    GIT_STRATEGY: none
   script:
+    - pwd
     - npm run ci_test
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts: # these are saved and available to other jobs in this script even when container is removed
