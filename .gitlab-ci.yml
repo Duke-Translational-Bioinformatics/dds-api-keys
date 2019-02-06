@@ -1,5 +1,7 @@
 stages:
   - build
+  - test
+  - publish
 
 build:
   stage: build
@@ -10,3 +12,30 @@ build:
     - ./bin/ci/build
   tags:
     - docker-build
+
+jest:
+  stage: test
+  image: ${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
+  script:
+    - npm run ci_test
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts: # these are saved and available to other jobs in this script even when container is removed
+    when: always # see docs for possible values
+    paths:
+      - coverage/ # where to save
+  tags:
+    - docker
+
+pages:
+  tags:
+    - docker
+  stage: publish
+  dependencies:
+    - jest
+  script: # move all artifacts from previous jobs to public folder
+    - mv coverage/ public/
+  artifacts:
+    when: always
+    paths:
+      - public
+    expire_in: 30 days
