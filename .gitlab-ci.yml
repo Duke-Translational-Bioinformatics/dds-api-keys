@@ -15,7 +15,7 @@ build:
 
 jest:
   stage: test
-  image: ${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
+  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
   script:
     - npm run ci_test
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
