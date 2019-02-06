@@ -21,6 +21,7 @@ jest:
   script:
     - cd /opt/app-root/src
     - npm run ci_test
+    - mv coverage ${CI_PROJECT_DIR}
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts: # these are saved and available to other jobs in this script even when container is removed
     when: always # see docs for possible values
