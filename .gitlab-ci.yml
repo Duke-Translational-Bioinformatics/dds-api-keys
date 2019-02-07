@@ -45,8 +45,10 @@ security_audit:
   variables:
     GIT_STRATEGY: none
   script:
-    - cd /opt/app-root/src
-    - npm audit
+    - cd ${APP_ROOT}
+    - npm install npm@latest -g --prefix ${APP_ROOT}/.node_modules
+    - ${APP_ROOT}/.node_modules/bin/npm i --package-lock-only
+    - ${APP_ROOT}/.node_modules/bin/npm audit
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
   allow_failure: true

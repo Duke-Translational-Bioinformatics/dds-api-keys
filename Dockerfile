@@ -2,6 +2,7 @@ FROM node:8-alpine
 
 EXPOSE 8080
 ENV APP_ROOT=/opt/app-root/src
+ENV HOME=/opt/app-root/src
 ARG NODE_ENV=development
 
 RUN mkdir -p ${APP_ROOT} && \
