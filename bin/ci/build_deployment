@@ -87,6 +87,7 @@ build_deployable() {
   if ! dry_run
   then
     # programmatically override the FROM
+    sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" Dockerfile.production >&2
     sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" Dockerfile.production | docker build --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${deployable_image}" -
     if [ $? -gt 0 ]
     then
