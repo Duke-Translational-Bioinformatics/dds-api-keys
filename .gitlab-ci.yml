@@ -63,7 +63,6 @@ pages:
     - jest
   script: # move all artifacts from previous jobs to public folder
     - mv coverage/ public/
-    - echo "PAGES AVAILABLE AT ${CI_PAGES_URL}"
   artifacts:
     when: always
     paths:
@@ -74,6 +73,7 @@ pages:
 
 build_deployment:
   stage: deploy
+  image: docker:stable
   script:
     - ./bin/ci/build_deployment
   only:
