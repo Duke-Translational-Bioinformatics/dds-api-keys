@@ -2,12 +2,12 @@ stages:
   - build
   - test
   - publish
+  - deploy
 
 build:
   stage: build
   script:
     - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
-    - id && ls -l .ssh
     - chmod 400 .ssh/config .ssh/git_deploy_key
     - ./bin/ci/build
   tags:
@@ -69,3 +69,15 @@ pages:
     paths:
       - public
     expire_in: 30 days
+  only:
+    - master
+
+build_deployment:
+  stage: deploy
+  script:
+    - ./bin/ci/build_deployment
+  only:
+    - master
+    - /.*-deployment-v.*/
+  tags:
+    - docker-build
