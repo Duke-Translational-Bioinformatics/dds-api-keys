@@ -64,7 +64,7 @@ login() {
 
 deployable() {
   local target_environment="${1}"
-  echo "${target_environment}" | grep '\-deployment' > /dev/null
+  echo "${target_environment}" | grep 'master\|\-deployment' > /dev/null
 }
 
 dry_run() {
