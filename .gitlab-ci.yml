@@ -16,6 +16,12 @@ build:
 jest:
   stage: test
   image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
+  # by default, gitlab ci clones your code out into a build directory
+  # that needs to then be initialized with npm.
+  # Since we are testing a candidate image that already has the required modules
+  # installed with npm install, we do not need to clone into the build directory.
+  # Instead, we need to change into the WORKDIR for the image before we run the
+  # tests, and then copy any artifacts back to the original CI_PROJECT_DIR
   variables:
     GIT_STRATEGY: none
   script:
@@ -29,6 +35,24 @@ jest:
       - coverage/ # where to save
   tags:
     - docker
+
+# this should be turned into a bot that fixes and creates a merge request
+security_audit:
+  tags:
+    - docker
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd /opt/app-root/src
+    - npm install npm@latest -g
+    - npm i --package-lock-only
+    - npm audit
+  # temporary until dracs is updated and we can upgrade react, etc
+  # as audit can't ignore dev dependencies
+  allow_failure: true
+  only:
+    - master
 
 pages:
   tags:
