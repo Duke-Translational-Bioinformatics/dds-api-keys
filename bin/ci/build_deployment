@@ -89,6 +89,8 @@ build_deployable() {
   "
   if ! dry_run
   then
+    echo "IMAGES:"
+    docker images
     # programmatically override the FROM
     local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
     local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
@@ -111,8 +113,9 @@ build_deployable() {
       raise "Problem in the Build"
       return 1
     fi
+    cp ${CI_PROJECT_DIR}/Dockerfile.production src/Dockerfile
     cd src
-    docker build -f ${CI_PROJECT_DIR}/Dockerfile.production -t ${deployable_image} .
+    docker build -t ${deployable_image} .
     if [ $? -gt 0 ]
     then
       raise "Problem in the Build"
@@ -131,7 +134,7 @@ publish_image() {
   [ ${DO_NOT_PUBLISH} ] && return
   local image="${1}"
   local publishable_image="${CI_REGISTRY_IMAGE}/${image}"
-  echo "
+  raise "
   tagging ${image} as ${publishable_image}
   "
   if ! dry_run
@@ -143,10 +146,9 @@ publish_image() {
       return 1
     fi
   fi
-  echo "
+  raise "
   pushing image to gitlab registry
   "
-
   dry_run && return
   docker push "${publishable_image}"
 }
@@ -171,8 +173,5 @@ run_main() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   run_main
-  if [ $? -gt 0 ]
-  then
-    exit 1
-  fi
+  exit $?
 fi
