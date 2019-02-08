@@ -72,6 +72,14 @@ dry_run() {
   return 1
 }
 
+cleanup_artifacts() {
+  local intermediate_image="${1}"
+  local extract_name="${2}"
+  docker stop ${extract_name}
+  docker rm -v ${extract_name}
+  docker rmi ${intermediate_image}
+}
+
 build_deployable() {
   local original_base_image="${1}"
   local candidate_image="${1}-candidate:${2}"
@@ -89,8 +97,7 @@ build_deployable() {
   "
   if ! dry_run
   then
-    echo "IMAGES:"
-    docker images
+    cleanup_artifacts
     # programmatically override the FROM
     local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
     local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
@@ -116,16 +123,15 @@ build_deployable() {
     cp ${CI_PROJECT_DIR}/Dockerfile.production src/Dockerfile
     cd src
     docker build -t ${deployable_image} .
-    if [ $? -gt 0 ]
+    build_exit=$?
+    cd ..
+    rm -rf src
+    cleanup_artifacts
+    if [ $build_exit -gt 0 ]
     then
       raise "Problem in the Build"
       return 1
     fi
-    cd ..
-    rm -rf src
-    docker stop ${extract_name}
-    docker rm -v ${extract_name}
-    docker rmi ${intermediate_image}
   fi
   publish_image "${deployable_image}"
 }
@@ -164,7 +170,6 @@ run_main() {
     exit
   fi
   login || exit 1
-
 
   build_deployable "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1
   raise "ALL COMPLETE"
