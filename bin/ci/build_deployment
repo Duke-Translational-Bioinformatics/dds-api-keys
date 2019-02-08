@@ -97,7 +97,7 @@ build_deployable() {
   "
   if ! dry_run
   then
-    cleanup_artifacts
+    cleanup_artifacts "${intermediate_image}" "${extract_name}"
     # programmatically override the FROM
     local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
     local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
@@ -126,7 +126,7 @@ build_deployable() {
     build_exit=$?
     cd ..
     rm -rf src
-    cleanup_artifacts
+    cleanup_artifacts "${intermediate_image}" "${extract_name}"
     if [ $build_exit -gt 0 ]
     then
       raise "Problem in the Build"
