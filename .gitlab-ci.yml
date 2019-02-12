@@ -73,7 +73,6 @@ pages:
 
 build_deployment:
   stage: deploy
-  image: docker:stable
   script:
     - ./bin/ci/build_deployment
   only:
@@ -81,3 +80,14 @@ build_deployment:
     - /.*-deployment-v.*/
   tags:
     - docker-build
+
+scan_deployment:
+  stage: deploy
+  script:
+    - ./bin/ci/scan
+  only:
+    - master
+    - /.*-deployment-v.*/
+  tags:
+    - docker-build
+  
