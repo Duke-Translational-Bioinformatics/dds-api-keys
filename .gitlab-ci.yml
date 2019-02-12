@@ -28,26 +28,8 @@ jest:
     - npm run ci_test
     - mv coverage ${CI_PROJECT_DIR}
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-  artifacts: # these are saved and available to other jobs in this script even when container is removed
-    when: always # see docs for possible values
-    paths:
-      - coverage/ # where to save
   tags:
     - docker
-
-pages:
-  tags:
-    - docker
-  stage: test
-  script: # move all artifacts from previous jobs to public folder
-    - mv coverage/ public/
-  artifacts:
-    when: always
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - master
 
 # this should be turned into a bot that fixes and creates a merge request
 security_audit:
