@@ -39,8 +39,6 @@ pages:
   tags:
     - docker
   stage: test
-  dependencies:
-    - jest
   script: # move all artifacts from previous jobs to public folder
     - mv coverage/ public/
   artifacts:
