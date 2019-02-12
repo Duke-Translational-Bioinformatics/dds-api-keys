@@ -76,7 +76,7 @@ run_main() {
   if deployable "${CI_COMMIT_REF_SLUG}"
   then
     login || exit 1
-    scan "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1
+    scan_image "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1
     raise "ALL COMPLETE"
   else
     raise "build_deployment skipping non deployable environment ${CI_COMMIT_REF_SLUG}"
