@@ -80,6 +80,60 @@ cleanup_artifacts() {
   docker rmi ${intermediate_image}
 }
 
+build_intermediate_image() {
+  local original_base_image="${1}"
+  local candidate_image="${2}"
+  local intermediate_image="${3}"
+  local environment="${4}"
+
+  # programmatically override the FROM
+  local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
+  local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
+  local dds_api_base_url_var="${environment}_DDS_API_BASE_URL"
+  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg OAUTH_CLIENT_ID="${!oauth_client_id_var}" --build-arg OAUTH_REDIRECT="${!oauth_redirect_var}" --build-arg DDS_API_BASE_URL="${!dds_api_base_url_var}" -t "${intermediate_image}" -
+  if [ $? -gt 0 ]
+  then
+    raise "Problem in the Build"
+    return 1
+  fi
+}
+
+build_deployable_image() {
+  local intermediate_image="${1}"
+  local extract_name="${2}"
+  local deployable_image="${3}"
+
+  docker container create --name ${extract_name} ${intermediate_image}
+  if [ $? -gt 0 ]
+  then
+    raise "Problem in the Build"
+    return 1
+  fi
+
+  docker container cp ${extract_name}:/opt/app-root/src .
+  if [ $? -gt 0 ]
+  then
+    cleanup_artifacts "${intermediate_image}" "${extract_name}"
+    raise "Problem in the Build"
+    return 1
+  fi
+
+  cp ${CI_PROJECT_DIR}/Dockerfile.production src/Dockerfile
+  cd src
+  docker build -t ${deployable_image} .
+  build_exit=$?
+
+  cd ..
+  rm -rf src
+  cleanup_artifacts "${intermediate_image}" "${extract_name}"
+  if [ $build_exit -gt 0 ]
+  then
+    raise "Problem in the Build"
+    return 1
+  fi
+  return
+}
+
 build_deployable() {
   local original_base_image="${1}"
   local candidate_image="${1}-candidate:${2}"
@@ -98,40 +152,8 @@ build_deployable() {
   if ! dry_run
   then
     cleanup_artifacts "${intermediate_image}" "${extract_name}"
-    # programmatically override the FROM
-    local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
-    local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
-    local dds_api_base_url_var="${environment}_DDS_API_BASE_URL"
-    sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg OAUTH_CLIENT_ID="${!oauth_client_id_var}" --build-arg OAUTH_REDIRECT="${!oauth_redirect_var}" --build-arg DDS_API_BASE_URL="${!dds_api_base_url_var}" -t "${intermediate_image}" -
-    if [ $? -gt 0 ]
-    then
-      raise "Problem in the Build"
-      return 1
-    fi
-    docker container create --name ${extract_name} ${intermediate_image}
-    if [ $? -gt 0 ]
-    then
-      raise "Problem in the Build"
-      return 1
-    fi
-    docker container cp ${extract_name}:/opt/app-root/src .
-    if [ $? -gt 0 ]
-    then
-      raise "Problem in the Build"
-      return 1
-    fi
-    cp ${CI_PROJECT_DIR}/Dockerfile.production src/Dockerfile
-    cd src
-    docker build -t ${deployable_image} .
-    build_exit=$?
-    cd ..
-    rm -rf src
-    cleanup_artifacts "${intermediate_image}" "${extract_name}"
-    if [ $build_exit -gt 0 ]
-    then
-      raise "Problem in the Build"
-      return 1
-    fi
+    build_intermediate_image "${original_base_image}" "${candidate_image}" "${intermediate_image}" "${environment}" || return 1
+    build_deployable_image "${intermediate_image}" "${extract_name}" "${deployable_image}" || return 1
   fi
   publish_image "${deployable_image}"
 }

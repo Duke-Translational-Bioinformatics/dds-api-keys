@@ -54,7 +54,7 @@ scan_image() {
   fi
 
   raise "Scanning ${deployable_image} with ${claire_address} ${claire_image}"
-  raise "using whitelist at ${CI_PROJECT_DIR}/whitelist.yaml"
+  raise "using whitelist at ${CI_PROJECT_DIR}/claire_whitelist.yaml"
 
   if ! dry_run
   then
@@ -65,7 +65,7 @@ scan_image() {
     -e CLAIR_OUTPUT=High \
     -e CLAIR_THRESHOLD=0 \
     -e WHITELIST_FILE=/data/whitelist.yaml \
-    -v ${CI_PROJECT_DIR}/whitelist.yaml:/data/whitelist.yaml \
+    -v ${CI_PROJECT_DIR}/claire_whitelist.yaml:/data/whitelist.yaml \
     ${claire_image} ${deployable_image}
   fi
 }
