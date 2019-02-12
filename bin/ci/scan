@@ -8,7 +8,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
 
   for reqvar in $required_env
   do
@@ -18,6 +18,12 @@ check_required_environment() {
       return 1
     fi
   done
+
+  if [ ! -f "${CI_PROJECT_DIR}/claire.whitelist.yml" ]
+  then
+    raise "missing whitelist file ${CI_PROJECT_DIR}/claire.whitelist.yml"
+    return 1
+  fi
 }
 
 login() {
