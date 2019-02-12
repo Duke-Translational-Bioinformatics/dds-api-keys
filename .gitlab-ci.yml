@@ -2,7 +2,6 @@ stages:
   - build
   - test
   - publish
-  - deploy
 
 build:
   stage: build
@@ -36,6 +35,22 @@ jest:
   tags:
     - docker
 
+pages:
+  tags:
+    - docker
+  stage: test
+  dependencies:
+    - jest
+  script: # move all artifacts from previous jobs to public folder
+    - mv coverage/ public/
+  artifacts:
+    when: always
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - master
+
 # this should be turned into a bot that fixes and creates a merge request
 security_audit:
   tags:
@@ -55,24 +70,8 @@ security_audit:
   only:
     - master
 
-pages:
-  tags:
-    - docker
-  stage: publish
-  dependencies:
-    - jest
-  script: # move all artifacts from previous jobs to public folder
-    - mv coverage/ public/
-  artifacts:
-    when: always
-    paths:
-      - public
-    expire_in: 30 days
-  only:
-    - master
-
 build_deployment:
-  stage: deploy
+  stage: publish
   script:
     - ./bin/ci/build_deployment
   only:
@@ -82,7 +81,7 @@ build_deployment:
     - docker-build
 
 scan_deployment:
-  stage: deploy
+  stage: publish
   script:
     - ./bin/ci/scan
   only:
@@ -90,4 +89,3 @@ scan_deployment:
     - /.*-deployment-v.*/
   tags:
     - docker-build
-  
