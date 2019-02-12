@@ -1,5 +1,8 @@
 FROM node:8-alpine
 
+ARG CI_COMMIT_SHA=unspecified
+LABEL git_commit_sha=${CI_COMMIT_SHA}
+
 EXPOSE 8080
 ENV APP_ROOT=/opt/app-root/src
 ENV HOME=/opt/app-root/src

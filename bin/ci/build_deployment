@@ -9,7 +9,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_COMMIT_SHORT_SHA CI_COMMIT_SHA"
 
   for reqvar in $required_env
   do
@@ -90,7 +90,7 @@ build_intermediate_image() {
   local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
   local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
   local dds_api_base_url_var="${environment}_DDS_API_BASE_URL"
-  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg OAUTH_CLIENT_ID="${!oauth_client_id_var}" --build-arg OAUTH_REDIRECT="${!oauth_redirect_var}" --build-arg DDS_API_BASE_URL="${!dds_api_base_url_var}" -t "${intermediate_image}" -
+  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg CI_COMMIT_SHA --build-arg OAUTH_CLIENT_ID="${!oauth_client_id_var}" --build-arg OAUTH_REDIRECT="${!oauth_redirect_var}" --build-arg DDS_API_BASE_URL="${!dds_api_base_url_var}" -t "${intermediate_image}" -
   if [ $? -gt 0 ]
   then
     raise "Problem in the Build"
@@ -120,7 +120,7 @@ build_deployable_image() {
 
   cp ${CI_PROJECT_DIR}/Dockerfile.production src/Dockerfile
   cd src
-  docker build -t ${deployable_image} .
+  docker build --build-arg CI_COMMIT_SHA -t ${deployable_image} .
   build_exit=$?
 
   cd ..
@@ -136,7 +136,7 @@ build_deployable_image() {
 
 build_deployable() {
   local original_base_image="${1}"
-  local candidate_image="${1}-candidate:${2}"
+  local candidate_image="${1}-candidate-${CI_COMMIT_SHORT_SHA}:${2}"
   local intermediate_image="${1}-intermediate:${2}"
   local extract_name="${1}-${2}-extract"
   local environment="${2}"

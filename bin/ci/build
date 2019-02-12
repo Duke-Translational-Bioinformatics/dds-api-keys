@@ -8,7 +8,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_COMMIT_SHA CI_COMMIT_SHORT_SHA"
 
   for reqvar in $required_env
   do
@@ -53,14 +53,14 @@ dry_run() {
 }
 
 build_candidate() {
-  local candidate_image="${1}-candidate:${2}"
+  local candidate_image="${1}-candidate-${CI_COMMIT_SHORT_SHA}:${2}"
   raise "
   Building candidate ${candidate_image}
   "
 
   if ! dry_run
   then
-    docker build --pull -t "${candidate_image}" .
+    docker build --build-arg CI_COMMIT_SHA --pull -t "${candidate_image}" .
     if [ $? -gt 0 ]
     then
       raise "Problem in the Build"

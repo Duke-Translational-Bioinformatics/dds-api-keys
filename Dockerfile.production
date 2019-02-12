@@ -1,5 +1,8 @@
 FROM node:8-alpine
 
+ARG CI_COMMIT_SHA=unspecified
+LABEL git_commit_sha=${CI_COMMIT_SHA}
+
 USER 1001
 ENV APP_ROOT=/opt/app-root/src
 ENV NODE_ENV=production

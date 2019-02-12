@@ -56,7 +56,6 @@ build_deployment:
     - ./bin/ci/build_deployment
   only:
     - master
-    - /.*-deployment-v.*/
   tags:
     - docker-build
 
