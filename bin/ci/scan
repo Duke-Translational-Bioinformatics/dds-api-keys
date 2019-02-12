@@ -64,8 +64,8 @@ scan_image() {
     -e CLAIR_ADDR=${claire_address} \
     -e CLAIR_OUTPUT=High \
     -e CLAIR_THRESHOLD=0 \
-    -e WHITELIST_FILE=/data/whitelist.yaml \
-    -v ${CI_PROJECT_DIR}/claire_whitelist.yaml:/data/whitelist.yaml \
+    -e WHITELIST_FILE=/data/claire_whitelist.yaml \
+    -v ${CI_PROJECT_DIR}/claire_whitelist.yaml:/data/claire_whitelist.yaml \
     ${claire_image} ${deployable_image}
   fi
 }
