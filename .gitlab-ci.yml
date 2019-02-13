@@ -68,3 +68,12 @@ scan_deployment:
     - /.*-deployment-v.*/
   tags:
     - docker-build
+
+deploy_tag:
+  stage: publish
+  script:
+    - echo ${CI_COMMIT_SHA}
+  only:
+    - /.*-deployment-v.*/
+  tags:
+    - docker
