@@ -41,7 +41,7 @@ security_audit:
   tags:
     - docker
   stage: test
-  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
+  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
   variables:
     GIT_STRATEGY: none
   script:
