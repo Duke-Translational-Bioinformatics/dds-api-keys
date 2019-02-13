@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - publish
+  - deploy
 
 build:
   stage: build
@@ -9,6 +10,8 @@ build:
     - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
     - chmod 400 .ssh/config .ssh/git_deploy_key
     - ./bin/ci/build
+  only:
+    - branches
   tags:
     - docker-build
 
@@ -28,6 +31,8 @@ jest:
     - npm run ci_test
     - mv coverage ${CI_PROJECT_DIR}
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  only:
+    - branches
   tags:
     - docker
 
@@ -70,10 +75,11 @@ scan_deployment:
     - docker-build
 
 deploy_tag:
-  stage: publish
+  stage: deploy
   script:
     - echo ${CI_COMMIT_SHA}
   only:
+    - tags
     - /.*-deployment-v.*/
   tags:
     - docker
