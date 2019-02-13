@@ -9,7 +9,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_COMMIT_SHORT_SHA CI_COMMIT_SHA"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_COMMIT_SHA"
 
   for reqvar in $required_env
   do
@@ -136,7 +136,7 @@ build_deployable_image() {
 
 build_deployable() {
   local original_base_image="${1}"
-  local candidate_image="${1}-candidate-${CI_COMMIT_SHORT_SHA}:${2}"
+  local candidate_image="${1}-candidate-${CI_COMMIT_SHA}:${2}"
   local intermediate_image="${1}-intermediate:${2}"
   local extract_name="${1}-${2}-extract"
   local environment="${2}"
