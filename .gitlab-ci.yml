@@ -17,7 +17,7 @@ build:
 
 jest:
   stage: test
-  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate:${CI_COMMIT_REF_SLUG}
+  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
   # by default, gitlab ci clones your code out into a build directory
   # that needs to then be initialized with npm.
   # Since we are testing a candidate image that already has the required modules
