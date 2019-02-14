@@ -3,7 +3,7 @@ stages:
   - test
   - publish
   - check_security
-  - deploy
+  - deployment
 
 build:
   stage: build
@@ -79,14 +79,10 @@ scan_development_deployment_image:
     - docker-build
 
 deploy_development:
-  stage: deploy
+  stage: deployment
   image: $CI_REGISTRY/utility/docker-helm:latest
   script:
-    - pwd
-    - ls -l
-    - ls -l bin/ci
-    - cat bin/ci/orchestrate
-    - ./bin/ci/orchestrate
+    - bin/ci/scan
   environment:
     name: development
   only:
