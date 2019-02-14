@@ -81,7 +81,10 @@ scan_development_deployment_image:
 deploy_development:
   stage: deploy
   script:
-    - ./bin/ci/helm_deploy
+    - pwd
+    - ls -l
+    - ls -l bin/ci
+    - ./bin/ci/deploy
   environment:
     name: development
   only:
