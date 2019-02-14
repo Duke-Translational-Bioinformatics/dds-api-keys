@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/bin/sh
 echo "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA} with helm"

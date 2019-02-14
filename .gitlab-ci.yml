@@ -82,7 +82,8 @@ deploy_development:
   stage: deployment
   image: $CI_REGISTRY/utility/docker-helm:latest
   script:
-    - bin/ci/scan
+    - which bash
+    - ./bin/ci/orchestrate
   environment:
     name: development
   only:
