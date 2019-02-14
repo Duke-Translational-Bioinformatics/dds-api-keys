@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: {{ template "imagePullSecret" . }}
+kind: Secret
+metadata:
+  name: {{ template "dds-api-keys.fullname" . }}-pull
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
+type: kubernetes.io/dockerconfigjson

@@ -1,0 +1,33 @@
+# Default values for dds-api-keys.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+livenessProbeAddress: /alive_and_ready
+environment: CI_ENVIRONMENT_NAME
+
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+# Any of these values can be over-written when deploying the chart
+
+# the registry information used to create the image pull secret
+registry:
+  root: CI_REGISTRY
+  secret:
+    username: CI_DEPLOY_USER
+    password: CI_DEPLOY_PASS
+
+# the docker container image
+image:
+  repository: CI_REGISTRY_IMAGE/CI_PROJECT_NAME
+  tag: CI_COMMIT_SHA
+  pullPolicy: Always
+
+# the internal port number
+port:
+  name: app-port
+  number: 8080
+
+# type of service
+service:
+  type: ClusterIP

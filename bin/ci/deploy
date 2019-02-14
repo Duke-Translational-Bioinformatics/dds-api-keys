@@ -1,0 +1,153 @@
+#!/bin/sh
+raise()
+{
+  echo "${1}" >&2
+}
+
+check_required_environment() {
+  if [ -z ${CI_PROJECT_NAME} ]
+  then
+    raise "MISSING CI_PROJECT_NAME ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${CI_COMMIT_SHA} ]
+  then
+    raise "MISSING CI_COMMIT_SHA ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${CI_REGISTRY_IMAGE} ]
+  then
+    raise "MISSING CI_REGISTRY_IMAGE ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${CI_ENVIRONMENT_NAME} ]
+  then
+    raise "MISSING CI_ENVIRONMENT_NAME ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${HELM_TOKEN} ]
+  then
+    raise "MISSING HELM_TOKEN ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${HELM_USER} ]
+  then
+    raise "MISSING HELM_USER ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${PROJECT_NAMESPACE} ]
+  then
+    raise "MISSING PROJECT_NAMESPACE ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [ -z ${CLUSTER_SERVER} ]
+  then
+    raise "MISSING CLUSTER_SERVER ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
+  if [[ -z ${CI_DEPLOY_USER} ]]
+  then
+    raise "You must set a Deploy Token on your repository"
+    return 1
+  fi
+}
+
+deployable() {
+  local target_environment="${1}"
+  echo "${target_environment}" | grep 'development' > /dev/null
+}
+
+dry_run() {
+  [ ${DRY_RUN} ] && raise "skipping for dry run" && return
+  return 1
+}
+
+cluster_login() {
+  raise "${HELM_USER} in ${PROJECT_NAMESPACE}"
+  kubectl config set-cluster dhtskube --server="${CLUSTER_SERVER}" || return 1
+  kubectl config set-credentials "${HELM_USER}" --token="${HELM_TOKEN}" || return 1
+  kubectl config set-context ${PROJECT_NAMESPACE}-deploy  --cluster=dhtskube --namespace=${PROJECT_NAMESPACE} --user=${HELM_USER} || return 1
+  kubectl config use-context ${PROJECT_NAMESPACE}-deploy || return 1
+}
+
+init_helm() {
+  export TILLER_NAMESPACE=$PROJECT_NAMESPACE
+  export HELM_HOST=localhost:44134
+  # https://rimusz.net/tillerless-helm/
+  # run tiller locally instead of in the cluster
+  tiller --storage=secret &
+  helm init --client-only
+  helm repo update
+}
+
+install_template() {
+  helm template ${CI_PROJECT_DIR}/helm-chart/${APPLICATION_NAME} || return 1
+}
+
+deploy_template() {
+  helm upgrade --force --recreate-pods --debug \
+  --set registry.root=${CI_REGISTRY} \
+  --set registry.secret.username=${CI_DEPLOY_USER} \
+  --set registry.secret.password="${CI_DEPLOY_PASSWORD}" \
+  --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA}" \
+  --set image.tag="${CI_COMMIT_SHA}" \
+  --set environment="${CI_ENVIRONMENT_NAME}" \
+  --install ${CI_COMMIT_SHA} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
+}
+
+get_pods() {
+  kubectl get pods -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME}
+}
+
+watch_deployment() {
+  kubectl rollout status deployment/${CI_COMMIT_SHA}-${CI_PROJECT_NAME} -w
+  sleep 5
+  get_pods
+  # see what has been deployed
+  kubectl describe deployment -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME}
+  kubectl describe service -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME}
+  kubectl describe route -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME}
+}
+
+run_main() {
+  check_required_environment || return 1
+  if deployable "${CI_ENVIRONMENT_NAME}"
+  then
+    cluster_login
+    if [ $? -gt 0 ]
+    then
+      raise "could not login kubectl"
+      return 1
+    fi
+
+    init_helm
+    if [ $? -gt 0 ]
+    then
+      raise "could not initialize helm"
+      return 1
+    fi
+
+    raise "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA} with helm"
+    install_template
+    deploy_template
+    watch_deployment
+  else
+    raise "deploy skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
+  fi
+}
+
+# DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
+raise "${0} running"
+echo "${0}" | grep 'bin/ci/deploy' > /dev/null 2>&1
+if [ $? -eq 0 ]
+then
+  run_main
+fi

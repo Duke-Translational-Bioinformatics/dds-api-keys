@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dds-api-keys.fullname" . }}
+  labels:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: {{ .Values.port.name }}
+      port: {{ .Values.port.number }}
+      targetPort: {{ .Values.port.name }}
+      protocol: TCP
+  selector:
+    app: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
