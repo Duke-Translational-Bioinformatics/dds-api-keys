@@ -85,8 +85,8 @@ deploy_development:
     - pwd
     - ls -l
     - ls -l bin/ci
-    - cat bin/ci/deploy
-    - ./bin/ci/deploy
+    - cat bin/ci/orchestrate
+    - ./bin/ci/orchestrate
   environment:
     name: development
   only:
