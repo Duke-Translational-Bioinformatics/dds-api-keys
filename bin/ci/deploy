@@ -19,6 +19,16 @@ check_required_environment() {
   done
 }
 
+deployable() {
+  local target_environment="${1}"
+  echo "${target_environment}" | grep 'development' > /dev/null
+}
+
+dry_run() {
+  [ ${DRY_RUN} ] && raise "skipping for dry run" && return
+  return 1
+}
+
 run_main() {
   check_required_environment || exit 1
 
