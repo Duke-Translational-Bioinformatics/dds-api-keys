@@ -8,7 +8,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE CI_ENVIRONMENT_NAME"
 
   for reqvar in $required_env
   do
@@ -36,7 +36,7 @@ login() {
 
 deployable() {
   local target_environment="${1}"
-  echo "${target_environment}" | grep 'master\|\-deployment' > /dev/null
+  echo "${target_environment}" | grep 'development' > /dev/null
 }
 
 dry_run() {
@@ -45,7 +45,7 @@ dry_run() {
 }
 
 scan_image() {
-  local deployable_image="${CI_REGISTRY_IMAGE}/${1}:${2}"
+  local deployable_image="${CI_REGISTRY_IMAGE}/${1}:${CI_COMMIT_SHA}"
 
   local claire_image="${CI_REGISTRY}/cats/klar-cmd:latest"
   if [ ${CLAIRE_IMAGE} ]
@@ -79,13 +79,13 @@ scan_image() {
 run_main() {
   check_required_environment || exit 1
 
-  if deployable "${CI_COMMIT_REF_SLUG}"
+  if deployable "${CI_ENVIRONMENT_NAME}"
   then
     login || exit 1
-    scan_image "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1
+    scan_image "${CI_PROJECT_NAME}" || return 1
     raise "ALL COMPLETE"
   else
-    raise "build_deployment skipping non deployable environment ${CI_COMMIT_REF_SLUG}"
+    raise "build_deployment skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
     exit
   fi
 }

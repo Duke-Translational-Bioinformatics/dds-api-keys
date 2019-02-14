@@ -1,0 +1,38 @@
+#!/bin/bash
+# This script deploys the depoloyment image for the application
+# built and scanned in the publish stage
+raise()
+{
+  echo "${1}" >&2
+}
+
+check_required_environment() {
+  local required_env="CI_ENVIRONMENT_NAME CI_REGISTRY_IMAGE CI_PROJECT_NAME CI_COMMIT_SHA"
+
+  for reqvar in $required_env
+  do
+    if [ -z ${!reqvar} ]
+    then
+      raise "missing ENVIRONMENT ${reqvar}!"
+      return 1
+    fi
+  done
+}
+
+run_main() {
+  check_required_environment || exit 1
+
+  if deployable "${CI_ENVIRONMENT_NAME}"
+  then
+    echo "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA} with helm"
+  else
+    raise "deploy skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
+    exit
+  fi
+}
+
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
+then
+  run_main
+  exit $?
+fi

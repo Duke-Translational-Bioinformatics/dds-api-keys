@@ -1,15 +1,16 @@
 #!/bin/bash
-# This script builds the ${application}:${environment}
+# This script builds the ${application}:${commit}
 # production ready image from the image built from build.nodejs,
 # which is pruned of all devDependencies, and only includes the
 # express application, dist, and node_modules.
+# It only runs in deployable environments.
 raise()
 {
   echo "${1}" >&2
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_COMMIT_SHA"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_COMMIT_SHA CI_ENVIRONMENT_NAME"
 
   for reqvar in $required_env
   do
@@ -22,8 +23,7 @@ check_required_environment() {
 }
 
 check_required_deployment_environment() {
-  local environment="${1}"
-  local required_deploymet_env="${environment}_OAUTH_CLIENT_ID ${environment}_OAUTH_REDIRECT ${environment}_DDS_API_BASE_URL"
+  local required_deploymet_env="OAUTH_CLIENT_ID OAUTH_REDIRECT DDS_API_BASE_URL"
 
   for reqvar in $required_deploymet_env
   do
@@ -38,7 +38,7 @@ check_required_deployment_environment() {
 check_required_publish_environment() {
   [ ${DO_NOT_PUBLISH} ] && return
   local required_publish_env="CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
-
+  
   for reqvar in $required_publish_env
   do
     if [ -z ${!reqvar} ]
@@ -64,7 +64,7 @@ login() {
 
 deployable() {
   local target_environment="${1}"
-  echo "${target_environment}" | grep 'master\|\-deployment' > /dev/null
+  echo "${target_environment}" | grep 'development' > /dev/null
 }
 
 dry_run() {
@@ -87,10 +87,7 @@ build_intermediate_image() {
   local environment="${4}"
 
   # programmatically override the FROM
-  local oauth_client_id_var="${environment}_OAUTH_CLIENT_ID"
-  local oauth_redirect_var="${environment}_OAUTH_REDIRECT"
-  local dds_api_base_url_var="${environment}_DDS_API_BASE_URL"
-  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg CI_COMMIT_SHA --build-arg OAUTH_CLIENT_ID="${!oauth_client_id_var}" --build-arg OAUTH_REDIRECT="${!oauth_redirect_var}" --build-arg DDS_API_BASE_URL="${!dds_api_base_url_var}" -t "${intermediate_image}" -
+  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg CI_COMMIT_SHA --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${intermediate_image}" -
   if [ $? -gt 0 ]
   then
     raise "Problem in the Build"
@@ -145,7 +142,7 @@ build_deployable() {
   then
     candidate_image="${CI_REGISTRY_IMAGE}/${1}-candidate:${2}"
   fi
-  local deployable_image="${1}:${2}"
+  local deployable_image="${1}:${CI_COMMIT_SHA}"
   raise "
   Building ${original_base_image} deployable ${deployable_image} FROM ${candidate_image}
   "
@@ -184,11 +181,11 @@ publish_image() {
 run_main() {
   check_required_environment || exit 1
 
-  if deployable "${CI_COMMIT_REF_SLUG}"
+  if deployable "${CI_ENVIRONMENT_NAME}"
   then
-    check_required_deployment_environment "${CI_COMMIT_REF_SLUG}" || exit 1
+    check_required_deployment_environment || exit 1
   else
-    raise "build_deployment skipping non deployable environment ${CI_COMMIT_REF_SLUG}"
+    raise "build_deployment skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
     exit
   fi
   login || exit 1

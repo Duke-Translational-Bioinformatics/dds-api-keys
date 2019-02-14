@@ -2,6 +2,7 @@ stages:
   - build
   - test
   - publish
+  - check_security
   - deploy
 
 build:
@@ -36,7 +37,7 @@ jest:
   tags:
     - docker
 
-# this should be turned into a bot that fixes and creates a merge request
+# this should be turned into a bot that fixes and creates a merge request or an issue
 security_audit:
   tags:
     - docker
@@ -55,31 +56,35 @@ security_audit:
   only:
     - master
 
-build_deployment:
+publish_development_image:
   stage: publish
   script:
     - ./bin/ci/build_deployment
+  environment:
+    name: development
   only:
     - master
   tags:
     - docker-build
 
-scan_deployment:
-  stage: publish
+scan_development_deployment_image:
+  stage: check_security
   script:
     - ./bin/ci/scan
+  environment:
+    name: development
   only:
     - master
-    - /.*-deployment-v.*/
   tags:
     - docker-build
 
-deploy_tag:
+deploy_development:
   stage: deploy
   script:
-    - echo ${CI_COMMIT_SHA}
+    - ./bin/ci/deploy
+  environment:
+    name: development
   only:
-    - tags
-    - /.*-deployment-v.*/
+    - master
   tags:
     - docker
