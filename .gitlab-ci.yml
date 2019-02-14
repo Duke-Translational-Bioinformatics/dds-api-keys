@@ -81,7 +81,7 @@ scan_development_deployment_image:
 deploy_development:
   stage: deploy
   script:
-    - ./bin/ci/deploy
+    - ./bin/ci/helm_deploy
   environment:
     name: development
   only:
