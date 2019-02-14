@@ -80,10 +80,12 @@ scan_development_deployment_image:
 
 deploy_development:
   stage: deploy
+  image: $CI_REGISTRY/utility/docker-helm:latest
   script:
     - pwd
     - ls -l
     - ls -l bin/ci
+    - cat bin/ci/deploy
     - ./bin/ci/deploy
   environment:
     name: development
