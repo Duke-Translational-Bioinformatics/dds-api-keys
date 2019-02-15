@@ -88,6 +88,10 @@ init_helm() {
   helm repo update
 }
 
+lint_template() {
+  helm lint ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
+}
+
 install_template() {
   helm template ${CI_PROJECT_DIR}/helm-chart/${APPLICATION_NAME} || return 1
 }
@@ -136,6 +140,7 @@ run_main() {
     fi
 
     raise "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA} with helm"
+    lint_template
     install_template
     deploy_template
     watch_deployment
