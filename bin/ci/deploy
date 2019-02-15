@@ -104,6 +104,7 @@ deploy_template() {
   --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA}" \
   --set image.tag="${CI_COMMIT_SHA}" \
   --set environment="${CI_ENVIRONMENT_NAME}" \
+  --wait \
   --install ${CI_COMMIT_SHA} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
 }
 
