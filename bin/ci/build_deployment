@@ -133,14 +133,15 @@ build_deployable_image() {
 
 build_deployable() {
   local original_base_image="${1}"
-  local candidate_image="${1}-candidate-${CI_COMMIT_SHA}:${2}"
+  # the candidate image is always built in the master branch
+  local candidate_image="${1}-candidate-${CI_COMMIT_SHA}:master"
   local intermediate_image="${1}-intermediate:${2}"
   local extract_name="${1}-${2}-extract"
   local environment="${2}"
 
   if [ ${CI_REGISTRY_IMAGE} ]
   then
-    candidate_image="${CI_REGISTRY_IMAGE}/${1}-candidate:${2}"
+    candidate_image="${CI_REGISTRY_IMAGE}/${1}-candidate-${CI_COMMIT_SHA}:master"
   fi
   local deployable_image="${1}:${CI_COMMIT_REF_SLUG}"
   raise "
