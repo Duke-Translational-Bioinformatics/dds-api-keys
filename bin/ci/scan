@@ -45,7 +45,7 @@ dry_run() {
 }
 
 scan_image() {
-  local deployable_image="${CI_REGISTRY_IMAGE}/${1}:${CI_COMMIT_SHA}"
+  local deployable_image="${CI_REGISTRY_IMAGE}/${1}:${CI_COMMIT_REF_SLUG}"
 
   local claire_image="${CI_REGISTRY}/cats/klar-cmd:latest"
   if [ ${CLAIRE_IMAGE} ]

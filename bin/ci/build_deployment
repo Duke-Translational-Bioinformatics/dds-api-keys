@@ -38,7 +38,7 @@ check_required_deployment_environment() {
 check_required_publish_environment() {
   [ ${DO_NOT_PUBLISH} ] && return
   local required_publish_env="CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
-  
+
   for reqvar in $required_publish_env
   do
     if [ -z ${!reqvar} ]
@@ -142,7 +142,7 @@ build_deployable() {
   then
     candidate_image="${CI_REGISTRY_IMAGE}/${1}-candidate:${2}"
   fi
-  local deployable_image="${1}:${CI_COMMIT_SHA}"
+  local deployable_image="${1}:${CI_COMMIT_REF_SLUG}"
   raise "
   Building ${original_base_image} deployable ${deployable_image} FROM ${candidate_image}
   "

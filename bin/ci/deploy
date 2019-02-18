@@ -11,9 +11,9 @@ check_required_environment() {
     return 1
   fi
 
-  if [ -z ${CI_COMMIT_SHA} ]
+  if [ -z ${CI_COMMIT_REF_SLUG} ]
   then
-    raise "MISSING CI_COMMIT_SHA ENVIRONMENT VARIABLE"
+    raise "MISSING CI_COMMIT_REF_SLUG ENVIRONMENT VARIABLE"
     return 1
   fi
 
@@ -101,11 +101,11 @@ deploy_template() {
   --set registry.root=${CI_REGISTRY} \
   --set registry.secret.username=${CI_DEPLOY_USER} \
   --set registry.secret.password="${CI_DEPLOY_PASSWORD}" \
-  --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA}" \
-  --set image.tag="${CI_COMMIT_SHA}" \
+  --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_PROJECT_NAME}" \
+  --set image.tag="${CI_COMMIT_REF_SLUG}" \
   --set environment="${CI_ENVIRONMENT_NAME}" \
   --wait \
-  --install ${CI_COMMIT_SHA} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
+  --install ${CI_COMMIT_REF_SLUG} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
 }
 
 get_pods() {
@@ -113,7 +113,7 @@ get_pods() {
 }
 
 watch_deployment() {
-  kubectl rollout status deployment/${CI_COMMIT_SHA}-${CI_PROJECT_NAME} -w
+  kubectl rollout status deployment/${CI_COMMIT_REF_SLUG}-${CI_PROJECT_NAME} -w
   sleep 5
   get_pods
   # see what has been deployed
@@ -140,7 +140,7 @@ run_main() {
       return 1
     fi
 
-    raise "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_SHA} with helm"
+    raise "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_REF_SLUG} with helm"
     lint_template
     install_template
     deploy_template
