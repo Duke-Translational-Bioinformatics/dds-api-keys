@@ -29,6 +29,12 @@ check_required_environment() {
     return 1
   fi
 
+  if [ -z "${CI_COMMIT_SHA}" ]
+  then
+    raise "MISSING GIT_COMMIT_SHA ENVIRONMENT VARIABLE"
+    return 1
+  fi
+
   if [ -z ${HELM_TOKEN} ]
   then
     raise "MISSING HELM_TOKEN ENVIRONMENT VARIABLE"
@@ -104,6 +110,7 @@ deploy_template() {
   --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}" \
   --set image.tag="${CI_COMMIT_REF_SLUG}" \
   --set environment="${CI_ENVIRONMENT_NAME}" \
+  --set git_commit="${CI_COMMIT_SHA}" \
   --wait \
   --install ${CI_COMMIT_REF_SLUG} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
 }

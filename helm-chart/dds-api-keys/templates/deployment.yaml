@@ -9,6 +9,7 @@ metadata:
     app: {{ .Chart.Name }}
     release: {{ .Release.Name }}
     environment: {{ .Values.environment }}
+    git_commit: {{ .Values.git_commit }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
