@@ -8,6 +8,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s-%s" .Release.Name .Chart.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
+{{- define "dds-api-keys.environmentName" -}}
+{{- printf "%s-%s" .Values.environment .Chart.Name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
 {{- define "imagePullSecret" }}
 {{- printf "{\"auths\": {\"%s\": {\"auth\": \"%s\"}}}" .Values.registry.root (printf "%s:%s" .Values.registry.secret.username .Values.registry.secret.password | b64enc) | b64enc -}}
 {{- end }}
