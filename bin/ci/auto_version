@@ -64,7 +64,13 @@ get_latest_version() {
 increment() {
   local current_version="${1}"
   version_level=$(echo "${CI_COMMIT_MESSAGE}" | grep '^SEMVER_VERSION_LEVEL\:' | cut -d':' -f2)
-  ./node_modules/.bin/semver -i ${version_level} ${current_version}
+  new_version=$(${APP_ROOT}/node_modules/.bin/semver -i ${version_level} ${current_version})
+  if [ $? -gt 0 ]
+  then
+    raise "problem running semver"
+    return 1
+  fi
+  echo "${new_version}"
 }
 
 tag_version() {
