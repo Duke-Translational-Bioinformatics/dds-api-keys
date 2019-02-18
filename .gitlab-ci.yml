@@ -56,6 +56,21 @@ security_audit:
   only:
     - master
 
+# this only runs on master
+# it automatically generates the next semantic verson and creates an annotated tag
+increment_version:
+  stage: publish
+  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd /opt/app-root/src
+    - ./bin/ci/auto_version
+  only:
+    - master
+  tags:
+    - docker
+
 publish_development_image:
   stage: publish
   script:
@@ -63,7 +78,8 @@ publish_development_image:
   environment:
     name: development
   only:
-    - master
+    - tags
+    - /^v.*$/
   tags:
     - docker-build
 
@@ -74,7 +90,8 @@ scan_development_deployment_image:
   environment:
     name: development
   only:
-    - master
+    - tags
+    - /^v.*$/
   tags:
     - docker-build
 
@@ -86,6 +103,7 @@ deploy_development:
   environment:
     name: development
   only:
-    - master
+    - tags
+    - /^v.*$/
   tags:
     - docker
