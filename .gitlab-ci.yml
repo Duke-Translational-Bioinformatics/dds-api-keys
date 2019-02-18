@@ -75,8 +75,9 @@ publish_development_image:
   environment:
     name: development
   only:
-    - tags
     - /^v.*$/
+  except:
+    - branches
   tags:
     - docker-build
 
@@ -87,8 +88,9 @@ scan_development_deployment_image:
   environment:
     name: development
   only:
-    - tags
     - /^v.*$/
+  except:
+    - branches
   tags:
     - docker-build
 
@@ -100,7 +102,8 @@ deploy_development:
   environment:
     name: development
   only:
-    - tags
     - /^v.*$/
+  except:
+    - branches
   tags:
     - docker
