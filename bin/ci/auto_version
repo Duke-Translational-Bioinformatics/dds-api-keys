@@ -52,8 +52,8 @@ check_required_environment() {
 }
 
 get_latest_version() {
-  local latest_version=$(git for-each-ref --sort=taggerdate --format '%(tag)' refs/tags | grep '^v')
-  if [ -z ${latest_version} ]
+  local latest_version=$(git for-each-ref --sort=taggerdate --format '%(tag)' refs/tags | grep '^v' | tail -1)
+  if [ -z "${latest_version}" ]
   then
     # initialize the first version tag for the project if no previous tags exist
     latest_version='v0.0.0'
@@ -86,6 +86,10 @@ run_main() {
   check_required_environment || return 1
   local latest_version=$(get_latest_version)
   local this_version=$(increment "${latest_version}")
+  if [ $? -gt 0 ]
+  then
+    return 1
+  fi
   # semver strips the initial 'v'
   tag_version "v${this_version}"
 }
