@@ -61,11 +61,8 @@ security_audit:
 increment_version:
   stage: publish
   image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
-  variables:
-    GIT_STRATEGY: none
   script:
-    - cd /opt/app-root/src
-    - ./bin/ci/auto_version
+    - /opt/app-root/src/bin/ci/auto_version
   only:
     - master
   tags:
