@@ -7,3 +7,4 @@ node_modules
 *secret*
 .ssh/git_deploy_key
 docker-compose.override.yml
+.ash_history
