@@ -10,7 +10,7 @@ ARG NODE_ENV=development
 
 RUN mkdir -p ${APP_ROOT} && \
     apk update && apk upgrade && \
-    apk add --no-cache git openssh
+    apk add --no-cache git openssh curl
 
 ADD . ${APP_ROOT}
 
