@@ -7,23 +7,22 @@ metadata:
   name: {{ include "dds-api-keys.fullname" . }}
   labels:
     app: {{ .Chart.Name }}
-    release: {{ .Release.Name }}
-    environment: {{ .Values.environment }}
+    environment: {{ .Release.Name }}
+    version: {{ .Values.version }}
     git_commit: {{ .Values.git_commit }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-      release: {{ .Release.Name }}
-      environment: {{ .Values.environment }}
+      environment: {{ .Release.Name }}
   # This is the pod template
   template:
     metadata:
       labels:
         app: {{ .Chart.Name }}
-        release: {{ .Release.Name }}
-        environment: {{ .Values.environment }}
+        environment: {{ .Release.Name }}
+        version: {{ .Values.version }}
     spec:
       containers:
         - name: {{ .Chart.Name }}

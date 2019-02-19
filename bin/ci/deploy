@@ -109,10 +109,10 @@ deploy_template() {
   --set registry.secret.password="${CI_DEPLOY_PASSWORD}" \
   --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}" \
   --set image.tag="${CI_COMMIT_REF_SLUG}" \
-  --set environment="${CI_ENVIRONMENT_NAME}" \
+  --set version="${CI_COMMIT_REF_SLUG}" \
   --set git_commit="${CI_COMMIT_SHA}" \
   --wait \
-  --install ${CI_COMMIT_REF_SLUG} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
+  --install ${CI_ENVIRONMENT_NAME} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME} || return 1
 }
 
 get_pods() {

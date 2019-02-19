@@ -6,6 +6,5 @@ metadata:
   name: {{ template "dds-api-keys.fullname" . }}-pull
   labels:
     app: {{ .Chart.Name }}
-    release: {{ .Release.Name }}
-    environment: {{ .Values.environment }}
+    environment: {{ .Release.Name }}
 type: kubernetes.io/dockerconfigjson
