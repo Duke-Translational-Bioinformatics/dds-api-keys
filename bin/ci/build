@@ -53,7 +53,9 @@ dry_run() {
 }
 
 build_candidate() {
-  local candidate_image="${1}-candidate-${CI_COMMIT_SHA}:${2}"
+  local application="${1}"
+  local branch="${2}"
+  local candidate_image="${application}-candidate-${CI_COMMIT_SHA}:${branch}"
   raise "
   Building candidate ${candidate_image}
   "

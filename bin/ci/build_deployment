@@ -84,7 +84,6 @@ build_intermediate_image() {
   local original_base_image="${1}"
   local candidate_image="${2}"
   local intermediate_image="${3}"
-  local environment="${4}"
 
   # programmatically override the FROM
   sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg CI_COMMIT_SHA --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${intermediate_image}" -
@@ -132,25 +131,27 @@ build_deployable_image() {
 }
 
 build_deployable() {
-  local original_base_image="${1}"
+  local application="${1}"
+  local version="${2}"
+
+  local original_base_image="${application}"
   # the candidate image is always built in the master branch
-  local candidate_image="${1}-candidate-${CI_COMMIT_SHA}:master"
-  local intermediate_image="${1}-intermediate:${2}"
-  local extract_name="${1}-${2}-extract"
-  local environment="${2}"
+  local candidate_image="${application}-candidate-${CI_COMMIT_SHA}:master"
+  local intermediate_image="${application}-intermediate:${version}"
+  local extract_name="${application}-${version}-extract"
 
   if [ ${CI_REGISTRY_IMAGE} ]
   then
-    candidate_image="${CI_REGISTRY_IMAGE}/${1}-candidate-${CI_COMMIT_SHA}:master"
+    candidate_image="${CI_REGISTRY_IMAGE}/${application}-candidate-${CI_COMMIT_SHA}:master"
   fi
-  local deployable_image="${1}:${CI_COMMIT_REF_SLUG}"
+  local deployable_image="${application}:${version}"
   raise "
   Building ${original_base_image} deployable ${deployable_image} FROM ${candidate_image}
   "
   if ! dry_run
   then
     cleanup_artifacts "${intermediate_image}" "${extract_name}"
-    build_intermediate_image "${original_base_image}" "${candidate_image}" "${intermediate_image}" "${environment}" || return 1
+    build_intermediate_image "${original_base_image}" "${candidate_image}" "${intermediate_image}" || return 1
     build_deployable_image "${intermediate_image}" "${extract_name}" "${deployable_image}" || return 1
   fi
   publish_image "${deployable_image}"

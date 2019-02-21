@@ -8,6 +8,9 @@
 # where level can be one of the levels supported by semver
 # https://www.npmjs.com/package/semver
 # If this line does not exist in the commit, a patch increment will be applied
+# This requires semver to be installed in ${APP_ROOT}/node_modules, e.g.
+# cd ${APP_ROOT}
+# npm -i semver
 raise()
 {
   echo "${1}" >&2
@@ -64,13 +67,7 @@ get_latest_version() {
 increment() {
   local current_version="${1}"
   version_level=$(echo "${CI_COMMIT_MESSAGE}" | grep '^SEMVER_VERSION_LEVEL\:' | cut -d':' -f2)
-  new_version=$(${APP_ROOT}/node_modules/.bin/semver -i ${version_level} ${current_version})
-  if [ $? -gt 0 ]
-  then
-    raise "problem running semver"
-    return 1
-  fi
-  echo "${new_version}"
+  ${APP_ROOT}/node_modules/.bin/semver -i ${version_level} ${current_version}
 }
 
 tag_version() {
@@ -85,9 +82,10 @@ tag_version() {
 run_main() {
   check_required_environment || return 1
   local latest_version=$(get_latest_version)
-  local this_version=$(increment "${latest_version}")
+  this_version=$(increment "${latest_version}")
   if [ $? -gt 0 ]
   then
+    raise "problem incrementing"
     return 1
   fi
   # semver strips the initial 'v'
@@ -95,9 +93,7 @@ run_main() {
 }
 
 # DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
-raise "${0} running"
-echo "${0}" | grep 'bin/ci/auto_version' > /dev/null 2>&1
-if [ $? -eq 0 ]
+if echo "${0}" | grep 'bin/ci/auto_version' > /dev/null 2>&1
 then
   run_main
 fi
