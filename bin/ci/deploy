@@ -150,11 +150,11 @@ watch_deployment() {
   raise "waiting until deployment is ready"
   dry_run && return
 
-  kubectl rollout status deployment/${CI_COMMIT_REF_SLUG}-${CI_PROJECT_NAME} -w || return 1
+  kubectl rollout status deployment/${CI_ENVIRONMENT_NAME}-${CI_PROJECT_NAME} -w || return 1
   sleep 5
   get_pods || return 1
   # see what has been deployed
-  kubectl describe deployment -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME} || return 1
+  kubectl describe deployment -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME},version=${CI_COMMIT_REF_SLUG} || return 1
   kubectl describe service -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME} || return 1
   kubectl describe route -l app=${CI_PROJECT_NAME},environment=${CI_ENVIRONMENT_NAME} || return 1
 }
