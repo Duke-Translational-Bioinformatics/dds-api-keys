@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 export BOT_BRANCH='audit_fix'
 raise()
 {
@@ -45,8 +45,8 @@ run_main() {
   # fi
 }
 
-# DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
-if echo "${0}" | grep 'bin/ci/audit_fix' > /dev/null 2>&1
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   run_main
+  exit $?
 fi
