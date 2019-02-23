@@ -1,11 +1,48 @@
 #!/bin/sh
+export BOT_BRANCH='audit_fix'
+raise()
+{
+  echo "${1}" >&2
+}
+
+check_required_environment() {
+  local required_env="BOT_SSH_KEY"
+
+  for reqvar in $required_env
+  do
+    if [ -z "${!reqvar}" ]
+    then
+      raise "missing ENVIRONMENT ${reqvar}!"
+      return 1
+    fi
+  done
+}
+
+branch_exists() {
+  git branch | grep "${1}"
+}
 
 run_main() {
-  npm install npm@latest -g --prefix .node_modules
-  .node_modules/bin/npm i --package-lock-only
-  .node_modules/bin/npm audit
-  ./node_modules/bin/npm audit fix
-  git status
+  check_required_environment || return 1
+  # if branch_exists "${BOT_BRANCH}"
+  # then
+  #   git checkout ${BOT_BRANCH}
+  # else
+  #   git checkout -b ${BOT_BRANCH}
+  # fi
+  git remote -v
+  # npm install npm@latest -g --prefix .node_modules
+  # .node_modules/bin/npm i --package-lock-only
+  # .node_modules/bin/npm audit
+  # ./node_modules/bin/npm audit fix
+  # if git status --short | grep 'package.*json'
+  # then
+  #   git add package.*json
+  #   git commit -m 'audit_fix bot update'
+  #   git push origin ${BOT_BRANCH}
+  # else
+  #   raise "Nothing to report"
+  # fi
 }
 
 # DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!

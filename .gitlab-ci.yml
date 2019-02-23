@@ -44,6 +44,8 @@ security_audit:
   stage: test
   image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
   script:
+    - echo "${BOT_SSH_KEY}" > .ssh/git_deploy_key
+    - chmod 400 .ssh/config .ssh/git_deploy_key
     - ./bin/ci/audit_fix
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
