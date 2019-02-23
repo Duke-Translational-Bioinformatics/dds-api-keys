@@ -6,7 +6,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="BOT_SSH_KEY"
+  local required_env="BOT_SSH_KEY CI_REPOSITORY_URL"
 
   for reqvar in $required_env
   do
