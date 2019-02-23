@@ -42,7 +42,7 @@ security_audit:
   tags:
     - docker
   stage: test
-  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
+  image: node:8
   script:
     - echo "${BOT_SSH_KEY}" > .ssh/git_deploy_key
     - chmod 400 .ssh/config .ssh/git_deploy_key
