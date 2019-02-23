@@ -51,7 +51,7 @@ security_audit:
   # as audit can't ignore dev dependencies
   allow_failure: true
   only:
-    - master
+    - test_audit_bot
 
 # this only runs on master
 # it automatically generates the next semantic verson and creates an annotated tag
