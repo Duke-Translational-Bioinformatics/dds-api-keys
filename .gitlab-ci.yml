@@ -43,13 +43,8 @@ security_audit:
     - docker
   stage: test
   image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
-  variables:
-    GIT_STRATEGY: none
   script:
-    - cd ${APP_ROOT}
-    - npm install npm@latest -g --prefix ${APP_ROOT}/.node_modules
-    - ${APP_ROOT}/.node_modules/bin/npm i --package-lock-only
-    - ${APP_ROOT}/.node_modules/bin/npm audit
+    - ./bin/ci/audit_fix
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
   allow_failure: true

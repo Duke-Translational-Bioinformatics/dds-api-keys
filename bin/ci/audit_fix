@@ -1,0 +1,15 @@
+#!/bin/sh
+
+run_main() {
+  npm install npm@latest -g --prefix .node_modules
+  .node_modules/bin/npm i --package-lock-only
+  .node_modules/bin/npm audit
+  ./node_modules/bin/npm audit fix
+  git status
+}
+
+# DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
+if echo "${0}" | grep 'bin/ci/audit_fix' > /dev/null 2>&1
+then
+  run_main
+fi
