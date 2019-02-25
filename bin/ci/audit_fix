@@ -59,7 +59,7 @@ merge_request_exists() {
 notify_changes() {
   merge_request_exists && return
   local title="WIP: Audit Detected Issues"
-  local body="${AUDIT_REVIEWERS} check ${BOT_BRANCH} pipeline to ensure tests pass before merging"
+  local description="${AUDIT_REVIEWERS} check ${BOT_BRANCH} pipeline to ensure tests pass before merging"
   curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
        -H "Private-Token: ${BOT_KEY}" \
        -d "{\"source_branch\":\"${BOT_BRANCH}\",\"target_branch\":\"master\",\"title\":\"${title}\",\"description\":\"${description}\"}" \
