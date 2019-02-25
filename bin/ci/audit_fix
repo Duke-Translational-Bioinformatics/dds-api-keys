@@ -22,12 +22,20 @@ branch_exists() {
   git branch | grep "${1}"
 }
 
+remote_branch_exists() {
+  curl -H "Private-Token: ${BOT_KEY}"  "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/repository/branches/${1}" | grep "${1}"
+}
+
 initialize_bot_branch() {
   if branch_exists "${BOT_BRANCH}"
   then
     git checkout ${BOT_BRANCH}
-    git pull bot_remote ${BOT_BRANCH}
   else
+    if remote_branch_exists "${BOT_BRANCH}"
+    then
+      git fetch bot_remote "${BOT_BRANCH}"
+      git checkout bot_remote/${BOT_BRANCH}
+    fi
     git checkout -b ${BOT_BRANCH}
   fi
 }
