@@ -44,9 +44,8 @@ security_audit:
   stage: test
   image: node:8
   script:
-    - echo "${BOT_SSH_KEY}" > .ssh/git_deploy_key
-    - chmod 400 .ssh/config .ssh/git_deploy_key
-    - git remote add bot_remote ${CI_REPOSITORY_URL}
+    - echo "${CI_PROJECT_URL}"
+    - echo "${CI_REPOSITORY_URL}" | sed "s|\(https*\://\).*\:.*\(\@.*\)|\1${BOT_USER}:BOT_KEY\2|"
     - ./bin/ci/audit_fix
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
