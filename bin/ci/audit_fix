@@ -26,6 +26,7 @@ initialize_bot_branch() {
   if branch_exists "${BOT_BRANCH}"
   then
     git checkout ${BOT_BRANCH}
+    git pull bot_remote ${BOT_BRANCH}
   else
     git checkout -b ${BOT_BRANCH}
   fi
@@ -68,8 +69,8 @@ notify_changes() {
 
 run_main() {
   check_required_environment || return 1
-  initialize_bot_branch || return 1
   initialize_bot_remote || return 1
+  initialize_bot_branch || return 1
   setup_modules || return 1
 
   node_modules/bin/npm i --package-lock-only | tee -a /tmp/npm_install.out
