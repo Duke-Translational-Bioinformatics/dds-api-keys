@@ -43,6 +43,8 @@ security_audit:
     - docker
   stage: test
   image: node:8
+  variables:
+    GIT_STRATEGY: none
   script:
     - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
     - chmod 400 .ssh/config .ssh/git_deploy_key

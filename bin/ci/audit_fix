@@ -6,7 +6,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="BOT_KEY BOT_USER CI_PROJECT_URL CI_API_V4_URL CI_PROJECT_ID AUDIT_REVIEWERS DRACS_GITLAB_KEY"
+  local required_env="CI_PROJECT_NAME BOT_KEY BOT_USER CI_PROJECT_URL CI_API_V4_URL CI_PROJECT_ID AUDIT_REVIEWERS DRACS_GITLAB_KEY"
 
   for reqvar in $required_env
   do
@@ -32,7 +32,8 @@ initialize_bot_branch() {
 }
 
 initialize_bot_remote() {
-  git remote add bot_remote "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}|").git"
+  git clone "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}|").git"
+  cd ${CI_PROJECT_NAME}
   git config user.name "${BOT_USER}"
   git config user.email "${BOT_USER}@duke.edu"
 }
