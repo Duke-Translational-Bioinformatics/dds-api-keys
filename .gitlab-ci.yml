@@ -46,9 +46,9 @@ security_audit:
   variables:
     GIT_STRATEGY: clone
   script:
-    - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
-    - chmod 400 .ssh/config .ssh/git_deploy_key
-    - mv .ssh ${HOME}/.ssh
+    - cp -r .ssh ${HOME}/.ssh
+    - echo "${DRACS_GITLAB_KEY}" > ${HOME}/.ssh/git_deploy_key
+    - chmod 400 ${HOME}/.ssh/config ${HOME}/.ssh/git_deploy_key
     - ./bin/ci/audit_fix
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
