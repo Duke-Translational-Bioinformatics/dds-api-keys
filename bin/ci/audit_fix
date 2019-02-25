@@ -32,7 +32,7 @@ initialize_bot_branch() {
 }
 
 initialize_bot_remote() {
-  git remote add bot_remote "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}|")"
+  git remote add bot_remote "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}@|")"
   git config user.name "${BOT_USER}"
   git config user.email "${BOT_USER}@duke.edu"
 }
