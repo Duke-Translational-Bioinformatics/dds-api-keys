@@ -31,6 +31,12 @@ initialize_bot_branch() {
   fi
 }
 
+initialize_bot_remote() {
+  git remote add bot_remote "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}|")"
+  git config user.name "${BOT_USER}"
+  git config user.email "${BOT_USER}@duke.edu"
+}
+
 setup_modules() {
   npm install npm@latest -g --prefix node_modules
 }
@@ -63,6 +69,7 @@ notify_changes() {
 run_main() {
   check_required_environment || return 1
   initialize_bot_branch || return 1
+  initialize_bot_remote || return 1
   setup_modules || return 1
 
   node_modules/bin/npm i --package-lock-only | tee -a /tmp/npm_install.out
