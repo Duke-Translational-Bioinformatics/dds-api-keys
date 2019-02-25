@@ -49,6 +49,7 @@ security_audit:
     - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
     - chmod 400 .ssh/config .ssh/git_deploy_key
     - mv .ssh ${HOME}/.ssh
+    - git remote add bot_remote "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}|").git"
     - git config user.name "${BOT_USER}"
     - git config user.email "${BOT_USER}@duke.edu"
     - ./bin/ci/audit_fix
