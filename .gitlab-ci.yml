@@ -44,14 +44,16 @@ security_audit:
   stage: test
   image: node:8
   script:
-    - echo "${CI_PROJECT_URL}"
-    - echo "${CI_REPOSITORY_URL}" | sed "s|\(https*\://\).*\:.*\(\@.*\)|\1${BOT_USER}:BOT_KEY\2|"
     - ./bin/ci/audit_fix
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
   allow_failure: true
   only:
     - test_audit_bot
+  artifacts:
+    paths:
+      - audit_report.json
+    expire_in: 1 week
 
 # this only runs on master
 # it automatically generates the next semantic verson and creates an annotated tag

@@ -8,3 +8,4 @@ node_modules
 .ssh/git_deploy_key
 docker-compose.override.yml
 .ash_history
+audit_report.json
