@@ -1,12 +1,12 @@
-#!/bin/sh
-export BOT_BRANCH='audit_fix'
+#!/bin/bash
+
 raise()
 {
   echo "${1}" >&2
 }
 
 check_required_environment() {
-  local required_env="BOT_SSH_KEY"
+  local required_env="CI_COMMIT_REF_NAME CI_PROJECT_NAME BOT_KEY BOT_USER CI_PROJECT_URL CI_API_V4_URL CI_PROJECT_ID DRACS_GITLAB_KEY"
 
   for reqvar in $required_env
   do
@@ -19,34 +19,106 @@ check_required_environment() {
 }
 
 branch_exists() {
-  git branch | grep "${1}"
+  local local_branch="${1}"
+  git branch | grep "${local_branch}"
+}
+
+remote_branch_exists() {
+  local remote_branch="${1}"
+  curl -H "Private-Token: ${BOT_KEY}"  "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/repository/branches/${remote_branch}" | grep "${1}"
+}
+
+initialize_bot_branch() {
+  local bot_target_branch="${1}"
+
+  if branch_exists "${bot_target_branch}"
+  then
+    git checkout ${bot_target_branch}
+  else
+    if remote_branch_exists "${bot_target_branch}"
+    then
+      git fetch bot_remote "${bot_target_branch}"
+      git checkout bot_remote/${bot_target_branch}
+    fi
+    git checkout -b ${bot_target_branch}
+  fi
+}
+
+initialize_bot_remote() {
+  git remote add bot_remote "$(echo "${CI_PROJECT_URL}" | sed "s|\(https*\://\)|\1${BOT_USER}:${BOT_KEY}@|")"
+  git config user.name "${BOT_USER}"
+  git config user.email "${BOT_USER}@duke.edu"
+}
+
+setup_modules() {
+  npm install npm@latest -g --prefix node_modules
+}
+
+run_audit() {
+  node_modules/bin/npm audit > audit_report.txt 2>&2
+  node_modules/bin/npm audit fix --force
+}
+
+changes_detected() {
+  ! git diff --quiet HEAD
+}
+
+push_changes() {
+  local target_branch="${1}"
+
+  git add .
+  git commit -m 'attempt to fix audit issues from audit_fix bot'
+  git push bot_remote "${target_branch}"
+}
+
+merge_request_exists() {
+  local target_branch="${1}"
+  curl -H "Private-Token: ${BOT_KEY}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests?scope=created_by_me&source_branch=${BOT_BRANCH}&target_branch="${CI_COMMIT_REF_NAME}"&wip=yes&state=opened" | grep "${target_branch}"
+}
+
+notify_changes() {
+  local source_branch="${1}"
+  merge_request_exists "${source_branch}" && raise "merge request already exists from ${source_branch} to ${CI_COMMIT_REF_NAME}!" && return
+
+  local title="WIP: AuditFix Bot Detected Insecure Packages"
+  local description="@$(audit_reviewer) please check ${source_branch} pipeline to ensure tests pass before merging"
+  curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
+       -H "Private-Token: ${BOT_KEY}" \
+       -d "{\"source_branch\":\"${source_branch}\",\"target_branch\":\"${CI_COMMIT_REF_NAME}\",\"title\":\"${title}\",\"description\":\"${description}\"}" \
+       "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests"
+}
+
+audit_reviewer() {
+  local committer_email=$(curl -H "Private-Token: ${BOT_KEY}" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/repository/branches/${CI_COMMIT_REF_NAME}" | node -e 'const fs = require("fs"); const data = fs.readFileSync("/dev/stdin", "utf-8"); const obj = JSON.parse(data); process.stdout.write(obj.commit.committer_email + "\n");')
+  curl -H "Private-Token: ${BOT_KEY}" "${CI_API_V4_URL}/users?search=${committer_email}" | node -e 'const fs = require("fs"); const data = fs.readFileSync("/dev/stdin", "utf-8"); const obj = JSON.parse(data); process.stdout.write(obj[0].username + "\n");'
 }
 
 run_main() {
   check_required_environment || return 1
-  # if branch_exists "${BOT_BRANCH}"
-  # then
-  #   git checkout ${BOT_BRANCH}
-  # else
-  #   git checkout -b ${BOT_BRANCH}
-  # fi
-  git remote -v
-  # npm install npm@latest -g --prefix .node_modules
-  # .node_modules/bin/npm i --package-lock-only
-  # .node_modules/bin/npm audit
-  # ./node_modules/bin/npm audit fix
-  # if git status --short | grep 'package.*json'
-  # then
-  #   git add package.*json
-  #   git commit -m 'audit_fix bot update'
-  #   git push origin ${BOT_BRANCH}
-  # else
-  #   raise "Nothing to report"
-  # fi
+  initialize_bot_remote || return 1
+
+  local bot_branch="${CI_COMMIT_REF_NAME}-audit_fix"
+  initialize_bot_branch "${bot_branch}" || return 1
+  setup_modules || return 1
+
+  node_modules/bin/npm i --package-lock-only | tee -a /tmp/npm_install.out
+  if grep 'npm audit fix' /tmp/npm_install.out
+  then
+    run_audit || return 1
+    if changes_detected
+    then
+      push_changes "${bot_branch}" || return 1
+      notify_changes "${bot_branch}" || return 1
+    else
+      raise "No Changes Detected!"
+    fi
+  else
+    raise "No Audit Problems Detected"
+  fi
 }
 
-# DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
-if echo "${0}" | grep 'bin/ci/audit_fix' > /dev/null 2>&1
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
 then
   run_main
+  exit $?
 fi

@@ -37,6 +37,49 @@ jest:
   tags:
     - docker
 
+security_audit:
+  tags:
+    - docker
+  stage: test
+  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd ${APP_ROOT}
+    - npm install npm@latest -g --prefix ${APP_ROOT}/.node_modules
+    - ${APP_ROOT}/.node_modules/bin/npm i --package-lock-only
+    - ${APP_ROOT}/.node_modules/bin/npm audit
+  # temporary until dracs is updated and we can upgrade react, etc
+  # as audit can't ignore dev dependencies
+  allow_failure: true
+  only:
+    - master
+
+# this runs on every branch except master
+# it attempts to run npm audit fix on the repo,
+# create a branch, and a merge request from the
+# audit fix branch to the original branch
+audit_fix:
+  tags:
+    - docker
+  stage: test
+  image: node:8
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    - cp -r .ssh ${HOME}/.ssh
+    - echo "${DRACS_GITLAB_KEY}" > ${HOME}/.ssh/git_deploy_key
+    - chmod 400 ${HOME}/.ssh/config ${HOME}/.ssh/git_deploy_key
+    - ./bin/ci/audit_fix
+  only:
+    - branches
+  except:
+    - master
+  artifacts:
+    paths:
+      - audit_report.txt
+    expire_in: 1 week
+
 # this only runs on master
 # it automatically generates the next semantic verson and creates an annotated tag
 increment_version:
