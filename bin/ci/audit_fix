@@ -55,7 +55,7 @@ setup_modules() {
 }
 
 run_audit() {
-  node_modules/bin/npm audit --json > audit_report.json
+  node_modules/bin/npm audit > audit_report.txt 2>&2
   node_modules/bin/npm audit fix --force
 }
 
