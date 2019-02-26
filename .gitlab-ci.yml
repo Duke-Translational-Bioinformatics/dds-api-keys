@@ -48,10 +48,14 @@ security_audit:
     - cd ${APP_ROOT}
     - npm install npm@latest -g --prefix ${APP_ROOT}/.node_modules
     - ${APP_ROOT}/.node_modules/bin/npm i --package-lock-only
-    - ${APP_ROOT}/.node_modules/bin/npm audit
+    - ${APP_ROOT}/.node_modules/bin/npm audit > audit_report.txt 2>&1
   # temporary until dracs is updated and we can upgrade react, etc
   # as audit can't ignore dev dependencies
   allow_failure: true
+  artifacts:
+    paths:
+      - audit_report.txt
+    expire_in: 1 week
   only:
     - master
 
