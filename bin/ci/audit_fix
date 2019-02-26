@@ -50,9 +50,13 @@ setup_modules() {
   npm install npm@latest -g --prefix node_modules
 }
 
-detect_changes() {
+run_audit() {
   node_modules/bin/npm audit --json | tee -a audit_report.json
   node_modules/bin/npm audit fix --force
+}
+
+changes_detected() {
+  ! git diff --quiet HEAD
 }
 
 push_changes() {
@@ -66,7 +70,7 @@ merge_request_exists() {
 }
 
 notify_changes() {
-  merge_request_exists && return
+  merge_request_exists && raise "merge request already exists !" && return
   local title="WIP: Audit Detected Issues"
   local description="${AUDIT_REVIEWERS} check ${BOT_BRANCH} pipeline to ensure tests pass before merging"
   curl -X POST --header "Content-Type: application/json" --header "Accept: application/json" \
@@ -84,9 +88,14 @@ run_main() {
   node_modules/bin/npm i --package-lock-only | tee -a /tmp/npm_install.out
   if grep 'npm audit fix' /tmp/npm_install.out
   then
-    detect_changes || return 1
-    push_changes || return 1
-    notify_changes || return 1
+    run_audit || return 1
+    if changes_detected
+    then
+      push_changes || return 1
+      notify_changes || return 1
+    else
+      raise "No Changes Detected!"
+    fi
   else
     raise "No Audit problems Detected"
   fi
