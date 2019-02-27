@@ -68,7 +68,7 @@ check_required_environment() {
 
 deployable() {
   local target_environment="${1}"
-  echo "${target_environment}" | grep 'development' > /dev/null
+  echo "${target_environment}" | grep 'development\|uatest' > /dev/null
 }
 
 dry_run() {
