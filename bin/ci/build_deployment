@@ -132,19 +132,19 @@ build_deployable_image() {
 
 build_deployable() {
   local application="${1}"
-  local version="${2}"
+  local image_tag="${2}"
 
   local original_base_image="${application}"
   # the candidate image is always built in the master branch
   local candidate_image="${application}-candidate-${CI_COMMIT_SHA}:master"
-  local intermediate_image="${application}-intermediate:${version}"
-  local extract_name="${application}-${version}-extract"
+  local intermediate_image="${application}-intermediate:${image_tag}"
+  local extract_name="${application}-${image_tag}-extract"
 
   if [ ${CI_REGISTRY_IMAGE} ]
   then
     candidate_image="${CI_REGISTRY_IMAGE}/${application}-candidate-${CI_COMMIT_SHA}:master"
   fi
-  local deployable_image="${application}:${version}"
+  local deployable_image="${application}:${image_tag}"
   raise "
   Building ${original_base_image} deployable ${deployable_image} FROM ${candidate_image}
   "
