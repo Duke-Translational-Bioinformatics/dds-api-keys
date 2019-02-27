@@ -6,6 +6,9 @@ metadata:
     app: {{ .Chart.Name }}
     environment: {{ .Release.Name }}
 spec:
+  {{- if .Values.url }}
+  host: {{ .Values.url }}
+  {{- end }}
   tls:
     termination: edge
   to:

@@ -137,6 +137,7 @@ deploy_template() {
   --set image.repository="${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}" \
   --set image.tag="${CI_COMMIT_REF_SLUG}" \
   --set version="${CI_COMMIT_REF_SLUG}" \
+  --set url="${ENVIRONMENT_URL}" \
   --set git_commit="${CI_COMMIT_SHA}" \
   --wait \
   --install ${CI_ENVIRONMENT_NAME} ${CI_PROJECT_DIR}/helm-chart/${CI_PROJECT_NAME}

@@ -6,6 +6,7 @@ replicaCount: 1
 livenessProbeAddress: /alive_and_ready
 version: CI_COMMIT_REF_SLUG
 git_commit: CI_COMMIT_SHA
+url: ""
 
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
