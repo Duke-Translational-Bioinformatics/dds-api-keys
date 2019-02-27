@@ -7,8 +7,7 @@ kubectl get all --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},e
 kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},environment={{ .Release.Name }},version={{ .Values.version }}" -o jsonpath="{.items[0].metadata.name}"
 
 3. get an interactive shell in the first pod for this deployment
-POD=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},environment={{ .Release.Name }},version={{ .Values.version }}"
-)
+POD=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},environment={{ .Release.Name }},version={{ .Values.version }}" -o jsonpath="{.items[0].metadata.name}")
 kubectl exec -t -i ${POD} -- sh -i
 
 4. Describe the route to the deployment (includes the host url)
