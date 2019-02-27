@@ -109,6 +109,19 @@ publish_development_image:
   tags:
     - docker-build
 
+publish_uatest_image:
+  stage: publish
+  script:
+    - ./bin/ci/build_deployment
+  environment:
+    name: uatest
+  only:
+    - /^uatest\-v.*$/
+  except:
+    - branches
+  tags:
+    - docker-build
+
 scan_development_deployment_image:
   stage: check_security
   script:
@@ -117,6 +130,19 @@ scan_development_deployment_image:
     name: development
   only:
     - /^v.*$/
+  except:
+    - branches
+  tags:
+    - docker-build
+
+scan_uatest_deployment_image:
+  stage: check_security
+  script:
+    - ./bin/ci/scan
+  environment:
+    name: uatest
+  only:
+    - /^uatest\-v.*$/
   except:
     - branches
   tags:
@@ -131,6 +157,20 @@ deploy_development:
     name: development
   only:
     - /^v.*$/
+  except:
+    - branches
+  tags:
+    - docker
+
+deploy_uatest:
+  stage: deployment
+  image: $CI_REGISTRY/utility/docker-helm:latest
+  script:
+    - ./bin/ci/deploy
+  environment:
+    name: uatest
+  only:
+    - /^uatest\-v.*$/
   except:
     - branches
   tags:
