@@ -12,4 +12,4 @@ POD=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Na
 kubectl exec -t -i ${POD} -- sh -i
 
 4. Describe the route to the deployment (includes the host url)
-kubectl describe route --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},environment={{ .Release.Name }},version={{ .Values.version }}"
+kubectl describe route --namespace {{ .Release.Namespace }} -l "app={{ .Chart.Name }},environment={{ .Release.Name }}"
