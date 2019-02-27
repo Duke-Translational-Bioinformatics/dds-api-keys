@@ -19,6 +19,11 @@ console.log("NODE ENV IS:", process.env.NODE_ENV);
 app.use(helmet());
 app.use(express.static(path.join(__dirname, "dist")));
 
+app.set("views", __dirname + "/dist");
+app.engine("html", require("ejs").renderFile);
+
+app.set("view engine", "html");
+
 // k8s liveness and readyness probe entrypoint
 app.get('/alive_and_ready', function (req, res) {
   res.json({ status: 'alive and ready' })
