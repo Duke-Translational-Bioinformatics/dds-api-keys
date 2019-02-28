@@ -1,4 +1,5 @@
 #!/bin/sh
+# This must be run within a gitlab ci environment.
 raise()
 {
   echo "${1}" >&2
@@ -64,11 +65,6 @@ check_required_environment() {
     raise "You must set a Deploy Token on your repository"
     return 1
   fi
-}
-
-deployable() {
-  local target_environment="${1}"
-  echo "${target_environment}" | grep 'development\|uatest' > /dev/null
 }
 
 dry_run() {
@@ -166,57 +162,52 @@ watch_deployment() {
 
 run_main() {
   check_required_environment || return 1
-  if deployable "${CI_ENVIRONMENT_NAME}"
+  cluster_login
+  if [ $? -gt 0 ]
   then
-    cluster_login
-    if [ $? -gt 0 ]
-    then
-      raise "could not login kubectl"
-      return 1
-    fi
-
-    init_helm
-    if [ $? -gt 0 ]
-    then
-      raise "could not initialize helm"
-      return 1
-    fi
-
-    lint_template
-    if [ $? -gt 0 ]
-    then
-      raise "linting failed"
-      return 1
-    fi
-
-    install_template
-    if [ $? -gt 0 ]
-    then
-      raise "could not install template"
-      return 1
-    fi
-
-    raise "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_REF_SLUG} with helm"
-    deploy_template
-    if [ $? -gt 0 ]
-    then
-      raise "could not deploy template"
-      return 1
-    fi
-
-    watch_deployment
-    if [ $? -gt 0 ]
-    then
-      raise "could not watch deployment"
-      return 1
-    fi
-
-    cleanup
-    echo "ALL Complete!"
-    return
-  else
-    raise "deploy skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
+    raise "could not login kubectl"
+    return 1
   fi
+
+  init_helm
+  if [ $? -gt 0 ]
+  then
+    raise "could not initialize helm"
+    return 1
+  fi
+
+  lint_template
+  if [ $? -gt 0 ]
+  then
+    raise "linting failed"
+    return 1
+  fi
+
+  install_template
+  if [ $? -gt 0 ]
+  then
+    raise "could not install template"
+    return 1
+  fi
+
+  raise "deploying ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}:${CI_COMMIT_REF_SLUG} with helm"
+  deploy_template
+  if [ $? -gt 0 ]
+  then
+    raise "could not deploy template"
+    return 1
+  fi
+
+  watch_deployment
+  if [ $? -gt 0 ]
+  then
+    raise "could not watch deployment"
+    return 1
+  fi
+
+  cleanup
+  echo "ALL Complete!"
+  return
 }
 
 # DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!

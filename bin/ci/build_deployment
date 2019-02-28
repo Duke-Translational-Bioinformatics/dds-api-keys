@@ -3,7 +3,7 @@
 # production ready image from the image built from build.nodejs,
 # which is pruned of all devDependencies, and only includes the
 # express application, dist, and node_modules.
-# It only runs in deployable environments.
+# It must be run within a gitlab ci environment.
 raise()
 {
   echo "${1}" >&2
@@ -60,11 +60,6 @@ login() {
   "
   dry_run && return
   docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
-}
-
-deployable() {
-  local target_environment="${1}"
-  echo "${target_environment}" | grep 'development\|uatest' > /dev/null
 }
 
 dry_run() {
@@ -182,14 +177,7 @@ publish_image() {
 
 run_main() {
   check_required_environment || exit 1
-
-  if deployable "${CI_ENVIRONMENT_NAME}"
-  then
-    check_required_deployment_environment || exit 1
-  else
-    raise "build_deployment skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
-    exit
-  fi
+  check_required_deployment_environment || exit 1
   login || exit 1
 
   build_deployable "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1

@@ -1,7 +1,6 @@
 #!/bin/bash
-# This script builds the nodejs image for the application
-# with its devDependencies as ${application}-candidate:${environment}
-# so that it can be used for testing in later pipeline stages
+# This script scans the deployment image. It must be
+# run within a gitlab ci environment.
 raise()
 {
   echo "${1}" >&2
@@ -34,18 +33,14 @@ login() {
   docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 }
 
-deployable() {
-  local target_environment="${1}"
-  echo "${target_environment}" | grep 'development\|uatest' > /dev/null
-}
-
 dry_run() {
   [ ${DRY_RUN} ] && raise "skipping for dry run" && return
   return 1
 }
 
 scan_image() {
-  local deployable_image="${CI_REGISTRY_IMAGE}/${1}:${CI_COMMIT_REF_SLUG}"
+  local application="${1}"
+  local deployable_image="${CI_REGISTRY_IMAGE}/${application}:${CI_COMMIT_REF_SLUG}"
 
   local claire_image="${CI_REGISTRY}/cats/klar-cmd:latest"
   if [ ${CLAIRE_IMAGE} ]
@@ -79,15 +74,9 @@ scan_image() {
 run_main() {
   check_required_environment || exit 1
 
-  if deployable "${CI_ENVIRONMENT_NAME}"
-  then
-    login || exit 1
-    scan_image "${CI_PROJECT_NAME}" || return 1
-    raise "ALL COMPLETE"
-  else
-    raise "build_deployment skipping non deployable environment ${CI_ENVIRONMENT_NAME}"
-    exit
-  fi
+  login || exit 1
+  scan_image "${CI_PROJECT_NAME}" || return 1
+  raise "ALL COMPLETE"
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]
