@@ -8,6 +8,7 @@ stages:
 build:
   stage: build
   script:
+    - [ -z "${DRACS_GITLAB_KEY}" ] && echo "DRACS_GITLAB_KEY_ENVIRONMENT IS MISSING" && exit 1
     - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
     - chmod 400 .ssh/config .ssh/git_deploy_key
     - ./bin/ci/build
@@ -71,6 +72,7 @@ audit_fix:
   variables:
     GIT_STRATEGY: clone
   script:
+    - [ -z "${DRACS_GITLAB_KEY}" ] && echo "DRACS_GITLAB_KEY_ENVIRONMENT IS MISSING" && exit 1
     - cp -r .ssh ${HOME}/.ssh
     - echo "${DRACS_GITLAB_KEY}" > ${HOME}/.ssh/git_deploy_key
     - chmod 400 ${HOME}/.ssh/config ${HOME}/.ssh/git_deploy_key

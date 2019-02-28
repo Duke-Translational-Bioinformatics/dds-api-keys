@@ -6,7 +6,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_NAME CI_PROJECT_NAME BOT_KEY BOT_USER CI_PROJECT_URL CI_API_V4_URL CI_PROJECT_ID DRACS_GITLAB_KEY"
+  local required_env="CI_COMMIT_REF_NAME CI_PROJECT_NAME BOT_KEY BOT_USER CI_PROJECT_URL CI_API_V4_URL CI_PROJECT_ID"
 
   for reqvar in $required_env
   do

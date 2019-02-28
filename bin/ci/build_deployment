@@ -22,14 +22,13 @@ check_required_environment() {
   done
 }
 
-check_required_deployment_environment() {
-  local required_deploymet_env="OAUTH_CLIENT_ID OAUTH_REDIRECT DDS_API_BASE_URL"
-
-  for reqvar in $required_deploymet_env
+check_required_build_arg_environment() {
+  [ -z "${PROJECT_SPECIFIC_BUILD_ARGS}" ] && return
+  for reqvar in ${PROJECT_SPECIFIC_BUILD_ARGS}
   do
     if [ -z ${!reqvar} ]
     then
-      raise "missing ENVIRONMENT required for deployment ${reqvar}!"
+      raise "missing ENVIRONMENT required for --build-arg ${reqvar}!"
       return 1
     fi
   done
@@ -75,13 +74,18 @@ cleanup_artifacts() {
   docker rmi ${intermediate_image}
 }
 
+project_specific_build_args() {
+  [ -z "${PROJECT_SPECIFIC_BUILD_ARGS}" ] && echo "" && return
+  echo "--build-arg $(echo "${PROJECT_SPECIFIC_BUILD_ARGS}" | sed 's/ / --build-arg /g')"
+}
+
 build_intermediate_image() {
   local original_base_image="${1}"
   local candidate_image="${2}"
   local intermediate_image="${3}"
 
   # programmatically override the FROM
-  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg CI_COMMIT_SHA --build-arg OAUTH_CLIENT_ID --build-arg OAUTH_REDIRECT --build-arg DDS_API_BASE_URL -t "${intermediate_image}" -
+  sed "s|FROM ${original_base_image}|FROM ${candidate_image}|" ${CI_PROJECT_DIR}/Dockerfile.production.intermediate | docker build --build-arg CI_COMMIT_SHA $(project_specific_build_args) -t "${intermediate_image}" -
   if [ $? -gt 0 ]
   then
     raise "Problem in the Build"
@@ -177,7 +181,7 @@ publish_image() {
 
 run_main() {
   check_required_environment || exit 1
-  check_required_deployment_environment || exit 1
+  check_required_build_arg_environment || exit 1
   login || exit 1
 
   build_deployable "${CI_PROJECT_NAME}" "${CI_COMMIT_REF_SLUG}" || return 1
