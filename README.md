@@ -4,4 +4,4 @@
 
 Small javascript frontend to the Duke Data Service API which allows users to login and manage their api keys
 
-Uses gitlab ci for continuous integration and deployment
+Uses gitlab ci for continuous integration and deployment.
