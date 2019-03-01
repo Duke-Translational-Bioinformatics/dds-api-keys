@@ -211,7 +211,7 @@ run_main() {
 }
 
 # DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
-if [[ "${0}" =~ bin/ci.*/deploy ]]
+if echo "${0}" | grep 'bin/ci.*/deploy' > /dev/null 2>&1
 then
   run_main
 fi
