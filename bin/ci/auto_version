@@ -93,7 +93,7 @@ run_main() {
 }
 
 # DO NOT CHANGE THE NAME OF THIS SCRIPT OR ITS DIRECTORY!
-if echo "${0}" | grep 'bin/ci/auto_version' > /dev/null 2>&1
+if [[ "${0}" =~ bin/ci.*/auto_version ]]
 then
   run_main
 fi
