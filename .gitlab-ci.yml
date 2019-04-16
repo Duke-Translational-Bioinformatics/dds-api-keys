@@ -130,9 +130,6 @@ scan_development_deployment_image:
     - ./bin/ci/scan
   environment:
     name: development
-  # twistloc finds an old version of tar that I cannot seem
-  # to find and remove in the image
-  allow_failure: true
   only:
     - /^v.*$/
   except:
@@ -150,9 +147,6 @@ scan_uatest_deployment_image:
     - ./bin/ci/scan
   environment:
     name: uatest
-  # twistloc finds an old version of tar that I cannot seem
-  # to find and remove in the image
-  allow_failure: true
   only:
     - /^uatest\-v.*$/
   except:
