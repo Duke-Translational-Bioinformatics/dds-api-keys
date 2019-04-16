@@ -1,5 +1,6 @@
 FROM node:8-alpine
 
+ENV SHELL=/bin/sh
 ARG CI_COMMIT_SHA=unspecified
 LABEL git_commit_sha=${CI_COMMIT_SHA}
 
