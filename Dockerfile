@@ -6,6 +6,7 @@ LABEL git_commit_sha=${CI_COMMIT_SHA}
 EXPOSE 8080
 ENV APP_ROOT=/opt/app-root/src
 ENV HOME=/opt/app-root/src
+ENV SHELL=/bin/sh
 ARG NODE_ENV=development
 
 RUN mkdir -p ${APP_ROOT} && \
@@ -16,7 +17,9 @@ ADD . ${APP_ROOT}
 
 WORKDIR ${APP_ROOT}
 
+# twistlock finds old version of tar in npm/node_modules/node-gyp
 RUN npm update -g npm && \
+    npm explore npm/node_modules/node-gyp -g -- npm install tar@4.4.2 \
     mv ${APP_ROOT}/.ssh /root/.ssh && \
     NODE_ENV=${NODE_ENV} npm install && \
     rm -rf /root/.ssh
