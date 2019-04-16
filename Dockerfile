@@ -16,7 +16,8 @@ ADD . ${APP_ROOT}
 
 WORKDIR ${APP_ROOT}
 
-RUN mv ${APP_ROOT}/.ssh /root/.ssh && \
+RUN npm update -g npm && \
+    mv ${APP_ROOT}/.ssh /root/.ssh && \
     NODE_ENV=${NODE_ENV} npm install && \
     rm -rf /root/.ssh
 
