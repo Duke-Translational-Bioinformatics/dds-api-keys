@@ -38,14 +38,14 @@ scan_image() {
 
   if ! dry_run
   then
-    curl -X POST ${twistlock}
-          -H "Content-Type: application/json"
-          -H "registry_password: ${CI_REGISTRY_PASSWORD}"
-          -H "registry_user: ${CI_REGISTRY_USER}"
-          -H "image: ${deployable_image}"
+    curl -X POST ${twistlock} \
+          -H "Content-Type: application/json" \
+          -H "registry_password: ${CI_REGISTRY_PASSWORD}" \
+          -H "registry_user: ${CI_REGISTRY_USER}" \
+          -H "image: ${deployable_image}" \
           -d "{}" > image_vulnerability_report.json
     cat image_vulnerability_report.json
-    cat image.vulns.pre | grep 'FailVulnerabilities\"\:false' > /dev/null 2>&1
+    cat image_vulnerability_report.json | grep 'FailVulnerabilities\"\:false' > /dev/null 2>&1
     if [ $? -gt 0 ]
     then
       return 1
