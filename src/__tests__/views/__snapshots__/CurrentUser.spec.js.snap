@@ -146,7 +146,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
           width="500px"
         >
           <section
-            className="card__CardWrapper-aKCya fwnmPO"
+            className="card__CardWrapper-sc-1u88ynt-0 hvWiHu"
             height="400px"
             width="500px"
           >
@@ -183,7 +183,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                 }
               >
                 <header
-                  className="header__CardHeaderWrap-gWktLy joQkYb"
+                  className="header__CardHeaderWrap-cnowk2-0 flInhE"
                   style={
                     Object {
                       "backgroundColor": "#0680CD",
@@ -196,7 +196,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                     color="#FFFFFF"
                   >
                     <h4
-                      className="typography__H4-ggBxhx clfzTd"
+                      className="typography__H4-sc-14c7b7p-4 ccxjOq"
                       color="#FFFFFF"
                     >
                       Duke Data Service User Secret
@@ -218,13 +218,13 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                 style={Object {}}
               >
                 <article
-                  className="body__CardBodyWrap-gxNncO iKghek"
+                  className="body__CardBodyWrap-uuqib5-0 hOMrRL"
                   id=""
                   style={Object {}}
                 >
                   <typography__P>
                     <p
-                      className="typography__P-jyzngc gYZjzX"
+                      className="typography__P-sc-14c7b7p-0 blpnrN"
                     >
                       Initializing ... 
                     </p>
@@ -239,14 +239,14 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                       size={32}
                     >
                       <div
-                        className="spinner__ElementWrap-hXnaGg eIYEol"
+                        className="spinner__ElementWrap-sfzsto-0 kVUrwq"
                         size={32}
                       >
                         <spinner__SpinnerWrap
                           size={32}
                         >
                           <div
-                            className="spinner__SpinnerWrap-cJPLcw eSvGES"
+                            className="spinner__SpinnerWrap-sfzsto-1 hkUzwr"
                             size={32}
                           >
                             <spinner__SpinnerBar
@@ -262,7 +262,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -287,7 +287,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -312,7 +312,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -337,7 +337,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -362,7 +362,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -387,7 +387,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -412,7 +412,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -437,7 +437,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -462,7 +462,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -487,7 +487,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -512,7 +512,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
@@ -537,7 +537,7 @@ exports[`CurrentUser View UI when user is not already logged in when a a login e
                               }
                             >
                               <div
-                                className="spinner__SpinnerBar-gVLYMq dbGfAr"
+                                className="spinner__SpinnerBar-sfzsto-2 boegwM"
                                 color="#0680cd"
                                 style={
                                   Object {
