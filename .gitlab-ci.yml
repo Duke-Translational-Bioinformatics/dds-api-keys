@@ -135,7 +135,11 @@ scan_development_deployment_image:
   except:
     - branches
   tags:
-    - docker-build
+    - shell-executor
+  artifacts:
+    paths:
+      - image_vulnerability_report.json
+    expire_in: 1 week
 
 scan_uatest_deployment_image:
   stage: check_security
@@ -148,7 +152,11 @@ scan_uatest_deployment_image:
   except:
     - branches
   tags:
-    - docker-build
+    - shell-executor
+  artifacts:
+    paths:
+      - image_vulnerability_report.json
+    expire_in: 1 week
 
 deploy_development:
   stage: deployment

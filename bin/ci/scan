@@ -7,7 +7,7 @@ raise()
 }
 
 check_required_environment() {
-  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_PROJECT_DIR CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE CI_ENVIRONMENT_NAME"
+  local required_env="CI_COMMIT_REF_SLUG CI_PROJECT_NAME CI_REGISTRY_USER CI_REGISTRY_PASSWORD CI_REGISTRY_IMAGE"
 
   for reqvar in $required_env
   do
@@ -17,20 +17,6 @@ check_required_environment() {
       return 1
     fi
   done
-
-  if [ ! -f "${CI_PROJECT_DIR}/claire.whitelist.yml" ]
-  then
-    raise "missing whitelist file ${CI_PROJECT_DIR}/claire.whitelist.yml"
-    return 1
-  fi
-}
-
-login() {
-  echo "
-  logging into ${CI_REGISTRY}
-  "
-  dry_run && return
-  docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
 }
 
 dry_run() {
@@ -42,39 +28,35 @@ scan_image() {
   local application="${1}"
   local deployable_image="${CI_REGISTRY_IMAGE}/${application}:${CI_COMMIT_REF_SLUG}"
 
-  local claire_image="${CI_REGISTRY}/cats/klar-cmd:latest"
-  if [ ${CLAIRE_IMAGE} ]
+  local twistlock="https://app-image-scan.cats.dhe.duke.edu/v2/image"
+  if [ ${TWISTLOCK_ADDR} ]
   then
-    claire_image="${CLAIRE_IMAGE}"
+    twistlock="${TWISTLOCK_ADDR}"
   fi
 
-  local claire_address="https://api-route-clair-scanner.cats.dhe.duke.edu:443"
-  if [ ${CLAIRE_ADDR} ]
-  then
-    claire_address="${CLAIRE_ADDR}"
-  fi
-
-  raise "Scanning ${deployable_image} with ${claire_address} ${claire_image}"
-  raise "using whitelist at ${CI_PROJECT_DIR}/claire.whitelist.yml"
+  raise "Scanning ${deployable_image} with ${twistlock}"
 
   if ! dry_run
   then
-    docker run --rm \
-    -e DOCKER_USER=${CI_REGISTRY_USER} \
-    -e DOCKER_PASSWORD="${CI_REGISTRY_PASSWORD}" \
-    -e CLAIR_ADDR=${claire_address} \
-    -e CLAIR_OUTPUT=High \
-    -e CLAIR_THRESHOLD=0 \
-    -e WHITELIST_FILE=/data/claire.whitelist.yml \
-    -v ${CI_PROJECT_DIR}/claire.whitelist.yml:/data/claire.whitelist.yml \
-    ${claire_image} ${deployable_image}
+    curl -X POST ${twistlock}
+          -H "Content-Type: application/json"
+          -H "registry_password: ${CI_REGISTRY_PASSWORD}"
+          -H "registry_user: ${CI_REGISTRY_USER}"
+          -H "image: ${deployable_image}"
+          -d "{}" > image_vulnerability_report.json
+    cat image_vulnerability_report.json
+    cat image.vulns.pre | grep 'FailVulnerabilities\"\:false' > /dev/null 2>&1
+    if [ $? -gt 0 ]
+    then
+      return 1
+    fi
+    return
   fi
 }
 
 run_main() {
   check_required_environment || exit 1
 
-  login || exit 1
   scan_image "${CI_PROJECT_NAME}" || return 1
   raise "ALL COMPLETE"
 }
