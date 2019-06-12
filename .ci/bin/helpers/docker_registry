@@ -1,0 +1,86 @@
+if [ "$(LC_ALL=C type -t current_log_level)" != "function" ]
+then
+  echo "source helpers/common before helpers/docker_registry" >&2
+fi
+
+check_required_publish_environment() {
+  [ ${DO_NOT_PUBLISH} ] && return
+  local required_publish_env="CI_REGISTRY CI_REGISTRY_USER CI_REGISTRY_PASSWORD"
+
+  for reqvar in $required_publish_env
+  do
+    if [ -z ${!reqvar} ]
+    then
+      error "missing ENVIRONMENT ${reqvar} REQUIRED TO PUBLISH!
+      SET DO_NOT_PUBLISH=1 TO SKIP PUBLISHING TO THE GITLAB REGISTRY
+      "
+      return 1
+    fi
+  done
+}
+
+login() {
+  [ ${DO_NOT_PUBLISH} ] && return
+
+  check_required_publish_environment || return 1
+  info "
+  logging into ${CI_REGISTRY}
+  "
+  dry_run && return
+  docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+}
+
+pull_image() {
+  [ ${DO_NOT_PUBLISH} ] && return
+  local image="${1}"
+  info "
+  pulling ${image}
+  "
+  if dry_run
+  then
+    info "docker pull ${image}"
+  else
+    docker pull ${image}
+  fi
+}
+
+tag_image() {
+  [ ${DO_NOT_PUBLISH} ] && return
+  local image="${1}"
+  local image_tag="${2}"
+  info "
+  tagging ${image} as ${image_tag}
+  "
+  if dry_run
+  then
+    info "docker tag ${image} ${image_tag}"
+  else
+    docker tag "${image}" "${image_tag}"
+    if [ $? -gt 0 ]
+    then
+      error "Problem Tagging"
+      return 1
+    fi
+  fi
+}
+
+push_image() {
+  [ ${DO_NOT_PUBLISH} ] && return
+  local image="${1}"
+
+  info "
+  pushing ${image} to gitlab registry
+  "
+
+  if dry_run
+  then
+    info "docker push ${image}"
+  else
+    docker push "${image}"
+    if [ $? -gt 0 ]
+    then
+      error "Problem Pushing"
+      return 1
+    fi
+  fi
+}

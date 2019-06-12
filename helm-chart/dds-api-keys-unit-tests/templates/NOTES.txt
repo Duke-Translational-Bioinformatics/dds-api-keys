@@ -1,7 +1,0 @@
-1. Print the log of the unit test
-export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "dds-api-keys-unit-tests.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-kubectl logs -f ${POD_NAME}
-
-2. Get the status of the terminated unit test
-export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "dds-api-keys-unit-tests.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-kubectl get pod/${POD_NAME} -o jsonpath='{.status.containerStatuses[0].state.terminated.exitCode}'

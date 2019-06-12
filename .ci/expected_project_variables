@@ -1,0 +1,16 @@
+# This file should contain a list of Environment Variable Keys
+# that must be configured in the gitlab repo CI/CD Environment
+# Variables for the overall CI/CD pipeline to work
+CLUSTER_SERVER: the base url (with scheme, but without paths), to the Kubernetes cluster
+PROJECT_NAMESPACE: the name of the kubernetes project to deploy to
+SCAN_SERVICE_URL: url to the DHTS twistlock scanning service
+BOT_KEY: personal access token for the BOT_USER
+BOT_USER: a user with developer or greater role in the project, preferably a service_account
+HELM_USER: provided by DHTS when a Kubernetes project is created
+HELM_TOKEN: provided by DHTS when a Kubernetes project is created
+CI_API_V4_URL: full url to the gitlab api, typically ending with /api/v4. This will be supplied by gitlab in future versions
+# THESE will be set multiple times, once per environment
+ENVIRONMENT_ROUTE_URL: full url to use in the external Kubernetes Route.
+OAUTH_CLIENT_ID: client id used in the OIT OAUTH system for this application
+OAUTH_REDIRECT: full url for the OIT OAUTH system to redirect back to after authentication
+DDS_API_BASE_URL: full url, including /api/vX, to the DDS API being used in the environment

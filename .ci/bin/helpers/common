@@ -1,0 +1,66 @@
+log_level_for()
+{
+  case "${1}" in
+    "error")
+      echo 1
+      ;;
+
+    "warn")
+      echo 2
+      ;;
+
+    "debug")
+      echo 3
+      ;;
+
+    "info")
+      echo 4
+      ;;
+    *)
+      echo -1
+      ;;
+  esac
+}
+
+current_log_level()
+{
+  log_level_for "${LOG_LEVEL}"
+}
+
+error()
+{
+  [ $(log_level_for "error") -le $(current_log_level) ] &&  echo "${1}" >&2
+}
+
+warn()
+{
+  [ $(log_level_for "warn") -le $(current_log_level) ] &&  echo "${1}" >&2
+}
+
+debug()
+{
+  [ $(log_level_for "debug") -le $(current_log_level) ] &&  echo "${1}" >&2
+}
+
+info()
+{
+  [ $(log_level_for "info") -le $(current_log_level) ] &&  echo "${1}" >&2
+}
+
+check_required_environment() {
+  local required_env="${1}"
+
+  for reqvar in $required_env
+  do
+    if [ -z "${!reqvar}" ]
+    then
+      error "missing ENVIRONMENT ${reqvar}!"
+      return 1
+    fi
+  done
+}
+
+dry_run() {
+  [ ${DRY_RUN} ] && info "skipping for dry run" && return
+  return 1
+}

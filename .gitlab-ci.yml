@@ -5,17 +5,26 @@ stages:
   - check_security
   - deployment
 
+variables:
+  LOG_LEVEL: "info"
+
+include:
+  - project: 'ori-rad/kubernetes_deployment_pipeline'
+    file: '/auto_version.yml'
+  - project: 'ori-rad/kubernetes_deployment_pipeline'
+    file: '/ori-deployments.yml'
+
 build:
   stage: build
   script:
     - if [ -z "${DRACS_GITLAB_KEY}" ]; then echo "DRACS_GITLAB_KEY ENVIRONMENT IS MISSING"; exit 1; fi
     - echo "${DRACS_GITLAB_KEY}" > .ssh/git_deploy_key
     - chmod 400 .ssh/config .ssh/git_deploy_key
-    - ./bin/ci/build
+    - ./.ci/bin/build
   only:
     - branches
   tags:
-    - docker-build
+    - shell-executor
 
 jest:
   stage: test
@@ -60,39 +69,17 @@ security_audit:
   only:
     - master
 
-# this runs on every branch except master
-# it attempts to run npm audit fix on the repo,
-# create a branch, and a merge request from the
-# audit fix branch to the original branch
-audit_fix:
-  tags:
-    - docker
-  stage: test
-  image: node:8
-  variables:
-    GIT_STRATEGY: clone
-  script:
-    - if [ -z "${DRACS_GITLAB_KEY}" ]; then echo "DRACS_GITLAB_KEY ENVIRONMENT IS MISSING"; exit 1; fi
-    - cp -r .ssh ${HOME}/.ssh
-    - echo "${DRACS_GITLAB_KEY}" > ${HOME}/.ssh/git_deploy_key
-    - chmod 400 ${HOME}/.ssh/config ${HOME}/.ssh/git_deploy_key
-    - ./bin/ci/audit_fix
+scan:
+  stage: scan
+  extends: .scan
   only:
-    - branches
-  except:
     - master
-  artifacts:
-    paths:
-      - audit_report.txt
-    expire_in: 1 week
 
 # this only runs on master
 # it automatically generates the next semantic verson and creates an annotated tag
 increment_version:
+  extends: .auto_version
   stage: publish
-  image: ${CI_REGISTRY_IMAGE}/${CI_PROJECT_NAME}-candidate-${CI_COMMIT_SHA}:${CI_COMMIT_REF_SLUG}
-  script:
-    - /opt/app-root/src/bin/ci/auto_version
   only:
     - master
   tags:
@@ -101,11 +88,12 @@ increment_version:
 publish_development_image:
   stage: publish
   script:
-    - ./bin/ci/build_deployment
+    - ./.ci/bin/build_deployment
   environment:
     name: development
+    url: ${ENVIRONMENT_ROUTE_URL}
   only:
-    - /^v.*$/
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
     - branches
   tags:
@@ -114,74 +102,35 @@ publish_development_image:
 publish_uatest_image:
   stage: publish
   script:
-    - ./bin/ci/build_deployment
+    - ./.ci/bin/build_deployment
   environment:
     name: uatest
+    url: ${ENVIRONMENT_ROUTE_URL}
   only:
-    - /^uatest\-v.*$/
+    - /^uatest\-v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
     - branches
   tags:
     - docker-build
 
-scan_development_deployment_image:
-  stage: check_security
-  script:
-    - ./bin/ci/scan
-  environment:
-    name: development
-  only:
-    - /^v.*$/
-  except:
-    - branches
-  tags:
-    - shell-executor
-  artifacts:
-    paths:
-      - image_vulnerability_report.json
-    expire_in: 1 week
-
-scan_uatest_deployment_image:
-  stage: check_security
-  script:
-    - ./bin/ci/scan
-  environment:
-    name: uatest
-  only:
-    - /^uatest\-v.*$/
-  except:
-    - branches
-  tags:
-    - shell-executor
-  artifacts:
-    paths:
-      - image_vulnerability_report.json
-    expire_in: 1 week
-
 deploy_development:
   stage: deployment
-  image: $CI_REGISTRY/utility/docker-helm:latest
-  script:
-    - ./bin/ci/deploy
+  extends: .deploy
   environment:
     name: development
+    url: ${ENVIRONMENT_ROUTE_URL}
   only:
-    - /^v.*$/
+    - /^v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
     - branches
-  tags:
-    - docker
 
 deploy_uatest:
   stage: deployment
-  image: $CI_REGISTRY/utility/docker-helm:latest
-  script:
-    - ./bin/ci/deploy
+  extends: .deploy
   environment:
-    name: uatest
+    name: development
+    url: ${ENVIRONMENT_ROUTE_URL}
   only:
-    - /^uatest\-v.*$/
+    - /^uatest\-v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
     - branches
-  tags:
-    - docker

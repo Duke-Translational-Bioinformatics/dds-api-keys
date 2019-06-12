@@ -1,0 +1,98 @@
+if [ "$(LC_ALL=C type -t current_log_level)" != "function" ]
+then
+  echo "source helpers/common before heleprs/build" >&2
+fi
+
+check_required_build_arg_environment() {
+  [ -z "${PROJECT_SPECIFIC_BUILD_ARGS}" ] && return
+  for reqvar in ${PROJECT_SPECIFIC_BUILD_ARGS}
+  do
+    if [ -z ${!reqvar} ]
+    then
+      error "missing ENVIRONMENT required for --build-arg ${reqvar}!"
+      return 1
+    fi
+  done
+}
+
+project_specific_build_args() {
+  [ -z "${PROJECT_SPECIFIC_BUILD_ARGS}" ] && echo "" && return
+  echo "--build-arg $(echo "${PROJECT_SPECIFIC_BUILD_ARGS}" | sed 's/ / --build-arg /g')"
+}
+
+build_dockerfile() {
+  local dockerfile="${1}"
+  local target_image="${2}"
+
+  if [ ! -f "${dockerfile}" ]
+  then
+    error "This build process requires ${dockerfile} to exist in the root of the repository"
+    return 1
+  fi
+  if dry_run
+  then
+    echo "docker build -f ${dockerfile} --build-arg CI_COMMIT_SHA --build-arg CI_PROJECT_URL $(project_specific_build_args) --pull -t "${target_image}" ."
+  else
+    docker build -f ${dockerfile} --build-arg CI_COMMIT_SHA --build-arg CI_PROJECT_URL $(project_specific_build_args) --pull -t "${target_image}" .
+    if [ $? -gt 0 ]
+    then
+      error "Problem in the Build"
+      return 1
+    fi
+  fi
+}
+
+build_dockerfile_from() {
+  local dockerfile="${1}"
+  local target_image="${2}"
+  local parent_image="${3}"
+
+  if [ ! -f ${dockerfile} ]
+  then
+    error "This build process requires ${dockerfile} to exist in the root of the repository"
+    return 1
+  fi
+
+  if dry_run
+  then
+    echo "sed \"s|FROM.*|FROM ${parent_image}|\" ${dockerfile} | docker build --build-arg CI_COMMIT_SHA --build-arg CI_PROJECT_URL $(project_specific_build_args) -t \"${target_image}\" -"
+  else
+    # programmatically override the FROM
+    sed "s|FROM.*|FROM ${parent_image}|" ${dockerfile} | docker build --build-arg CI_COMMIT_SHA --build-arg CI_PROJECT_URL $(project_specific_build_args) -t "${target_image}" -
+
+    if [ $? -gt 0 ]
+    then
+      error "Problem in the Build"
+      return 1
+    fi
+  fi
+}
+
+create_container_from_image() {
+  local container_name="${1}"
+  local image_name="${2}"
+  docker container create --name ${container_name} ${image_name}
+  if [ $? -gt 0 ]
+  then
+    raise "Problem creating container ${container_name} from image ${image_name}"
+    return 1
+  fi
+}
+
+extract_container_dir() {
+  local container_name="${1}"
+  local container_path="${2}"
+  local host_path="${3}"
+  docker container cp ${container_name}:${container_path} ${host_path}
+}
+
+stop_and_remove_container() {
+  local container="${1}"
+  docker stop ${container}
+  docker rm -v ${container}
+}
+
+remove_image() {
+  local image_name="${1}"
+  docker rmi ${image_name}
+}

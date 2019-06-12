@@ -1,31 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  # This uses a "fullname" template (see _helpers)
-  # Basing names on .Release.Name means that the same chart can be installed
-  # multiple times into the same namespace.
-  name: {{ include "dds-api-keys.fullname" . }}
+  name: {{ include "fullName" . }}
   labels:
     app: {{ .Chart.Name }}
-    environment: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
     version: {{ .Values.version }}
     git_commit: {{ .Values.git_commit }}
+    git_tag: {{ .Values.git_tag }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Chart.Name }}
-      environment: {{ .Release.Name }}
+      environment: {{ .Values.environment }}
   # This is the pod template
   template:
     metadata:
       labels:
         app: {{ .Chart.Name }}
-        environment: {{ .Release.Name }}
+        environment: {{ .Values.environment }}
         version: {{ .Values.version }}
+        git_commit: {{ .Values.git_commit }}
     spec:
       containers:
-        - name: {{ .Chart.Name }}
+        - name: {{ include "fullName" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -42,4 +41,4 @@ spec:
             successThreshold: 1
             timeoutSeconds: 1
       imagePullSecrets:
-        - name: {{ include "dds-api-keys.fullname" . }}-pull
+        - name: {{ include "fullName" . }}-pull

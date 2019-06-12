@@ -3,8 +3,8 @@ data:
   .dockerconfigjson: {{ template "imagePullSecret" . }}
 kind: Secret
 metadata:
-  name: {{ template "dds-api-keys.fullname" . }}-pull
+  name: {{ template "fullName" . }}-pull
   labels:
     app: {{ .Chart.Name }}
-    environment: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
 type: kubernetes.io/dockerconfigjson

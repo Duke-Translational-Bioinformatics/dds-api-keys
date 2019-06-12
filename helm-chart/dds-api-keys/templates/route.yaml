@@ -1,10 +1,10 @@
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
-  name: {{ include "dds-api-keys.fullname" . }}
+  name: {{ include "fullName" . }}
   labels:
     app: {{ .Chart.Name }}
-    environment: {{ .Release.Name }}
+    environment: {{ .Values.environment }}
 spec:
   {{- if .Values.url }}
   host: {{ .Values.url }}
@@ -13,7 +13,7 @@ spec:
     termination: edge
   to:
     kind: Service
-    name: {{ include "dds-api-keys.fullname" . }}
+    name: {{ include "fullName" . }}
     weight: 100
   wildcardPolicy: None
 status:
