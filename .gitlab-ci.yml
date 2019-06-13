@@ -13,6 +13,8 @@ include:
     file: '/auto_version.yml'
   - project: 'ori-rad/kubernetes_deployment_pipeline'
     file: '/ori-deployments.yml'
+  - project: 'utility/images/image-scanner'
+    file: '/image-scanner.yml'
 
 build:
   stage: build
