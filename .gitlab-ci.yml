@@ -85,7 +85,7 @@ publish_development_image:
     - ./.ci/bin/build_deployment
   environment:
     name: development
-    url: ${ENVIRONMENT_ROUTE_URL}
+    url: https://${ENVIRONMENT_ROUTE_URL}
   only:
     - /^v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
@@ -99,7 +99,7 @@ publish_uatest_image:
     - ./.ci/bin/build_deployment
   environment:
     name: uatest
-    url: ${ENVIRONMENT_ROUTE_URL}
+    url: https://${ENVIRONMENT_ROUTE_URL}
   only:
     - /^uatest\-v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
@@ -114,7 +114,7 @@ scan_development_deployment_image:
   extends: .scan
   environment:
     name: development
-    url: ${ENVIRONMENT_ROUTE_URL}
+    url: https://${ENVIRONMENT_ROUTE_URL}
   only:
     - /^v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
@@ -127,7 +127,7 @@ scan_uatest_deployment_image:
   extends: .scan
   environment:
     name: uatest
-    url: ${ENVIRONMENT_ROUTE_URL}
+    url: https://${ENVIRONMENT_ROUTE_URL}
   only:
     - /^uatest\-v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
@@ -138,7 +138,7 @@ deploy_development:
   extends: .deploy
   environment:
     name: development
-    url: ${ENVIRONMENT_ROUTE_URL}
+    url: https://${ENVIRONMENT_ROUTE_URL}
   only:
     - /^v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
@@ -148,8 +148,8 @@ deploy_uatest:
   stage: deployment
   extends: .deploy
   environment:
-    name: development
-    url: ${ENVIRONMENT_ROUTE_URL}
+    name: uatest
+    url: https://${ENVIRONMENT_ROUTE_URL}
   only:
     - /^uatest\-v[0-9]+\.[0-9]+\.[0-9]+$/
   except:
